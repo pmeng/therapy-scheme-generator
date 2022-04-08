@@ -3,6 +3,8 @@
 namespace App\Entity\Therapy;
 
 use App\Repository\Therapy\LabelRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LabelRepository::class)]
@@ -11,13 +13,21 @@ class Label
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id;
 
     #[ORM\Column(type: 'string', length: 50)]
-    private $shortName;
+    private ?string $shortName;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $reportName;
+    private ?string $reportName;
+
+    #[ORM\ManyToMany(targetEntity: Stub::class, inversedBy: 'labels')]
+    private ?Collection $stubs;
+
+    public function __construct()
+    {
+        $this->stubs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -46,5 +56,31 @@ class Label
         $this->reportName = $reportName;
 
         return $this;
+    }
+
+    public function getStubs(): Collection
+    {
+        return $this->stubs;
+    }
+
+    public function addStub(Stub $stub): self
+    {
+        if (!$this->stubs->contains($stub)) {
+            $this->stubs[] = $stub;
+        }
+
+        return $this;
+    }
+
+    public function removeStub(Stub $stub): self
+    {
+        $this->stubs->removeElement($stub);
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getShortName();
     }
 }

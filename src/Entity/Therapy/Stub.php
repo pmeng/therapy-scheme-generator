@@ -3,6 +3,8 @@
 namespace App\Entity\Therapy;
 
 use App\Repository\Therapy\StubRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StubRepository::class)]
@@ -22,14 +24,22 @@ class Stub
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $background;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $isDeleted;
+
+    #[ORM\ManyToMany(targetEntity: Label::class, mappedBy: 'stubs')]
+    private ?Collection $labels;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt;
+
+    public function __construct()
+    {
+        $this->labels = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -80,6 +90,27 @@ class Stub
     public function setIsDeleted(bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function getLabels(): ?Collection
+    {
+        return $this->labels;
+    }
+
+    public function addLabel(Label $label): self
+    {
+        if (!$this->labels->contains($label)) {
+            $this->labels[] = $label;
+        }
+
+        return $this;
+    }
+
+    public function removeLabel(Label $label): self
+    {
+        $this->labels->removeElement($label);
 
         return $this;
     }

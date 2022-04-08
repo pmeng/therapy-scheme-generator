@@ -2,6 +2,7 @@
 
 namespace App\Controller\Therapy;
 
+use App\Entity\Therapy\Stub;
 use App\Form\Therapy\StubType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,11 +40,27 @@ class StubController extends AbstractController
         ]);
     }
 
-    #[Route('/therapy/stub', name: 'app_therapy_stub')]
-    public function index(): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/edit/{id<\d+>}', name: 'app_therapy_stub_edit')]
+    public function editStub(Request $request, int $id): Response
     {
+        $stub = $this->entityManager->getRepository(Stub::class)->find($id);
+
+        if (!$stub) {
+            // TODO exception about stub not exists
+        }
+
+        $stubForm = $this->createForm(StubType::class, $stub);
+        $stubForm->handleRequest($request);
+
+        if ($stubForm->isSubmitted() && $stubForm->isValid()) {
+            // TODO
+        }
+
         return $this->render('therapy/stub/index.html.twig', [
-            'controller_name' => 'StubController',
+            'formTitle' => $this->translator->trans('stub_edit_form_title', [
+                'stub_name' => $stub->getName()
+            ]),
+            'stubForm' => $stubForm->createView(),
         ]);
     }
 }
