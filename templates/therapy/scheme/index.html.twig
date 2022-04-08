@@ -26,7 +26,7 @@
             <tbody>
             {% for label in data %}
                 <tr class="table-light">
-                    <th scope="row" colspan="5">{{ label.shortName }}</th>
+                    <th scope="row" colspan="5">{{ label.shortName }} : {{ label.id }}</th>
                 </tr>
                 {% for stub in label.stubs %}
                     <tr>

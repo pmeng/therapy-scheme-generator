@@ -102,6 +102,10 @@
                 <source>therapy_table_generate_button</source>
                 <target>Generieren</target>
             </trans-unit>
+            <trans-unit id="therapy_stubs_list_title">
+                <source>therapy_stubs_list_title</source>
+                <target>Liste der Therapiestummel</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
