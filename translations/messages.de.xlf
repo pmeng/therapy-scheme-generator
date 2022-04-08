@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="project_title">
+                <source>project_title</source>
+                <target>Therapiezusammenstellung</target>
+            </trans-unit>
+            <trans-unit id="main_form_title">
+                <source>main_form_title</source>
+                <target>Hauptform</target>
+            </trans-unit>
+            <trans-unit id="stub_new_form_title">
+                <source>stub_new_form_title</source>
+                <target>Neuer Therapiestummel</target>
+            </trans-unit>
+            <trans-unit id="stub_edit_form_title">
+                <source>stub_edit_form_title</source>
+                <target>Bearbeiten "stub_name"</target>
+            </trans-unit>
+            <trans-unit id="search_label">
+                <source>search_label</source>
+                <target>Suchlabel</target>
+            </trans-unit>
+            <trans-unit id="search_therapy">
+                <source>search_therapy</source>
+                <target>Therapie suchen</target>
+            </trans-unit>
+            <trans-unit id="new_therapy_stub">
+                <source>new_therapy_stub</source>
+                <target>Neuer Therapiestummel</target>
+            </trans-unit>
+            <trans-unit id="new_therapy_scheme">
+                <source>new_therapy_scheme</source>
+                <target>Neues Therapieschema</target>
+            </trans-unit>
+            <trans-unit id="therapy_stub_form">
+                <source>therapy_stub_form</source>
+                <target>Neuer Therapiestummel</target>
+            </trans-unit>
+            <trans-unit id="therapy_stub_form_name">
+                <source>therapy_stub_form_name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="therapy_stub_form_description">
+                <source>therapy_stub_form_description</source>
+                <target>Beschreibung</target>
+            </trans-unit>
+            <trans-unit id="therapy_stub_form_background">
+                <source>therapy_stub_form_background</source>
+                <target>Hintergrund</target>
+            </trans-unit>
+            <trans-unit id="therapy_stub_form_labels">
+                <source>therapy_stub_form_labels</source>
+                <target>Labels</target>
+            </trans-unit>
+            <trans-unit id="form_save">
+                <source>form_save</source>
+                <target>Speichern</target>
+            </trans-unit>
+            <trans-unit id="form_cancel">
+                <source>form_cancel</source>
+                <target>Stornieren</target>
+            </trans-unit>
+            <trans-unit id="form_delete_undo">
+                <source>form_delete_undo</source>
+                <target>Löschen/Wiederherstellen</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

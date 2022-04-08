@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<div class="container">
+    <h2>{{ 'main_form_title'|trans }}</h2>
+    <div class="row-cols-2">
+        <div class="col">
+            {#{ form(mainForm) }#}
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-grid gap-2 d-md-block">
+            <a href="{#{ path('app_stub_new', {'_locale': app.request.locale}) }#}" class="btn btn-outline-primary btn-sm" role="button">{{ 'new_therapy_stub'|trans }}</a>
+            <a href="{#{ path('app_therapy_scheme', {'_locale': app.request.locale}) }#}" class="btn btn-outline-primary btn-sm" role="button">{{ 'new_therapy_scheme'|trans }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
