@@ -18,6 +18,10 @@
                 <source>stub_edit_form_title</source>
                 <target>Bearbeiten "stub_name"</target>
             </trans-unit>
+            <trans-unit id="therapy_new_form_title">
+                <source>therapy_new_form_title</source>
+                <target>Enter labels</target>
+            </trans-unit>
             <trans-unit id="search_label">
                 <source>search_label</source>
                 <target>Suchlabel</target>
@@ -65,6 +69,38 @@
             <trans-unit id="form_delete_undo">
                 <source>form_delete_undo</source>
                 <target>Löschen/Wiederherstellen</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_title">
+                <source>therapy_table_title</source>
+                <target>Titel</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_name">
+                <source>therapy_table_name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_description">
+                <source>therapy_table_description</source>
+                <target>Beschreibung</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_background">
+                <source>therapy_table_background</source>
+                <target>Hintergrund</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_comment">
+                <source>therapy_table_comment</source>
+                <target>Kommentar</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_label_list">
+                <source>therapy_table_label_list</source>
+                <target>Liste der Etiketten</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_load_labels">
+                <source>therapy_table_load_labels</source>
+                <target>Etiketten laden</target>
+            </trans-unit>
+            <trans-unit id="therapy_table_generate_button">
+                <source>therapy_table_generate_button</source>
+                <target>Generieren</target>
             </trans-unit>
         </body>
     </file>
