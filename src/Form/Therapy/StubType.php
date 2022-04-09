@@ -42,7 +42,7 @@ class StubType extends AbstractType
                 'attr' => ['class' => 'select2 form-control select2-widget'],
                 'row_attr' => ['class' => 'form-group'],
                 'multiple' => true,
-                'choices' => $this->entityManager->getRepository(Label::class)->findAll(),//$options['data']->labels ?? [],
+                'choices' => $this->entityManager->getRepository(Label::class)->findAll(),
                 'choice_label' => function ($choice, $key, $value) {
                     return $value;
                 },

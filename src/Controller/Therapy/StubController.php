@@ -40,22 +40,17 @@ class StubController extends AbstractController
     public function index(Request $request): Response
     {
         $repository = $this->entityManager->getRepository(Stub::class);
-        $total = $repository
-            ->createQueryBuilder('total')
-            ->select('COUNT(total.id)')
-            ->getQuery()
-            ->getSingleScalarResult()
-        ;
+
         $query = $repository
             ->createQueryBuilder('stub')
-            ->setFirstResult(($request->query->getInt('page')))
+            ->setFirstResult($request->query->getInt('page', 0))
             ->setMaxResults(self::PAGINATION_PAGE)
             ->getQuery()
         ;
         $pagination = $this->paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            6
+            self::PAGINATION_PAGE
         );
 
         return $this->render('therapy/stub/list.html.twig', [

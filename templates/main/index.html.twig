@@ -8,7 +8,16 @@
     </div>
     <div class="row-cols-2">
         <div class="col">
-            {{ form(mainForm) }}
+            <form name="search_label" action="{{ path('app_therapy_labels_list') }}" method="post">
+                <div class="input-group mb-3">
+                    <input type="search" name="label_name" required="required" class="form-control form-control" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'search_label'|trans }}</button>
+                </div>
+            </form>
+            <div class="input-group mb-3">
+                <input type="search" required="required" class="form-control form-control" aria-describedby="button-addon2">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'search_therapy'|trans }}</button>
+            </div>
         </div>
     </div>
     <div class="row">

@@ -6,6 +6,18 @@
                 <source>project_title</source>
                 <target>Therapy Scheme Generator</target>
             </trans-unit>
+            <trans-unit id="app_main_page_title">
+                <source>app_main_page_title</source>
+                <target>Home</target>
+            </trans-unit>
+            <trans-unit id="app_stabs_list_page_title">
+                <source>app_stabs_list_page_title</source>
+                <target>Stubs</target>
+            </trans-unit>
+            <trans-unit id="app_labels_list_page_title">
+                <source>app_labels_list_page_title</source>
+                <target>Labels</target>
+            </trans-unit>
             <trans-unit id="main_form_title">
                 <source>main_form_title</source>
                 <target>Main Form</target>
@@ -101,6 +113,10 @@
             <trans-unit id="therapy_table_generate_button">
                 <source>therapy_table_generate_button</source>
                 <target>Generate</target>
+            </trans-unit>
+            <trans-unit id="therapy_labels_list_title">
+                <source>therapy_labels_list_title</source>
+                <target>Therapy Labels List</target>
             </trans-unit>
             <trans-unit id="therapy_stubs_list_title">
                 <source>therapy_stubs_list_title</source>
