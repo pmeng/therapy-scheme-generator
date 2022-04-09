@@ -6,6 +6,18 @@
                 <source>project_title</source>
                 <target>Therapiezusammenstellung</target>
             </trans-unit>
+            <trans-unit id="app_main_page_title">
+                <source>app_main_page_title</source>
+                <target>Heim</target>
+            </trans-unit>
+            <trans-unit id="app_stabs_list_page_title">
+                <source>app_stabs_list_page_title</source>
+                <target>Stummel</target>
+            </trans-unit>
+            <trans-unit id="app_labels_list_page_title">
+                <source>app_labels_list_page_title</source>
+                <target>Labels</target>
+            </trans-unit>
             <trans-unit id="main_form_title">
                 <source>main_form_title</source>
                 <target>Hauptform</target>
@@ -101,6 +113,10 @@
             <trans-unit id="therapy_table_generate_button">
                 <source>therapy_table_generate_button</source>
                 <target>Generieren</target>
+            </trans-unit>
+            <trans-unit id="therapy_labels_list_title">
+                <source>therapy_labels_list_title</source>
+                <target>Liste der Therapieetiketten</target>
             </trans-unit>
             <trans-unit id="therapy_stubs_list_title">
                 <source>therapy_stubs_list_title</source>

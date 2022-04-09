@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<div class="container">
+    <h2>
+        {% if app.request.request.get('label_name') is not null %}
+            Results for '{{ app.request.request.get('label_name') }}'
+            <a href="{{ path('app_therapy_labels_list') }}" class="btn btn-outline-secondary">Reset search</a>
+        {% else %}
+            {{ 'therapy_stubs_list_title'|trans }}
+        {% endif %}
+    </h2>
+    <form name="search_label" action="{{ path('app_therapy_labels_list') }}" method="post">
+        <div class="input-group mb-3">
+            <input type="search" name="label_name" required="required" class="form-control form-control" aria-describedby="button-addon2">
+            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'search_label'|trans }}</button>
+        </div>
+    </form>
+    <div class="row">
+    {% if pagination|length > 0 %}
+        {% for label in pagination %}
+            <div class="list-group mb-3">
+                <a href="{{ path('app_therapy_label_edit', {'id': label.id}) }}" class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ label.shortName }}</h5>
+                    </div>
+                    <p class="mt-2 text-black">{{ label.reportName }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="list-group mb-3">
+            <div class="alert alert-secondary" role="alert">
+                <h5 class="mb-1">No results...</h5>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+    <div class="row mb-3">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+{% endblock %}

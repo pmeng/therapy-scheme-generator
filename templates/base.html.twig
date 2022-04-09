@@ -14,32 +14,8 @@
         {% endblock %}
     </head>
     <body>
-        {% block navbar %}
-        <nav class="navbar navbar-dark bg-secondary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{{ path('app_main') }}">{{ 'project_title'|trans }}</a>
-                <div class="nav-item dropdown">
-                    <a class="nav-item text-white dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ app.request.locale|locale_name(app.request.locale)|u.title }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
-                        <li>
-                            <a class="dropdown-item" href="{{ path(
-                                app.request.attributes.get('_route'),
-                                app.request.attributes.get('_route_params') | merge({_locale: 'en'})
-                            ) }}">English</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path(
-                                app.request.attributes.get('_route'),
-                                app.request.attributes.get('_route_params') | merge({_locale: 'de'})
-                            ) }}">Deutsch</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        {% endblock %}
+        {% include 'navbar.html.twig' %}
+
         {% block body %}{% endblock %}
     </body>
 </html>
