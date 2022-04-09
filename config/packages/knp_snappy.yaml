@@ -8,3 +8,4 @@ knp_snappy:
         binary:     '%env(WKHTMLTOIMAGE_PATH)%'
         options:    []
     temporary_folder: "%kernel.cache_dir%/snappy"
+    
