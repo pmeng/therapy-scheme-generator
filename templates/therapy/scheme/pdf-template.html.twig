@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}{{ 'project_title'|trans }}{% endblock %}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row mb-3">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">{{ 'therapy_table_title'|trans }}</th>
+                        <th scope="col">{{ 'therapy_table_name'|trans }}</th>
+                        <th scope="col">{{ 'therapy_table_description'|trans }}</th>
+                        <th scope="col">{{ 'therapy_table_background'|trans }}</th>
+                        <th scope="col">{{ 'therapy_table_comment'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for label in data %}
+                        {% if label.id in targets|keys %}
+                            <tr class="table-light">
+                                <th scope="row" colspan="5">{{ label.reportName }}</th>
+                            </tr>
+                            {% for stub in label.stubs %}
+                                {% if stub.id in targets[label.id]|keys %}
+                                <tr>
+                                    <td class="text-end col-2"></td>
+                                    <td class="col-1 border-start">{{ stub.name }}</td>
+                                    <td class="col-3 border-start">{{ stub.description }}</td>
+                                    <td class="col-3 border-start">{{ stub.background }}</td>
+                                    <td class="border-start">
+                                        <span>{{ comments[stub.id] }}</span>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
