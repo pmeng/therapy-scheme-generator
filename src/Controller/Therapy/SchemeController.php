@@ -2,6 +2,7 @@
 
 namespace App\Controller\Therapy;
 
+
 use App\Entity\Therapy\Label;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
@@ -23,11 +24,27 @@ class SchemeController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/new', name: 'app_therapy_scheme_new')]
     public function index(Request $request): Response
     {
-        $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
-        
+        $data = $request->request->all();
+
+        $labelsData = $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
+        if (isset($data['labels'])) {
+            $qb = $this->entityManager->createQueryBuilder('l');
+            $labelsData = $qb->select('lbl')
+                ->where(
+                    $qb->expr()->in(
+                        'lbl.id', 
+                        $data['labels']
+                    )
+                )
+                ->from(Label::class, 'lbl')
+                ->getQuery()
+                ->getResult();
+        }
         
         return $this->render('therapy/scheme/index.html.twig', [
-            'data' => $labelsData
+            'all' => $allLabels,
+            'data' => $labelsData,
+            'selected' => isset($data['labels']) ? array_map('intval', $data['labels']) : [],
         ]);
     }
     

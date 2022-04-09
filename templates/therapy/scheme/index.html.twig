@@ -6,12 +6,25 @@
     <div class="row">
         <h2>{{ 'therapy_new_form_title'|trans }}</h2>
     </div>
-    <div class="row mb-3">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="{{ 'therapy_table_label_list'|trans }}" aria-label="{{ 'therapy_table_label_list'|trans }}" aria-describedby="button-addon2">
-            <button class="btn btn-primary" type="button" id="button-addon2">{{ 'therapy_table_load_labels'|trans }}</button>
+    <form action="{{ path('app_therapy_scheme_new') }}" method="POST">
+        <div class="row mb-3">
+            <div class="col">
+                <select 
+                    class="select2 form-select" name="labels[]" multiple="multiple" 
+                    placeholder="{{ 'therapy_table_label_list'|trans }}" 
+                    aria-label="{{ 'therapy_table_label_list'|trans }}" 
+                    aria-describedby="button-addon2"
+                >
+                {% for label in all %}
+                    <option value="{{ label.id }}"{% if label.id in selected %} selected{% endif %}>{{ label.shortName }}</option>
+                {% endfor %}
+                </select>
+            </div>
+            <div class="col-2">
+                <button class="btn btn-outline-secondary" type="submit">{{ 'therapy_table_load_labels'|trans }}</button>
+            </div>
         </div>
-    </div>
+    </form>
     <form action="{{ path('app_therapy_scheme_generate_pdf') }}" name="report_form" method="POST">
         <div class="row mb-3">
             <table class="table">
