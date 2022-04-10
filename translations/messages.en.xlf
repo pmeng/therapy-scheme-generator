@@ -29,6 +29,30 @@
         <source>app-therapy-stubs</source>
         <target>Therapy Stubs</target>
       </trans-unit>
+      <trans-unit id="KIKVxKE" resname="app-toggle-navigation">
+        <source>app-toggle-navigation</source>
+        <target>Toggle navigation</target>
+      </trans-unit>
+      <trans-unit id="zuogZtT" resname="app-main-form-title">
+        <source>app-main-form-title</source>
+        <target>Main Form</target>
+      </trans-unit>
+      <trans-unit id="J3D1JOF" resname="app-search-for-label-button">
+        <source>app-search-for-label-button</source>
+        <target>Search for label</target>
+      </trans-unit>
+      <trans-unit id="Yn_.ACQ" resname="app-search-for-therapy-button">
+        <source>app-search-for-therapy-button</source>
+        <target>Search for therapy</target>
+      </trans-unit>
+      <trans-unit id="sgLNMUN" resname="app-new-therapy-stub-button">
+        <source>app-new-therapy-stub-button</source>
+        <target>New therapy stub</target>
+      </trans-unit>
+      <trans-unit id="2odzo3G" resname="app-new-therapy-scheme-button">
+        <source>app-new-therapy-scheme-button</source>
+        <target>New therapy scheme</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

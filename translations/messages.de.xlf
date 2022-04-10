@@ -29,6 +29,30 @@
         <source>app-therapy-stubs</source>
         <target>Therapiestummel</target>
       </trans-unit>
+      <trans-unit id="KIKVxKE" resname="app-toggle-navigation">
+        <source>app-toggle-navigation</source>
+        <target>Navigation umschalten</target>
+      </trans-unit>
+      <trans-unit id="zuogZtT" resname="app-main-form-title">
+        <source>app-main-form-title</source>
+        <target>Hauptform</target>
+      </trans-unit>
+      <trans-unit id="J3D1JOF" resname="app-search-for-label-button">
+        <source>app-search-for-label-button</source>
+        <target>Etikett suchen</target>
+      </trans-unit>
+      <trans-unit id="Yn_.ACQ" resname="app-search-for-therapy-button">
+        <source>app-search-for-therapy-button</source>
+        <target>Therapie suchen</target>
+      </trans-unit>
+      <trans-unit id="sgLNMUN" resname="app-new-therapy-stub-button">
+        <source>app-new-therapy-stub-button</source>
+        <target>Neuer Therapiestummel</target>
+      </trans-unit>
+      <trans-unit id="2odzo3G" resname="app-new-therapy-scheme-button">
+        <source>app-new-therapy-scheme-button</source>
+        <target>Neues Therapieschema</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

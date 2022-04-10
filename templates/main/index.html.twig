@@ -4,26 +4,26 @@
 {% block body %}
 <div class="container d-grid gap-3">
     <div class="row">
-        <h2>{{ 'main_form_title'|trans }}</h2>
+        <h2>{{ 'app-main-form-title'|trans }}</h2>
     </div>
     <div class="row-cols-2">
         <div class="col">
             <form name="search_label" action="{{ path('app_therapy_labels_list') }}" method="post">
                 <div class="input-group mb-3">
                     <input type="search" name="label_name" required="required" class="form-control form-control" aria-describedby="button-addon2">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'search_label'|trans }}</button>
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-label-button'|trans }}</button>
                 </div>
             </form>
             <div class="input-group mb-3">
                 <input type="search" required="required" class="form-control form-control" aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'search_therapy'|trans }}</button>
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="d-grid gap-2 d-md-block">
-            <a href="{{ path('app_therapy_stub_new', {'_locale': app.request.locale}) }}" class="btn btn-outline-primary" role="button">{{ 'new_therapy_stub'|trans }}</a>
-            <a href="{{ path('app_therapy_scheme_new', {'_locale': app.request.locale}) }}" class="btn btn-outline-primary" role="button">{{ 'new_therapy_scheme'|trans }}</a>
+            <a href="{{ path('app_therapy_stub_new', {'_locale': app.request.locale}) }}" class="btn btn-outline-primary" role="button">{{ 'app-new-therapy-stub-button'|trans }}</a>
+            <a href="{{ path('app_therapy_scheme_new', {'_locale': app.request.locale}) }}" class="btn btn-outline-primary" role="button">{{ 'app-new-therapy-scheme-button'|trans }}</a>
         </div>
     </div>
 </div>
