@@ -11,14 +11,14 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        for ($l = 0; $l < 15; $l++) {
+        /*for ($l = 0; $l < 5; $l++) {
             $label = new Label();
             $label->setShortName('Title (label) #' . $l);
             $label->setReportName('Title (label) #' . $l);
             $manager->persist($label);
         }
 
-        for ($s = 0; $s < 30; $s++) {
+        for ($s = 0; $s < 10; $s++) {
             $stub = new Stub();
             $stub->setName('Stub #' . $s);
             $stub->setDescription('description for stub #'. $s);
@@ -37,7 +37,7 @@ class AppFixtures extends Fixture
                 $label->addStub($stub);
             }
             $manager->persist($label);
-        }
+        }*/
 
         $manager->flush();
     }

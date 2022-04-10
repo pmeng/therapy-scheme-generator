@@ -2,8 +2,11 @@
 
 namespace App\Repository\Therapy;
 
+use App\Entity\DTO\StubObject;
+use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Stub;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -43,6 +46,91 @@ class StubRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function getNewStubObjectFromArray(array $data): Stub
+    {
+        $stub = new Stub();
+        $stub->setName($data['name']);
+        $stub->setDescription($data['description']);
+        $stub->setBackground($data['background']);
+
+        $this->_em->persist($stub);
+
+        return $this->applyLabels($data['labels'], $stub);
+    }
+
+    public function updateEntityFromDto(Stub $stub, StubObject $dto): Stub
+    {
+        $stub->setName($dto->name);
+        $stub->setDescription($dto->description);
+        $stub->setBackground($dto->background);
+
+        foreach ($stub->getLabels() as $label) {
+            if (!in_array($label->getShortName(), $dto->labels)) {
+                $label->removeStub($stub);
+                $this->_em->persist($label);
+            }
+        }
+
+        return $this->applyLabels($dto->labels, $stub);
+    }
+
+    public function getStubObjectFromEntity(Stub $stub): StubObject
+    {
+        $stubDto = new StubObject();
+        $stubDto->id = $stub->getId();
+        $stubDto->name = $stub->getName();
+        $stubDto->description = $stub->getDescription();
+        $stubDto->background = $stub->getBackground();
+
+        foreach ($stub->getLabels() as $label) {
+            $stubDto->labels[$label->getId()] = $label->getShortName();
+        }
+
+        return $stubDto;
+    }
+
+    protected function applyLabels($stubLabels, ?Stub $stub = null): Stub
+    {
+        $allLabels = $this->_em->getRepository(Label::class)->findAll();
+        $labelsToInject = [];
+
+        if ($stubLabels instanceof Collection) {
+            $tmp = [];
+            foreach ($stubLabels as $label) {
+                $tmp[] = $label->getShortName();
+            }
+            $stubLabels = $tmp;
+        }
+
+        foreach ($allLabels as $label) {
+            foreach ($stubLabels as $_label) {
+                if ($label->getShortName() === $_label) {
+                    $labelsToInject[$_label] = $label;
+                }
+            }
+        }
+
+        $labelsToCreate = array_diff($stubLabels, array_keys($labelsToInject));
+
+        foreach ($labelsToCreate as $label) {
+            $_label = new Label();
+            $_label->setShortName($label);
+            $_label->setReportName($label);
+            $this->_em->persist($_label);
+
+            $labelsToInject[$label] = $_label;
+        }
+
+        foreach ($labelsToInject as $label) {
+            $label->addStub($stub);
+            $this->_em->persist($label);
+        }
+
+        $this->_em->flush();
+
+        return $stub;
     }
 
     // /**

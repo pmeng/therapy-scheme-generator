@@ -20,7 +20,7 @@ $(document).ready(function() {
 $('.select2').select2({
     tags: true,
     tokenSeparators: [',', '  ']
-})
+});
 
 import 'select2/dist/css/select2.min.css';
 

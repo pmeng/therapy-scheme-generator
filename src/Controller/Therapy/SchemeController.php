@@ -2,9 +2,11 @@
 
 namespace App\Controller\Therapy;
 
+
 use App\Entity\Therapy\Label;
-use App\Form\Therapy\SchemeType;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Snappy\Pdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,18 +24,45 @@ class SchemeController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/new', name: 'app_therapy_scheme_new')]
     public function index(Request $request): Response
     {
-        $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
+        $data = $request->request->all();
 
-        $schemeForm = $this->createForm(SchemeType::class);
-        $schemeForm->handleRequest($request);
-
-        if ($schemeForm->isSubmitted() && $schemeForm->isValid()) {
-            // TODO
+        $labelsData = $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
+        if (isset($data['labels'])) {
+            $qb = $this->entityManager->createQueryBuilder('l');
+            $labelsData = $qb->select('lbl')
+                ->where(
+                    $qb->expr()->in(
+                        'lbl.id', 
+                        $data['labels']
+                    )
+                )
+                ->from(Label::class, 'lbl')
+                ->getQuery()
+                ->getResult();
         }
-
+        
         return $this->render('therapy/scheme/index.html.twig', [
+            'all' => $allLabels,
             'data' => $labelsData,
-            'schemeForm' => $schemeForm->createView(),
+            'selected' => isset($data['labels']) ? array_map('intval', $data['labels']) : [],
         ]);
+    }
+    
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/pdf', name: 'app_therapy_scheme_generate_pdf', methods: ['POST'])]
+    public function generatePdf(Request $request, Pdf $pdfGenerator): PdfResponse
+    {
+        $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
+        $data = $request->request->all();
+
+        $html = $this->renderView('therapy/scheme/pdf-template.html.twig', [
+            'data' => $labelsData,
+            'targets' => $data['targets'],
+            'comments' => $data['comments'],
+        ]);
+        
+        return new PdfResponse(
+            $pdfGenerator->getOutputFromHtml($html),
+            sprintf('report-%s.pdf', date('Y-m-d'))
+        );
     }
 }

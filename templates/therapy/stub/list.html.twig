@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<div class="container">
+    <h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
+    <div class="row">
+    {% for stub in pagination %}
+        <div class="list-group mb-3">
+            <a href="{{ path('app_therapy_stub_edit', {id: stub.id}) }}" class="list-group-item list-group-item-action" aria-current="true">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ stub.name }}</h5>
+                    <small>{{ stub.createdAt|format_datetime(locale=app.request.locale) }}</small>
+                </div>
+                <p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-description'|trans }}</p>
+                <small>{{ stub.description }}</small>
+                <p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-background'|trans }}</p>
+                <small>{{ stub.background }}</small>
+            </a>
+        </div>
+    {% endfor %}
+    </div>
+    <div class="row mb-3">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+{% endblock %}
