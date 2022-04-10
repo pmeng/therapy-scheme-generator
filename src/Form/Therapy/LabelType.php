@@ -15,12 +15,14 @@ class LabelType extends AbstractType
     {
         $builder
             ->add('shortName', TextType::class, [
-                'label' => 'Default name (shown in app)'
+                'label' => 'app-therapy-label-edit-form-short-name',
             ])
             ->add('reportName', TextType::class, [
-                'label' => 'Report name (shown in generated report)'
+                'label' => 'app-therapy-label-edit-form-report-name',
             ])
-            ->add('save', SubmitType::class)
+            ->add('save', SubmitType::class, [
+                'label' => 'app-save-button',
+            ])
         ;
     }
 

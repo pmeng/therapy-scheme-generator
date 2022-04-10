@@ -153,6 +153,18 @@
         <source>app-therapy-report-generate-report-button</source>
         <target>Generate Report</target>
       </trans-unit>
+      <trans-unit id="e8RSXYg" resname="app-label-edit-page-title">
+        <source>app-label-edit-page-title</source>
+        <target>Edit Label</target>
+      </trans-unit>
+      <trans-unit id="zfSpLBH" resname="app-therapy-label-edit-form-short-name">
+        <source>app-therapy-label-edit-form-short-name</source>
+        <target>Default name (shown in app)</target>
+      </trans-unit>
+      <trans-unit id="8hYDwBz" resname="app-therapy-label-edit-form-report-name">
+        <source>app-therapy-label-edit-form-report-name</source>
+        <target>Report name (shown in generated report)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
