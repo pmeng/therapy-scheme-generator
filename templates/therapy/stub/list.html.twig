@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="container">
-    <h2>{{ 'therapy_stubs_list_title'|trans }}</h2>
+    <h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
     <div class="row">
     {% for stub in pagination %}
         <div class="list-group mb-3">
@@ -12,9 +12,9 @@
                     <h5 class="mb-1">{{ stub.name }}</h5>
                     <small>{{ stub.createdAt|format_datetime(locale=app.request.locale) }}</small>
                 </div>
-                <p class="mt-2 text-black">{{ 'Description:' }}</p>
+                <p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-description'|trans }}</p>
                 <small>{{ stub.description }}</small>
-                <p class="mt-2 text-black">{{ 'Background:' }}</p>
+                <p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-background'|trans }}</p>
                 <small>{{ stub.background }}</small>
             </a>
         </div>

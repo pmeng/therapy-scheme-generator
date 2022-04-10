@@ -89,6 +89,18 @@
         <source>app-delete-undo-button</source>
         <target>Delete/Undelete</target>
       </trans-unit>
+      <trans-unit id=".2x53wz" resname="app-therapy-stubs-list-page-title">
+        <source>app-therapy-stubs-list-page-title</source>
+        <target>Therapy stubs list</target>
+      </trans-unit>
+      <trans-unit id="DbQUwkJ" resname="app-therapy-stubs-list-label-description">
+        <source>app-therapy-stubs-list-label-description</source>
+        <target>Description:</target>
+      </trans-unit>
+      <trans-unit id="qfcDnmJ" resname="app-therapy-stubs-list-label-background">
+        <source>app-therapy-stubs-list-label-background</source>
+        <target>Background:</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
