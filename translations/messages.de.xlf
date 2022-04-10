@@ -101,6 +101,22 @@
         <source>app-therapy-stubs-list-label-background</source>
         <target>Hintergrund:</target>
       </trans-unit>
+      <trans-unit id="tUjYfDG" resname="app-therapy-labels-list-page-title">
+        <source>app-therapy-labels-list-page-title</source>
+        <target>Liste der Therapieetiketten</target>
+      </trans-unit>
+      <trans-unit id="ksxro1X" resname="app-reset-search-button">
+        <source>app-reset-search-button</source>
+        <target>Suche zurücksetzen</target>
+      </trans-unit>
+      <trans-unit id="LrrhBn9" resname="app-results-for-label-search-title">
+        <source>app-results-for-label-search-title</source>
+        <target>Ergebnisse für "%label_name%"</target>
+      </trans-unit>
+      <trans-unit id="u2IrG1d" resname="app-no-results-message">
+        <source>app-no-results-message</source>
+        <target>Keine Ergebnisse...</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
