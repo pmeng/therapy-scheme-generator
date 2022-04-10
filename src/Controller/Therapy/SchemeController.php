@@ -48,6 +48,19 @@ class SchemeController extends AbstractController
         ]);
     }
     
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/html', name: 'app_therapy_scheme_generate_html', methods: ['POST'])]
+    public function generateHtml(Request $request): Response
+    {
+        $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
+        $data = $request->request->all();
+
+        return $this->render('therapy/scheme/html-template.html.twig', [
+            'data' => $labelsData,
+            'targets' => $data['targets'],
+            'comments' => $data['comments'],
+        ]);
+    }
+    
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/pdf', name: 'app_therapy_scheme_generate_pdf', methods: ['POST'])]
     public function generatePdf(Request $request, Pdf $pdfGenerator): PdfResponse
     {

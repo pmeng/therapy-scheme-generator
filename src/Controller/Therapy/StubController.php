@@ -18,6 +18,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class StubController extends AbstractController
 {
     const PAGINATION_PAGE = 5;
+    
     protected EntityManagerInterface $entityManager;
     protected TranslatorInterface $translator;
     protected PaginatorInterface $paginator;
