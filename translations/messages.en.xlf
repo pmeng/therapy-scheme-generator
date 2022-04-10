@@ -1,127 +1,122 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file source-language="en" datatype="plaintext" original="file.ext">
-        <body>
-            <trans-unit id="project_title">
-                <source>project_title</source>
-                <target>Therapy Scheme Generator</target>
-            </trans-unit>
-            <trans-unit id="app_main_page_title">
-                <source>app_main_page_title</source>
-                <target>Home</target>
-            </trans-unit>
-            <trans-unit id="app_stabs_list_page_title">
-                <source>app_stabs_list_page_title</source>
-                <target>Stubs</target>
-            </trans-unit>
-            <trans-unit id="app_labels_list_page_title">
-                <source>app_labels_list_page_title</source>
-                <target>Labels</target>
-            </trans-unit>
-            <trans-unit id="main_form_title">
-                <source>main_form_title</source>
-                <target>Main Form</target>
-            </trans-unit>
-            <trans-unit id="stub_new_form_title">
-                <source>stub_new_form_title</source>
-                <target>New Therapy Stub</target>
-            </trans-unit>
-            <trans-unit id="stub_edit_form_title">
-                <source>stub_edit_form_title</source>
-                <target>Edit "stub_name"</target>
-            </trans-unit>
-            <trans-unit id="therapy_new_form_title">
-                <source>therapy_new_form_title</source>
-                <target>Enter labels</target>
-            </trans-unit>
-            <trans-unit id="search_label">
-                <source>search_label</source>
-                <target>Search Label</target>
-            </trans-unit>
-            <trans-unit id="search_therapy">
-                <source>search_therapy</source>
-                <target>Search Therapy</target>
-            </trans-unit>
-            <trans-unit id="new_therapy_stub">
-                <source>new_therapy_stub</source>
-                <target>New Stub</target>
-            </trans-unit>
-            <trans-unit id="new_therapy_scheme">
-                <source>new_therapy_scheme</source>
-                <target>New Scheme</target>
-            </trans-unit>
-            <trans-unit id="therapy_stub_form">
-                <source>therapy_stub_form</source>
-                <target>New Therapy Stub</target>
-            </trans-unit>
-            <trans-unit id="therapy_stub_form_name">
-                <source>therapy_stub_form_name</source>
-                <target>Name</target>
-            </trans-unit>
-            <trans-unit id="therapy_stub_form_description">
-                <source>therapy_stub_form_description</source>
-                <target>Description</target>
-            </trans-unit>
-            <trans-unit id="therapy_stub_form_background">
-                <source>therapy_stub_form_background</source>
-                <target>Background</target>
-            </trans-unit>
-            <trans-unit id="therapy_stub_form_labels">
-                <source>therapy_stub_form_labels</source>
-                <target>Labels</target>
-            </trans-unit>
-            <trans-unit id="form_save">
-                <source>form_save</source>
-                <target>Save</target>
-            </trans-unit>
-            <trans-unit id="form_cancel">
-                <source>form_cancel</source>
-                <target>Cancel</target>
-            </trans-unit>
-            <trans-unit id="form_delete_undo">
-                <source>form_delete_undo</source>
-                <target>Delete/Undelete</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_title">
-                <source>therapy_table_title</source>
-                <target>Title</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_name">
-                <source>therapy_table_name</source>
-                <target>Name</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_description">
-                <source>therapy_table_description</source>
-                <target>Description</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_background">
-                <source>therapy_table_background</source>
-                <target>Background</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_comment">
-                <source>therapy_table_comment</source>
-                <target>Comment</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_label_list">
-                <source>therapy_table_label_list</source>
-                <target>Labels list</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_load_labels">
-                <source>therapy_table_load_labels</source>
-                <target>Load labels</target>
-            </trans-unit>
-            <trans-unit id="therapy_table_generate_button">
-                <source>therapy_table_generate_button</source>
-                <target>Generate</target>
-            </trans-unit>
-            <trans-unit id="therapy_labels_list_title">
-                <source>therapy_labels_list_title</source>
-                <target>Therapy Labels List</target>
-            </trans-unit>
-            <trans-unit id="therapy_stubs_list_title">
-                <source>therapy_stubs_list_title</source>
-                <target>Therapy Stubs List</target>
-            </trans-unit>
-        </body>
-    </file>
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="bLrYxnm" resname="app-project-title">
+        <source>app-project-title</source>
+        <target>Therapy Scheme Generator</target>
+      </trans-unit>
+      <trans-unit id="a6z2eyn" resname="app-english">
+        <source>app-english</source>
+        <target>English</target>
+      </trans-unit>
+      <trans-unit id="AW6E6.H" resname="app-german">
+        <source>app-german</source>
+        <target>German</target>
+      </trans-unit>
+      <trans-unit id="S1PqBA." resname="app-home">
+        <source>app-home</source>
+        <target>Home</target>
+      </trans-unit>
+      <trans-unit id="_.EGDVA" resname="app-labels">
+        <source>app-labels</source>
+        <target>Labels</target>
+      </trans-unit>
+      <trans-unit id="yT7XYQ7" resname="app-therapy-stubs">
+        <source>app-therapy-stubs</source>
+        <target>Therapy Stubs</target>
+      </trans-unit>
+      <trans-unit id="KIKVxKE" resname="app-toggle-navigation">
+        <source>app-toggle-navigation</source>
+        <target>Toggle navigation</target>
+      </trans-unit>
+      <trans-unit id="zuogZtT" resname="app-main-form-title">
+        <source>app-main-form-title</source>
+        <target>Main Form</target>
+      </trans-unit>
+      <trans-unit id="J3D1JOF" resname="app-search-for-label-button">
+        <source>app-search-for-label-button</source>
+        <target>Search for label</target>
+      </trans-unit>
+      <trans-unit id="Yn_.ACQ" resname="app-search-for-therapy-button">
+        <source>app-search-for-therapy-button</source>
+        <target>Search for therapy</target>
+      </trans-unit>
+      <trans-unit id="sgLNMUN" resname="app-new-therapy-stub-button">
+        <source>app-new-therapy-stub-button</source>
+        <target>New therapy stub</target>
+      </trans-unit>
+      <trans-unit id="2odzo3G" resname="app-new-therapy-scheme-button">
+        <source>app-new-therapy-scheme-button</source>
+        <target>New therapy scheme</target>
+      </trans-unit>
+      <trans-unit id="C2wE6Ah" resname="app-new-therapy-stub-form-title">
+        <source>app-new-therapy-stub-form-title</source>
+        <target>New Therapy Stub</target>
+      </trans-unit>
+      <trans-unit id="0rRDwQu" resname="app-edit-therapy-stub-form-title">
+        <source>app-edit-therapy-stub-form-title</source>
+        <target>Edit Therapy Stub</target>
+      </trans-unit>
+      <trans-unit id="WurMa._" resname="app-therapy-stub-form-label-name">
+        <source>app-therapy-stub-form-label-name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="7a3fLVX" resname="app-therapy-stub-form-label-description">
+        <source>app-therapy-stub-form-label-description</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="luCEM2x" resname="app-therapy-stub-form-label-background">
+        <source>app-therapy-stub-form-label-background</source>
+        <target>Background</target>
+      </trans-unit>
+      <trans-unit id="kNAHhwm" resname="app-therapy-stub-form-label-labels">
+        <source>app-therapy-stub-form-label-labels</source>
+        <target>Labels</target>
+      </trans-unit>
+      <trans-unit id="FCVm5Cu" resname="app-save-button">
+        <source>app-save-button</source>
+        <target>Save</target>
+      </trans-unit>
+      <trans-unit id="5rTKEfI" resname="app-cancel-button">
+        <source>app-cancel-button</source>
+        <target>Cancel</target>
+      </trans-unit>
+      <trans-unit id="R4Om9By" resname="app-delete-undo-button">
+        <source>app-delete-undo-button</source>
+        <target>Delete/Undelete</target>
+      </trans-unit>
+      <trans-unit id=".2x53wz" resname="app-therapy-stubs-list-page-title">
+        <source>app-therapy-stubs-list-page-title</source>
+        <target>Therapy stubs list</target>
+      </trans-unit>
+      <trans-unit id="DbQUwkJ" resname="app-therapy-stubs-list-label-description">
+        <source>app-therapy-stubs-list-label-description</source>
+        <target>Description:</target>
+      </trans-unit>
+      <trans-unit id="qfcDnmJ" resname="app-therapy-stubs-list-label-background">
+        <source>app-therapy-stubs-list-label-background</source>
+        <target>Background:</target>
+      </trans-unit>
+      <trans-unit id="tUjYfDG" resname="app-therapy-labels-list-page-title">
+        <source>app-therapy-labels-list-page-title</source>
+        <target>Therapy labels list</target>
+      </trans-unit>
+      <trans-unit id="ksxro1X" resname="app-reset-search-button">
+        <source>app-reset-search-button</source>
+        <target>Reset search</target>
+      </trans-unit>
+      <trans-unit id="LrrhBn9" resname="app-results-for-label-search-title">
+        <source>app-results-for-label-search-title</source>
+        <target>Results for "%label_name%"</target>
+      </trans-unit>
+      <trans-unit id="u2IrG1d" resname="app-no-results-message">
+        <source>app-no-results-message</source>
+        <target>No results...</target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>

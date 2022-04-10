@@ -75,7 +75,7 @@ class StubController extends AbstractController
         }
 
         return $this->render('therapy/stub/index.html.twig', [
-            'formTitle' => $this->translator->trans('stub_new_form_title'),
+            'formTitle' => $this->translator->trans('app-new-therapy-stub-form-title'),
             'stubForm' => $stubForm->createView(),
         ]);
     }
@@ -100,7 +100,7 @@ class StubController extends AbstractController
         }
 
         return $this->render('therapy/stub/index.html.twig', [
-            'formTitle' => $this->translator->trans('stub_edit_form_title', [
+            'formTitle' => $this->translator->trans('app-edit-therapy-stub-form-title', [
                 'stub_name' => $stub->getName()
             ]),
             'stubForm' => $stubForm->createView(),

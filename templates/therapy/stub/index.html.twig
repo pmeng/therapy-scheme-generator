@@ -26,11 +26,11 @@
         </div>
         <div class="row">
             <div class="d-grid gap-2 d-md-block">
-                {{ form_widget(stubForm.save, {'label': 'form_save'|trans })}}
+                {{ form_widget(stubForm.save)}}
                 {% if stubForm.delete_undo is defined %}
                     {{ form_widget(stubForm.delete_undo)}}
                 {% endif %}
-                <a href="{{ path('app_main') }}" class="btn-secondary btn">{{ 'form_cancel'|trans }}</a>
+                <a href="{{ path('app_main') }}" class="btn-secondary btn">{{ 'app-cancel-button'|trans }}</a>
             </div>
         </div>
     </div>
