@@ -29,16 +29,16 @@ class StubType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'therapy_stub_form_name',
+                'label' => 'app-therapy-stub-form-label-name',
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'therapy_stub_form_description',
+                'label' => 'app-therapy-stub-form-label-description',
             ])
             ->add('background', TextareaType::class, [
-                'label' => 'therapy_stub_form_background',
+                'label' => 'app-therapy-stub-form-label-background',
             ])
             ->add('labels', ChoiceType::class, [
-                'label' => 'therapy_stub_form_labels',
+                'label' => 'app-therapy-stub-form-label-labels',
                 'attr' => ['class' => 'select2 form-control select2-widget'],
                 'row_attr' => ['class' => 'form-group'],
                 'multiple' => true,
@@ -50,11 +50,8 @@ class StubType extends AbstractType
                     return $choice;
                 }
             ])
-            ->add('cancel', ButtonType::class, [
-                'label' => 'form_cancel',
-            ])
             ->add('save', SubmitType::class, [
-                'label' => 'form_save',
+                'label' => 'app-save-button',
             ])
             ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
                 $stub = $event->getData();
@@ -63,6 +60,16 @@ class StubType extends AbstractType
                 $options = $form->get('labels')->getConfig()->getOptions();
                 $options['choices'] = $stub['labels'];
                 $form->add('labels', ChoiceType::class, $options);
+            })
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+                $stub = $event->getData();
+                $form = $event->getForm();
+                
+                if (isset($stub->id)) {
+                    $form->add('delete_undo', SubmitType::class, [
+                        'label' => 'app-delete-undo-button'
+                    ]);
+                }
             })
         ;
     }

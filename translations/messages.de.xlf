@@ -53,6 +53,42 @@
         <source>app-new-therapy-scheme-button</source>
         <target>Neues Therapieschema</target>
       </trans-unit>
+      <trans-unit id="C2wE6Ah" resname="app-new-therapy-stub-form-title">
+        <source>app-new-therapy-stub-form-title</source>
+        <target>Neuer Therapiestummel</target>
+      </trans-unit>
+      <trans-unit id="0rRDwQu" resname="app-edit-therapy-stub-form-title">
+        <source>app-edit-therapy-stub-form-title</source>
+        <target>Bearbeiten Sie Therapie Stub</target>
+      </trans-unit>
+      <trans-unit id="WurMa._" resname="app-therapy-stub-form-label-name">
+        <source>app-therapy-stub-form-label-name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="7a3fLVX" resname="app-therapy-stub-form-label-description">
+        <source>app-therapy-stub-form-label-description</source>
+        <target>Beschreibung</target>
+      </trans-unit>
+      <trans-unit id="luCEM2x" resname="app-therapy-stub-form-label-background">
+        <source>app-therapy-stub-form-label-background</source>
+        <target>Hintergrund</target>
+      </trans-unit>
+      <trans-unit id="kNAHhwm" resname="app-therapy-stub-form-label-labels">
+        <source>app-therapy-stub-form-label-labels</source>
+        <target>Labels</target>
+      </trans-unit>
+      <trans-unit id="FCVm5Cu" resname="app-save-button">
+        <source>app-save-button</source>
+        <target>Sparen</target>
+      </trans-unit>
+      <trans-unit id="5rTKEfI" resname="app-cancel-button">
+        <source>app-cancel-button</source>
+        <target>Absagen</target>
+      </trans-unit>
+      <trans-unit id="R4Om9By" resname="app-delete-undo-button">
+        <source>app-delete-undo-button</source>
+        <target>Löschen/Wiederherstellen</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
