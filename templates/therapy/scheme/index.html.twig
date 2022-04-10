@@ -4,15 +4,15 @@
 {% block body %}
 <div class="container">
     <div class="row">
-        <h2>{{ 'therapy_new_form_title'|trans }}</h2>
+        <h2>{{ 'app-new-therapy-scheme-page-title'|trans }}</h2>
     </div>
-    <form action="{{ path('app_therapy_scheme_new') }}" method="POST">
-        <div class="row mb-3">
-            <div class="col">
+    <form class="row mb-3" action="{{ path('app_therapy_scheme_new') }}" method="POST">
+     
+            <div class="col-8">
                 <select 
                     class="select2 form-select" name="labels[]" multiple="multiple" 
-                    placeholder="{{ 'therapy_table_label_list'|trans }}" 
-                    aria-label="{{ 'therapy_table_label_list'|trans }}" 
+                    placeholder="{{ 'app-new-therapy-scheme-labels-list'|trans }}" 
+                    aria-label="{{ 'app-new-therapy-scheme-labels-list'|trans }}" 
                     aria-describedby="button-addon2"
                 >
                 {% for label in all %}
@@ -20,21 +20,21 @@
                 {% endfor %}
                 </select>
             </div>
-            <div class="col-2">
-                <button class="btn btn-outline-secondary" type="submit">{{ 'therapy_table_load_labels'|trans }}</button>
+            <div class="col-4 text-end">
+                <button class="btn btn-primary" type="submit">{{ 'app-load-therapy-labels-button'|trans }}</button>
             </div>
-        </div>
+     
     </form>
     <form action="{{ path('app_therapy_scheme_generate_pdf') }}" name="report_form" method="POST">
         <div class="row mb-3">
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">{{ 'therapy_table_title'|trans }}</th>
-                        <th scope="col">{{ 'therapy_table_name'|trans }}</th>
-                        <th scope="col">{{ 'therapy_table_description'|trans }}</th>
-                        <th scope="col">{{ 'therapy_table_background'|trans }}</th>
-                        <th scope="col">{{ 'therapy_table_comment'|trans }}</th>
+                        <th scope="col">{{ 'app-therapy-report-table-title'|trans }}</th>
+                        <th scope="col">{{ 'app-therapy-report-table-name'|trans }}</th>
+                        <th scope="col">{{ 'app-therapy-report-table-description'|trans }}</th>
+                        <th scope="col">{{ 'app-therapy-report-table-background'|trans }}</th>
+                        <th scope="col">{{ 'app-therapy-report-table-comment'|trans }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,7 +51,7 @@
                             <td class="col-3 border-start">{{ stub.description }}</td>
                             <td class="col-3 border-start">{{ stub.background }}</td>
                             <td class="border-start">
-                                <input name="comments[{{ stub.id }}]" type="text" class="form-control">
+                                <textarea name="comments[{{ stub.id }}]" class="form-control"></textarea>
                             </td>
                         </tr>
                     {% endfor %}
@@ -62,7 +62,7 @@
         <div class="row mb-3">
             <div class="col"></div>
             <div class="col-3">
-                <button class="btn btn-primary flex-fill w-100" type="submit">Generate Report</button>
+                <button class="btn btn-primary flex-fill w-100" type="submit">{{ 'app-therapy-report-generate-report-button'|trans }}</button>
             </div>
             <div class="col"></div>
         </div>

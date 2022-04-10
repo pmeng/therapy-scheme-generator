@@ -117,6 +117,42 @@
         <source>app-no-results-message</source>
         <target>Keine Ergebnisse...</target>
       </trans-unit>
+      <trans-unit id="ALcwa3P" resname="app-new-therapy-scheme-page-title">
+        <source>app-new-therapy-scheme-page-title</source>
+        <target>Neues Therapieschema</target>
+      </trans-unit>
+      <trans-unit id="Kkyjfrd" resname="app-new-therapy-scheme-labels-list">
+        <source>app-new-therapy-scheme-labels-list</source>
+        <target>Etiketten für Therapieschemata</target>
+      </trans-unit>
+      <trans-unit id="MroWmQT" resname="app-load-therapy-labels-button">
+        <source>app-load-therapy-labels-button</source>
+        <target>Laden Sie die Therapieetiketten</target>
+      </trans-unit>
+      <trans-unit id="aL6ZqKB" resname="app-therapy-report-table-title">
+        <source>app-therapy-report-table-title</source>
+        <target>Titel</target>
+      </trans-unit>
+      <trans-unit id="_ABxv.4" resname="app-therapy-report-table-name">
+        <source>app-therapy-report-table-name</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="Ko5Opf6" resname="app-therapy-report-table-description">
+        <source>app-therapy-report-table-description</source>
+        <target>Beschreibung</target>
+      </trans-unit>
+      <trans-unit id="auQTAL4" resname="app-therapy-report-table-background">
+        <source>app-therapy-report-table-background</source>
+        <target>Hintergrund</target>
+      </trans-unit>
+      <trans-unit id="q_H4sVr" resname="app-therapy-report-table-comment">
+        <source>app-therapy-report-table-comment</source>
+        <target>Kommentar</target>
+      </trans-unit>
+      <trans-unit id="AuY7XjK" resname="app-therapy-report-generate-report-button">
+        <source>app-therapy-report-generate-report-button</source>
+        <target>Bericht generieren</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
