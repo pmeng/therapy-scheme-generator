@@ -2,7 +2,7 @@
 
 ### Configuration
 #### Database 
-In the file `.env` constant DATABASE_URL replace with correct values:
+In the file `.env` value of constant DATABASE_URL replace with correct values:
 - `"mysql://<username>:<password>@<address>:<port>/<db_name>?serverVersion=<8.0>&charset=utf8mb4"`
 
 #### Install composer & symfony dependencies 
