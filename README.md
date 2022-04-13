@@ -35,3 +35,5 @@ Next steps are on host machine:
 
 - `yarn install`
 - `yarn encore dev`
+
+Now you can open in browser http://127.0.0.1:8000/
