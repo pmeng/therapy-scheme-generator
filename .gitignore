@@ -19,4 +19,7 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
-/nbproject/private/
+
+###> docker ###
+/.docker/mysql/
+###< docker ###

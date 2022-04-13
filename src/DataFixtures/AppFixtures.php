@@ -11,7 +11,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        /*for ($l = 0; $l < 5; $l++) {
+        for ($l = 0; $l < 5; $l++) {
             $label = new Label();
             $label->setShortName('Title (label) #' . $l);
             $label->setReportName('Title (label) #' . $l);
@@ -37,7 +37,7 @@ class AppFixtures extends Fixture
                 $label->addStub($stub);
             }
             $manager->persist($label);
-        }*/
+        }
 
         $manager->flush();
     }
