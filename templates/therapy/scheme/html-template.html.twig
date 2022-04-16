@@ -18,8 +18,9 @@
                         {% for stub in label.stubs %}
                             <li>
                             {% if stub.id in targets[label.id]|keys %}
-                                <p class="text-black">{{ stub.description }}</p>
-                                <p class="text-secondary">{{ comments[stub.id] }}</p>
+                                <p class="text-black">
+                                    {{ stub.description }}{% if not stub.description ends with '.' %}.{% endif %} {{ comments[stub.id] }}{% if not comments[stub.id] ends with '.' %}.{% endif %}
+                                </p>
                             {% endif %}
                             </li>
                         {% endfor %}
