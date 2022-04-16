@@ -19,7 +19,7 @@
                             <li>
                             {% if stub.id in targets[label.id]|keys %}
                                 <p class="text-black">
-                                    {{ stub.description }}{% if not stub.description ends with '.' %}.{% endif %} {{ comments[stub.id] }}{% if not comments[stub.id] ends with '.' %}.{% endif %}
+                                    {{ stub.description }}{% if not (stub.description ends with '.') %}.{% endif %} {{ comments[stub.id] }}{% if not (comments[stub.id] ends with '.') %}.{% endif %}
                                 </p>
                             {% endif %}
                             </li>
