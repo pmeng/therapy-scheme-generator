@@ -1,10 +1,47 @@
 {% extends 'base.html.twig' %}
 
-
 {% block body %}
 <div class="container">
     <h2>{{ 'app-label-edit-page-title'|trans }}</h2>
     
-    {{ form(labelForm) }}
+    {{ form_start(labelForm) }}
+        <div>
+            <div class="mb-3">
+                {{ form_label(labelForm.shortName) }}
+                {{ form_widget(labelForm.shortName) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(labelForm.reportName) }}
+                {{ form_widget(labelForm.reportName) }}
+            </div>
+            <div class="row">
+                <div class="col-1 mb-3">
+                {{ form_widget(labelForm.save) }}
+                </div>
+                <div class="col-2 mb-3">
+                {{ form_widget(labelForm.delete) }}
+                </div>
+            </div>
+        </div>
+    {{ form_end(labelForm) }}
+</div>
+<div {{ stimulus_controller('label-edit', {
+    targetUrl: url('app_therapy_label_delete', {id: currentId})
+}) }} class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">{{ 'app-modal-label-confirmation'|trans}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'app-modal-close'|trans }}"></button>
+            </div>
+            <div class="modal-body">
+                {{ 'app-modal-label-confirmation'|trans }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'app-cancel-button'|trans }}</button>
+                <button type="button" data-action="label-edit#deleteLabel" class="btn btn-primary">{{ 'app-delete-button'|trans }}</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

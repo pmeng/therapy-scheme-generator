@@ -165,6 +165,18 @@
         <source>app-therapy-label-edit-form-report-name</source>
         <target>Report name (shown in generated report)</target>
       </trans-unit>
+      <trans-unit id="6HE969x" resname="app-modal-label-confirmation">
+        <source>app-modal-label-confirmation</source>
+        <target>Are you sure?</target>
+      </trans-unit>
+      <trans-unit id="QrvebFl" resname="app-modal-close">
+        <source>app-modal-close</source>
+        <target>Close</target>
+      </trans-unit>
+      <trans-unit id="XKdvlTf" resname="app-delete-button">
+        <source>app-delete-button</source>
+        <target>Delete</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

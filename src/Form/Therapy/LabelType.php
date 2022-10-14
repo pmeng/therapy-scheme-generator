@@ -4,6 +4,7 @@ namespace App\Form\Therapy;
 
 use App\Entity\Therapy\Label;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,6 +23,14 @@ class LabelType extends AbstractType
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'app-save-button',
+            ])
+            ->add('delete', ButtonType::class, [
+                'label' => 'app-delete-button',
+                'attr' => [
+                    'class' => 'btn-danger btn',
+                    'data-bs-toggle' => 'modal',
+                    'data-bs-target' => '#confirmModal'
+                ]
             ])
         ;
     }
