@@ -11,8 +11,8 @@
                 <h2></h2>
                 <ol>
                 {% for label in data %}
-                    <li>
                     {% if label.id in targets|keys %}
+                    <li>
                         <h5>{{ label.reportName }}</h5>
                         <ul>
                         {% for stub in label.stubs %}
@@ -25,8 +25,8 @@
                             </li>
                         {% endfor %}
                         </ul>
-                    {% endif %}
                     </li>
+                    {% endif %}
                 {% endfor %}
                 </ol>
             </div>
