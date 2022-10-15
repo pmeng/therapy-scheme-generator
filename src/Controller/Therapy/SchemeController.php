@@ -54,10 +54,14 @@ class SchemeController extends AbstractController
         $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
         $data = $request->request->all();
 
+        //dd($data);
+
         return $this->render('therapy/scheme/html-template.html.twig', [
             'data' => $labelsData,
             'targets' => $data['targets'],
             'comments' => $data['comments'],
+            'suppress_labels' => isset($data['suppress_labels']) ? $data['suppress_labels'] : false,
+            'use_excerpt' => isset($data['use_excerpt']) ? $data['use_excerpt'] : false,
         ]);
     }
     

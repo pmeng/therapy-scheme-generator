@@ -25,14 +25,14 @@
             </div>
      
     </form>
-    <form {{ stimulus_controller('build-report') }} action="{{ path('app_therapy_scheme_generate_html') }}" name="report_form" method="POST">
+    <form {{ stimulus_controller('build-report') }} target="_blank" action="{{ path('app_therapy_scheme_generate_html') }}" name="report_form" method="POST">
         <div class="row mb-3">
             <div class="form-check form-switch col-3">
-                <input {{ stimulus_action('build-report', 'suppressLabels') }} class="form-check-input" type="checkbox" role="switch" id="suppress-labels"/>
+                <input {{ stimulus_action('build-report', 'suppressLabels') }} name="suppress_labels" class="form-check-input" type="checkbox" role="switch" id="suppress-labels"/>
                 <label class="form-check-label" for="suppress-labels">{{ 'app-therapy-report-suppress-labels'|trans }}</label>
             </div>
             <div class="form-check form-switch col-5">
-                <input {{ stimulus_action('build-report', 'useExcerpt') }} class="form-check-input" type="checkbox" role="switch" id="use-excerpt"/>
+                <input {{ stimulus_action('build-report', 'useExcerpt') }} name="use_excerpt" class="form-check-input" type="checkbox" role="switch" id="use-excerpt"/>
                 <label class="form-check-label" for="use-excerpt">{{ 'app-therapy-report-use-excerpt'|trans }}</label>
             </div>
         </div>
