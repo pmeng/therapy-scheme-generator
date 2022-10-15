@@ -25,21 +25,32 @@
             </div>
      
     </form>
-    <form action="{{ path('app_therapy_scheme_generate_html') }}" name="report_form" method="POST">
+    <form {{ stimulus_controller('build-report') }} action="{{ path('app_therapy_scheme_generate_html') }}" name="report_form" method="POST">
+        <div class="row mb-3">
+            <div class="form-check form-switch col-3">
+                <input {{ stimulus_action('build-report', 'suppressLabels') }} class="form-check-input" type="checkbox" role="switch" id="suppress-labels"/>
+                <label class="form-check-label" for="suppress-labels">{{ 'app-therapy-report-suppress-labels'|trans }}</label>
+            </div>
+            <div class="form-check form-switch col-5">
+                <input {{ stimulus_action('build-report', 'useExcerpt') }} class="form-check-input" type="checkbox" role="switch" id="use-excerpt"/>
+                <label class="form-check-label" for="use-excerpt">{{ 'app-therapy-report-use-excerpt'|trans }}</label>
+            </div>
+        </div>
         <div class="row mb-3">
             <table class="table">
                 <thead>
                     <tr>
                         <th scope="col">{{ 'app-therapy-report-table-title'|trans }}</th>
-                        <th scope="col">{{ 'app-therapy-report-table-name'|trans }}</th>
-                        <th scope="col">{{ 'app-therapy-report-table-description'|trans }}</th>
-                        <th scope="col">{{ 'app-therapy-report-table-background'|trans }}</th>
-                        <th scope="col">{{ 'app-therapy-report-table-comment'|trans }}</th>
+                        <th data-column-index="0" data-shown="true" scope="col">{{ 'app-therapy-report-table-name'|trans }}</th>
+                        <th data-column-index="1" data-shown="true" id="description-column" scope="col">{{ 'app-therapy-report-table-description'|trans }}</th>
+                        <th data-column-index="2" data-shown="false" style="display: none" id="excerpt-column" scope="col">{{ 'app-therapy-report-table-excerpt'|trans }}</th>
+                        <th data-column-index="3" data-shown="true" scope="col">{{ 'app-therapy-report-table-background'|trans }}</th>
+                        <th data-column-index="4" data-shown="true" scope="col">{{ 'app-therapy-report-table-comment'|trans }}</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for label in data %}
-                    <tr class="table-light">
+                    <tr data-suppress-label="false" data-label-row class="table-light">
                         <th scope="row" colspan="5">{{ label.shortName }}</th>
                     </tr>
                     {% for stub in label.stubs %}
@@ -47,10 +58,11 @@
                             <td class="text-end col-2">
                                 <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input" checked>
                             </td>
-                            <td class="col-1 border-start">{{ stub.name }}</td>
-                            <td class="col-3 border-start">{{ stub.description }}</td>
-                            <td class="col-3 border-start">{{ stub.background }}</td>
-                            <td class="border-start">
+                            <td data-column-index="0" data-shown="true" class="col-1 border-start">{{ stub.name }}</td>
+                            <td data-column-index="1" data-shown="true" class="col-3 border-start description">{{ stub.description }}</td>
+                            <td data-column-index="2" data-shown="false" style="display: none" class="col-3 border-start excerpt">{{ stub.excerpt }}</td>
+                            <td data-column-index="3" data-shown="true" class="col-3 border-start">{{ stub.background }}</td>
+                            <td data-column-index="4" data-shown="true" class="border-start">
                                 <textarea name="comments[{{ stub.id }}]" class="form-control"></textarea>
                             </td>
                         </tr>

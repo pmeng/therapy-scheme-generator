@@ -185,6 +185,18 @@
         <source>app-save-and-new-button</source>
         <target>Save + New</target>
       </trans-unit>
+      <trans-unit id="8AsGalb" resname="app-therapy-report-suppress-labels">
+        <source>app-therapy-report-suppress-labels</source>
+        <target>Suppress labels</target>
+      </trans-unit>
+      <trans-unit id="cofIMtF" resname="app-therapy-report-use-excerpt">
+        <source>app-therapy-report-use-excerpt</source>
+        <target>Use 'excerpt' instead of 'description'</target>
+      </trans-unit>
+      <trans-unit id="A5mIo.v" resname="app-therapy-report-table-excerpt">
+        <source>app-therapy-report-table-excerpt</source>
+        <target>Excerpt</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
