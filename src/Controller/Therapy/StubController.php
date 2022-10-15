@@ -72,7 +72,11 @@ class StubController extends AbstractController
                 ->getRepository(Stub::class)
                 ->getNewStubObjectFromArray($data);
 
-            return $this->redirectToRoute('app_therapy_stub_edit', ['id' => $stub->getId()]);
+            $nextAction = $stubForm->get('saveAndNew')->isClicked()
+                ? 'app_therapy_stub_new'
+                : 'app_main';
+
+            return $this->redirectToRoute($nextAction);
         }
 
         return $this->render('therapy/stub/index.html.twig', [

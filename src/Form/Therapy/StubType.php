@@ -56,6 +56,9 @@ class StubType extends AbstractType
             ->add('save', SubmitType::class, [
                 'label' => 'app-save-button',
             ])
+            ->add('saveAndNew', SubmitType::class, [
+                'label' => 'app-save-and-new-button'
+            ])
             ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
                 $stub = $event->getData();
                 $form = $event->getForm();

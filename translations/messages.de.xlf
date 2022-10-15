@@ -181,6 +181,10 @@
         <source>app-therapy-stub-form-label-excerpt</source>
         <target>Auszug</target>
       </trans-unit>
+      <trans-unit id="JbMTt.T" resname="app-save-and-new-button">
+        <source>app-save-and-new-button</source>
+        <target>Speichern + Neu</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
