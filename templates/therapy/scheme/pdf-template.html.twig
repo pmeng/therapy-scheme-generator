@@ -32,7 +32,7 @@
                                     {{ 'app-therapy-report-table-title'|trans }}: {{ label.reportName }}
                                 </th>
                             </tr>
-                            {% endfor %}
+                            {% endif %}
                             {% for stub in label.stubs %}
                                 {% if stub.id in targets[label.id]|keys %}
                                 <tr>
