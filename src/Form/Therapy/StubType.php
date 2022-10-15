@@ -34,6 +34,9 @@ class StubType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'app-therapy-stub-form-label-description',
             ])
+            ->add('excerpt', TextareaType::class, [
+                'label' => 'app-therapy-stub-form-label-excerpt',
+            ])
             ->add('background', TextareaType::class, [
                 'label' => 'app-therapy-stub-form-label-background',
             ])

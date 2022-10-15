@@ -177,6 +177,10 @@
         <source>app-delete-button</source>
         <target>Delete</target>
       </trans-unit>
+      <trans-unit id="_zr_FWH" resname="app-therapy-stub-form-label-excerpt">
+        <source>app-therapy-stub-form-label-excerpt</source>
+        <target>Excerpt</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
