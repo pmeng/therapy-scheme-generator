@@ -16,14 +16,14 @@
         </div>
     </div>
     {% if this.labelsRequest %}
-    <p>labelsRequest: {{ this.labelsRequest }}</p>
+    <p>{{ 'app-therapy-report-requested-labels'|trans }}: {{ this.labelsRequest }}</p>
 
-    <div class="row mb-3">
-        <div class="form-check form-switch col-3">
+    <div class="row mt-3">
+        <div class="form-check form-switch col-3 m-3">
             <input id="suppress-labels" data-model="on(change)|suppressLabels" class="form-check-input" type="checkbox" role="switch"/>
             <label class="form-check-label" for="suppress-labels">{{ 'app-therapy-report-suppress-labels'|trans }}</label>
         </div>
-        <div class="form-check form-switch col-5">
+        <div class="form-check form-switch col-5 m-3">
             <input id="use-excerpt" data-model="on(change)|useExcerpt" class="form-check-input" type="checkbox" role="switch"/>
             <label class="form-check-label" for="use-excerpt">{{ 'app-therapy-report-use-excerpt'|trans }}</label>
         </div>

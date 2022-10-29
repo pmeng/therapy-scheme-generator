@@ -197,6 +197,10 @@
         <source>app-therapy-report-table-excerpt</source>
         <target>Excerpt</target>
       </trans-unit>
+      <trans-unit id="HD_Xnyg" resname="app-therapy-report-requested-labels">
+        <source>app-therapy-report-requested-labels</source>
+        <target>Requested labels</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
