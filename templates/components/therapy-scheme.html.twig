@@ -4,6 +4,7 @@
         <div class="col-8">
             <input 
                 name="labels-request"
+                class="form-control"
                 data-model="on(change)|labelsRequest"
                 {#{ stimulus_controller('symfony/ux-autocomplete/autocomplete', {
                     url: path('ux_entity_autocomplete', { alias: 'therapy-labels' })
@@ -14,7 +15,7 @@
             <button class="btn btn-primary" data-action="live#$render">{{ 'app-load-therapy-labels-button'|trans }}</button>
         </div>
     </div>
-
+    {% if this.labelsRequest %}
     <p>labelsRequest: {{ this.labelsRequest }}</p>
 
     <div class="row mb-3">
@@ -64,4 +65,5 @@
             </tbody>
         </table>
     </div>
+    {% endif %}
 </div>
