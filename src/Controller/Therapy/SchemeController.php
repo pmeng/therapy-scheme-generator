@@ -24,11 +24,17 @@ class SchemeController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create')]
     public function create(Request $request): Response
     {
+        return $this->render('therapy/scheme/create.html.twig');
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save-as-template', name: 'app_therapy_scheme_save_as_template')]
+    public function saveAsTemplate(Request $request): Response
+    {
         $data = $request->request->all();
 
-        $labelsData = $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
-
-        return $this->render('therapy/scheme/create.html.twig', []);
+        return $this->render('therapy/scheme/save-as-template.html.twig', [
+            'data' => $data
+        ]);
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/new', name: 'app_therapy_scheme_new')]
@@ -63,8 +69,6 @@ class SchemeController extends AbstractController
     {
         $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
         $data = $request->request->all();
-
-        //dd($data);
 
         return $this->render('therapy/scheme/html-template.html.twig', [
             'data' => $labelsData,

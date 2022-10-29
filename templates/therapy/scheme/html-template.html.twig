@@ -21,7 +21,7 @@
                             {% if stub.id in targets[label.id]|keys %}
                             <li>
                                 <p class="text-black">
-                                    {{ use_excerpt == 'on' ? stub.excerpt : stub.description }}{% if not (stub.description ends with '.') %}.{% endif %} {{ comments[stub.id] }}{% if not (comments[stub.id] ends with '.') and (comments[stub.id]|length > 0) %}.{% endif %}
+                                    {{ use_excerpt == 'on' ? stub.excerpt : stub.description }}{% if not (stub.description ends with '.') %}.{% endif %} {{ comments[label.id][stub.id]['comment'] }}{% if not (comments[label.id][stub.id]['comment'] ends with '.') and (comments[label.id][stub.id]['comment']|length > 0) %}.{% endif %}
                                 </p>
                             </li>
                             {% endif %}

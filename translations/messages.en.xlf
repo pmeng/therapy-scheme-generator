@@ -201,6 +201,10 @@
         <source>app-therapy-report-requested-labels</source>
         <target>Requested labels</target>
       </trans-unit>
+      <trans-unit id="0jVJ4L8" resname="app-therapy-report-save-as-template-button">
+        <source>app-therapy-report-save-as-template-button</source>
+        <target>Save as template</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

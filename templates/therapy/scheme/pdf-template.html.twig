@@ -40,7 +40,7 @@
                                     <td class="col-3 border-start">{{ use_excerpt == 'on' ? stub.excerpt : stub.description }}</td>
                                     <td class="col-3 border-start">{{ stub.background }}</td>
                                     <td class="border-start">
-                                        <span>{{ comments[stub.id] }}</span>
+                                        <span>{{ comments[label.id][stub.id]['comment'] }}</span>
                                     </td>
                                 </tr>
                                 {% endif %}
