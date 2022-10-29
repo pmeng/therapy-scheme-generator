@@ -3,9 +3,11 @@
 namespace App\Repository\Therapy;
 
 use App\Entity\Therapy\Label;
+use App\Entity\Therapy\Stub;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -45,15 +47,20 @@ class LabelRepository extends ServiceEntityRepository
         }
     }
 
-    public function findLabelsByRequest(string $query): array
+    public function findLabelsByRequest(string $query, bool $builder = false): QueryBuilder|array
     {
-        return $this->createQueryBuilder('entity')
+        $queryBuilder = $this->createQueryBuilder('entity')
+            ->leftJoin('entity.stubs', 'stubs')
+            ->addSelect('stubs')
             ->andWhere('entity.shortName LIKE :filter OR entity.reportName LIKE :filter')
             ->setParameter('filter', $query . '%')
             ->orderBy('entity.id', 'ASC')
-            ->getQuery()
-            ->getResult()
         ;
+        if ($builder) {
+            return $queryBuilder;
+        } else {
+            return $queryBuilder->getQuery()->getArrayResult();
+        }
     }
 
     // /**

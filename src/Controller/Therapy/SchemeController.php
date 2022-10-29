@@ -24,6 +24,10 @@ class SchemeController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create')]
     public function create(Request $request): Response
     {
+        $data = $request->request->all();
+
+        $labelsData = $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
+
         return $this->render('therapy/scheme/create.html.twig', []);
     }
 

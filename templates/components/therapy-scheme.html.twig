@@ -2,14 +2,20 @@
     <h2 class="mt-3">{{ 'app-new-therapy-scheme-page-title'|trans }}</h2>
     <div class="row mt-3">
         <div class="col-8">
-            <input type="text" data-model="on(change)|labelsRequest">
+            <input 
+                name="labels-request"
+                data-model="on(change)|labelsRequest"
+                {#{ stimulus_controller('symfony/ux-autocomplete/autocomplete', {
+                    url: path('ux_entity_autocomplete', { alias: 'therapy-labels' })
+                }) }#}
+            >
         </div>
         <div class="col-4 text-end">
             <button class="btn btn-primary" data-action="live#$render">{{ 'app-load-therapy-labels-button'|trans }}</button>
         </div>
     </div>
 
-    <p>labelsRequest: {{ labelsRequest }}</p>
+    <p>labelsRequest: {{ this.labelsRequest }}</p>
 
     <div class="row mb-3">
         <div class="form-check form-switch col-3">
@@ -38,20 +44,22 @@
                 <tr {% if this.suppressLabels %}style="display: none"{% endif %}data-label-row class="table-light">
                     <th scope="row" colspan="5">{{ label.shortName }}</th>
                 </tr>
-                {% for stub in label.stubs %}
-                    <tr>
-                        <td class="text-end col-2">
-                            <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input" checked>
-                        </td>
-                        <td data-column-index="0" data-shown="true" class="col-1 border-start">{{ stub.name }}</td>
-                        <td data-column-index="1" data-shown={% if this.useExcerpt %}"false"{% else %}"true"{% endif %} {% if this.useExcerpt %}style="display: none"{% endif %} class="col-3 border-start description">{{ stub.description }}</td>
-                        <td data-column-index="2" data-shown={% if not this.useExcerpt %}"false"{% else %}"true"{% endif %} {% if not this.useExcerpt %}style="display: none"{% endif %} class="col-3 border-start excerpt">{{ stub.excerpt }}</td>
-                        <td data-column-index="3" data-shown="true" class="col-3 border-start">{{ stub.background }}</td>
-                        <td data-column-index="4" data-shown="true" class="border-start">
-                            <textarea name="comments[{{ stub.id }}]" class="form-control"></textarea>
-                        </td>
-                    </tr>
-                {% endfor %}
+                {% if label.stubs is defined %}
+                    {% for stub in label.stubs %}
+                        <tr>
+                            <td class="text-end col-2">
+                                <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input" checked>
+                            </td>
+                            <td data-column-index="0" data-shown="true" class="col-1 border-start">{{ stub.name }}</td>
+                            <td data-column-index="1" data-shown={% if this.useExcerpt %}"false"{% else %}"true"{% endif %} {% if this.useExcerpt %}style="display: none"{% endif %} class="col-3 border-start description">{{ stub.description }}</td>
+                            <td data-column-index="2" data-shown={% if not this.useExcerpt %}"false"{% else %}"true"{% endif %} {% if not this.useExcerpt %}style="display: none"{% endif %} class="col-3 border-start excerpt">{{ stub.excerpt }}</td>
+                            <td data-column-index="3" data-shown="true" class="col-3 border-start">{{ stub.background }}</td>
+                            <td data-column-index="4" data-shown="true" class="border-start">
+                                <textarea name="comments[{{ stub.id }}]" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>
