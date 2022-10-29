@@ -45,6 +45,17 @@ class LabelRepository extends ServiceEntityRepository
         }
     }
 
+    public function findLabelsByRequest(string $query): array
+    {
+        return $this->createQueryBuilder('entity')
+            ->andWhere('entity.shortName LIKE :filter OR entity.reportName LIKE :filter')
+            ->setParameter('filter', $query . '%')
+            ->orderBy('entity.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Label[] Returns an array of Label objects
     //  */

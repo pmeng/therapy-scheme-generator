@@ -6,7 +6,10 @@
     <div class="row">
         <h2>{{ 'app-new-therapy-scheme-page-title'|trans }}</h2>
     </div>
-    <form class="row mb-3" action="{{ path('app_therapy_scheme_new') }}" method="POST">
+
+    {{ component('search-label') }}
+
+    {#<form class="row mb-3" action="{{ path('app_therapy_scheme_new') }}" method="POST">
             <div class="col-8">
                 <select 
                     class="select2 form-select" name="labels[]" multiple="multiple" 
@@ -83,5 +86,6 @@
             </div>
         </div>
     </form>
+    #}
 </div>
 {% endblock %}

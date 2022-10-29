@@ -21,6 +21,12 @@ class SchemeController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create')]
+    public function create(Request $request): Response
+    {
+        return $this->render('therapy/scheme/create.html.twig', []);
+    }
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/new', name: 'app_therapy_scheme_new')]
     public function index(Request $request): Response
     {
