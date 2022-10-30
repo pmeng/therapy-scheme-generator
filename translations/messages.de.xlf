@@ -205,6 +205,22 @@
         <source>app-therapy-report-save-as-template-button</source>
         <target>Als Vorlage speichern</target>
       </trans-unit>
+      <trans-unit id="9HQRcL8" resname="app-therapy-scheme-templates">
+        <source>app-therapy-scheme-templates</source>
+        <target>Gespeicherte Therapieschemata</target>
+      </trans-unit>
+      <trans-unit id="D6nuB.." resname="app-new-therapy-save-scheme-template">
+        <source>app-new-therapy-save-scheme-template</source>
+        <target>Therapieschema zur Wiederverwendung speichern</target>
+      </trans-unit>
+      <trans-unit id="UZh.lrg" resname="app-new-therapy-scheme-templates">
+        <source>app-new-therapy-scheme-templates</source>
+        <target>Liste der gespeicherten Therapieschemata</target>
+      </trans-unit>
+      <trans-unit id="Vgv6r_t" resname="app-scheme-template-form-label-name">
+        <source>app-scheme-template-form-label-name</source>
+        <target>Name der Vorlage</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

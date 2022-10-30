@@ -1,0 +1,14 @@
+<div{{ attributes }}>
+    <h2 class="mt-3">{{ 'app-new-therapy-save-scheme-template'|trans }}</h2>
+
+    {{ form_start(form, {
+        attr: {
+            'data-action': 'live#action',
+            'data-action-name': 'prevent|save'
+        }
+    }) }}
+        {{ form_row(form.name) }}
+
+        <button class="btn btn-primary flex-fill">{{ 'app-save-button'|trans }}</button>
+    {{ form_end(form) }}
+</div>

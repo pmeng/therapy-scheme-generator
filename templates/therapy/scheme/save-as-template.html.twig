@@ -3,6 +3,11 @@
 
 {% block body %}
 <div class="container">
-    {{ dump(data) }}
+    {{ component('scheme-template', {
+        scheme: scheme.id ? scheme : null,
+        targets: targets,
+        comments: comments,
+        form: form
+    }) }}
 </div>
 {% endblock %}

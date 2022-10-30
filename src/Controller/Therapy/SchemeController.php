@@ -4,13 +4,15 @@ namespace App\Controller\Therapy;
 
 
 use App\Entity\Therapy\Label;
+use App\Entity\Therapy\Scheme;
+use App\Form\SchemeTemplateType;
 use Doctrine\ORM\EntityManagerInterface;
-use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
-use Knp\Snappy\Pdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Snappy\Pdf;
 
 class SchemeController extends AbstractController
 {
@@ -32,8 +34,23 @@ class SchemeController extends AbstractController
     {
         $data = $request->request->all();
 
+        $scheme = new Scheme();
+        $scheme->setName('Date: ' . date(DATE_RSS));
+
+        $form = $this->createForm(SchemeTemplateType::class, $scheme);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('app_therapy_scheme_templates_list');
+        }
+
         return $this->render('therapy/scheme/save-as-template.html.twig', [
-            'data' => $data
+            'scheme' => $scheme,
+            'targets' => $data['targets'] ?? [],
+            'comments' => $data['comments'] ?? [],
+            'form' => $form->createView()
         ]);
     }
 

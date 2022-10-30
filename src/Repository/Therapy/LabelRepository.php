@@ -63,6 +63,22 @@ class LabelRepository extends ServiceEntityRepository
         }
     }
 
+    public function findLabelsByTemplate(string $query, bool $builder = false): QueryBuilder|array
+    {
+        $queryBuilder = $this->createQueryBuilder('entity')
+            ->leftJoin('entity.stubs', 'stubs')
+            ->addSelect('stubs')
+            ->andWhere('entity.shortName LIKE :filter OR entity.reportName LIKE :filter')
+            ->setParameter('filter', $query . '%')
+            ->orderBy('entity.id', 'ASC')
+        ;
+        if ($builder) {
+            return $queryBuilder;
+        } else {
+            return $queryBuilder->getQuery()->getArrayResult();
+        }
+    }
+
     // /**
     //  * @return Label[] Returns an array of Label objects
     //  */

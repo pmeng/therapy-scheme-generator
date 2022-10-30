@@ -21,6 +21,8 @@ final class TherapySchemeComponent
     public ?bool $suppressLabels = null;
     #[LiveProp(writable: true)]
     public ?bool $useExcerpt = null;
+    #[LiveProp(writable: true)]
+    public bool $isSaved = false;
 
     public function __construct(LabelRepository $labelRepository)
     {
