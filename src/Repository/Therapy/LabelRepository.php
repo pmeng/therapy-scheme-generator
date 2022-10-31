@@ -3,6 +3,7 @@
 namespace App\Repository\Therapy;
 
 use App\Entity\Therapy\Label;
+use App\Entity\Therapy\Scheme;
 use App\Entity\Therapy\Stub;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -77,6 +78,29 @@ class LabelRepository extends ServiceEntityRepository
         } else {
             return $queryBuilder->getQuery()->getArrayResult();
         }
+    }
+
+    public function loadSavedTemplate(Scheme $scheme): array
+    {
+        if ($scheme) {
+            $labelsList = [];
+            $stubsList = [];
+
+            foreach ($scheme->getTargets() as $key => $val) {
+                $labelsList[] = $key;
+                //$stubsList[] = 
+            }
+
+            $queryBuilder = $this->createQueryBuilder('entity')
+                ->leftJoin('entity.stubs', 'stubs')
+                ->addSelect('stubs')
+                ->andWhere('entity.id IN (:labels_list)')
+                ->setParameter('labels_list', $labelsList)
+                ->orderBy('entity.id', 'ASC')
+            ;
+        }
+
+        return $queryBuilder->getQuery()->getArrayResult();
     }
 
     // /**

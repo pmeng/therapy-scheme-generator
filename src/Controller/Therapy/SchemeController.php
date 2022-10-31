@@ -29,6 +29,16 @@ class SchemeController extends AbstractController
         return $this->render('therapy/scheme/create.html.twig');
     }
 
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/load/{id}', name: 'app_therapy_scheme_load')]
+    public function load(Request $request, int $id): Response
+    {
+        $scheme = $this->entityManager->getRepository(Scheme::class)->find($id);
+        
+        return $this->render('therapy/scheme/load.html.twig', [
+            'template' => $scheme,
+        ]);
+    }
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save-as-template', name: 'app_therapy_scheme_save_as_template')]
     public function saveAsTemplate(Request $request): Response
     {

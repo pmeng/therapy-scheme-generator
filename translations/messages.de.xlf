@@ -221,6 +221,10 @@
         <source>app-scheme-template-form-label-name</source>
         <target>Name der Vorlage</target>
       </trans-unit>
+      <trans-unit id="X9F88Gi" resname="app-new-therapy-scheme-template-title">
+        <source>app-new-therapy-scheme-template-title</source>
+        <target>Vorlage verwendet</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

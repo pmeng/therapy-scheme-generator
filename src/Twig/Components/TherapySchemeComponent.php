@@ -2,6 +2,7 @@
 
 namespace App\Twig\Components;
 
+use App\Entity\Therapy\Scheme;
 use App\Repository\Therapy\LabelRepository;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -23,6 +24,8 @@ final class TherapySchemeComponent
     public ?bool $useExcerpt = null;
     #[LiveProp(writable: true)]
     public bool $isSaved = false;
+    #[LiveProp(writable: true)]
+    public ?Scheme $template = null;
 
     public function __construct(LabelRepository $labelRepository)
     {
@@ -31,10 +34,16 @@ final class TherapySchemeComponent
 
     public function getLabels(): array
     {
-        if ($this->labelsRequest === null) {
+        if ($this->labelsRequest === null and $this->isSaved === false) {
             return [];
+        } elseif ($this->labelsRequest === null and $this->isSaved === true) {
+            return $this->labelRepository->loadSavedTemplate($this->template);
         } else {
-            return $this->labelRepository->findLabelsByRequest($this->labelsRequest);
+            if ($this->isSaved === false) {
+                return $this->labelRepository->findLabelsByRequest($this->labelsRequest);
+            } else {
+                return $this->labelRepository->loadSavedTemplate($this->template);
+            }
         }
     }
 
@@ -51,5 +60,15 @@ final class TherapySchemeComponent
     public function getLabelsRequest(): string
     {
         return $this->labelsRequest ?? '';
+    }
+
+    public function getIsSaved(): bool
+    {
+        return $this->isSaved;
+    }
+
+    public function getTemplateId(): ?int
+    {
+        return $this->templateId;
     }
 }
