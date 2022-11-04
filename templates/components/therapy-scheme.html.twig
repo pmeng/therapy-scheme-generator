@@ -31,17 +31,17 @@
         </p>
         {% endif %}
     </div>
-    <div class="row mt-3">
-        <div class="form-check form-switch col-3 m-3">
-            <input id="suppress-labels" data-model="on(change)|suppressLabels" class="form-check-input" type="checkbox" role="switch"/>
-            <label class="form-check-label" for="suppress-labels">{{ 'app-therapy-report-suppress-labels'|trans }}</label>
-        </div>
-        <div class="form-check form-switch col-5 m-3">
-            <input id="use-excerpt" data-model="on(change)|useExcerpt" class="form-check-input" type="checkbox" role="switch"/>
-            <label class="form-check-label" for="use-excerpt">{{ 'app-therapy-report-use-excerpt'|trans }}</label>
-        </div>
-    </div>
     <form {{ stimulus_controller('build-report') }} target="_blank" action="{{ path('app_therapy_scheme_generate_html') }}" name="report_form" method="POST">
+        <div class="row mt-3">
+            <div class="form-check form-switch col-3 m-3">
+                <input id="suppress-labels" name="suppress_labels" data-model="on(change)|suppressLabels" class="form-check-input" type="checkbox" role="switch"/>
+                <label class="form-check-label" for="suppress-labels">{{ 'app-therapy-report-suppress-labels'|trans }}</label>
+            </div>
+            <div class="form-check form-switch col-5 m-3">
+                <input id="use-excerpt" name="use_excerpt" data-model="on(change)|useExcerpt" class="form-check-input" type="checkbox" role="switch"/>
+                <label class="form-check-label" for="use-excerpt">{{ 'app-therapy-report-use-excerpt'|trans }}</label>
+            </div>
+        </div>
         <div class="row mt-3">
             <table class="table">
                 <thead>
@@ -74,7 +74,7 @@
                                         name="comments[{{ label.id }}][{{ stub.id }}][comment]" 
                                         class="form-control"
                                     >
-                                    {{- computed.template.comments[label.id][stub.id].comment -}}
+                                    {% if this.template.comments is defined %}{{- this.template.comments[label.id][stub.id].comment -}}{% endif %}
                                     </textarea>
                                 </td>
                             </tr>
