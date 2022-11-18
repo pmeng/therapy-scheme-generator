@@ -2,7 +2,7 @@
 
 namespace App\Controller\Therapy;
 
-
+use App\Entity\Template;
 use App\Entity\Therapy\Label;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
@@ -21,12 +21,26 @@ class SchemeController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/new', name: 'app_therapy_scheme_new')]
-    public function index(Request $request): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/new/{template}', name: 'app_therapy_scheme_new')]
+    public function index(Request $request, $template = null): Response
     {
         $data = $request->request->all();
         $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
         $labelsData = [];
+        $targets = [];
+
+        if (!is_null($template)) {
+            $templateObj = $this->entityManager->getRepository(Template::class)->findOneBy([
+                'id' => $template,
+            ]);
+            $targets = $templateObj->getTargets();
+
+            if (isset($data['labels'])) {
+                $data['labels'] = array_merge($data['labels'], array_keys($targets));
+            } else {
+                $data['labels'] = array_keys($targets);
+            }
+        }
 
         if (isset($data['labels'])) {
             $qb = $this->entityManager->createQueryBuilder('l');
@@ -46,6 +60,8 @@ class SchemeController extends AbstractController
             'all' => $allLabels,
             'data' => $labelsData,
             'selected' => isset($data['labels']) ? array_map('intval', $data['labels']) : [],
+            'targets' => $targets,
+            'template' => $template,
         ]);
     }
     
@@ -80,13 +96,45 @@ class SchemeController extends AbstractController
         );
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save/template', name: 'app_therapy_scheme_save_template', methods: ['POST'])]
-    public function saveAsTemplate(Request $request): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save/template/{templateId}', name: 'app_therapy_scheme_save_template', methods: ['POST'])]
+    public function saveAsTemplate(Request $request, $templateId = null): Response
     {
         $data = $request->request->all();
-        $targets = $data['targets'];
+        $targets = [];
         $comments = $data['comments'];
+        $templates = [];
 
-        return new Response();
+        foreach ($data['targets'] as $label => $stubs) {
+            $targets[$label] = [];
+            foreach (array_keys($stubs) as $key => $id) {
+                $targets[$label][$id] = trim($comments[$id]);
+            }
+        }
+
+        $name = date('Y-m-d H:i:s');
+
+        if (is_null($templateId)) {
+            $template = new Template();
+        } else {
+            $template = $this->entityManager->getRepository(Template::class)->findOneBy([
+                'id' => $templateId,
+            ]);
+        }
+        $template->setName($name);
+        $template->setTargets($targets);
+        $this->entityManager->persist($template);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('app_therapy_saved_templates');
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates')]
+    public function loadTemplates(Request $request): Response
+    {
+        $templates = $this->entityManager->getRepository(Template::class)->findAll();
+
+        return $this->render('therapy/scheme/templates-list.html.twig', [
+            'templates' => $templates,
+        ]);
     }
 }

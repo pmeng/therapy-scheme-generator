@@ -173,6 +173,34 @@
         <source>app-therapy-report-blank-labels</source>
         <target>Wählen Sie die zu ladenden Etiketten aus</target>
       </trans-unit>
+      <trans-unit id="yQ_iNex" resname="app-therapy-saved-templates">
+        <source>app-therapy-saved-templates</source>
+        <target>Schema-Vorlagen</target>
+      </trans-unit>
+      <trans-unit id="6AB7tG0" resname="app-therapy-report-saved-templates-page-title">
+        <source>app-therapy-report-saved-templates-page-title</source>
+        <target>Gespeicherte Therapieschemavorlagen</target>
+      </trans-unit>
+      <trans-unit id="X.UPFaR" resname="app-therapy-report-table-actions">
+        <source>app-therapy-report-table-actions</source>
+        <target>Aktionen</target>
+      </trans-unit>
+      <trans-unit id="l2O4Ff5" resname="app-therapy-report-saved-template-name">
+        <source>app-therapy-report-saved-template-name</source>
+        <target>Vorlage gespeichert unter</target>
+      </trans-unit>
+      <trans-unit id="09mOZ6l" resname="app-therapy-report-saved-template-load">
+        <source>app-therapy-report-saved-template-load</source>
+        <target>Laden</target>
+      </trans-unit>
+      <trans-unit id="SbfxC7_" resname="app-therapy-report-saved-template-delete">
+        <source>app-therapy-report-saved-template-delete</source>
+        <target>Löschung</target>
+      </trans-unit>
+      <trans-unit id="OazNcif" resname="app-therapy-report-no-saved-templates">
+        <source>app-therapy-report-no-saved-templates</source>
+        <target>Keine gespeicherten Vorlagen</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

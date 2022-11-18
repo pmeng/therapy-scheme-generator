@@ -173,6 +173,34 @@
         <source>app-therapy-report-blank-labels</source>
         <target>Select labels to load</target>
       </trans-unit>
+      <trans-unit id="yQ_iNex" resname="app-therapy-saved-templates">
+        <source>app-therapy-saved-templates</source>
+        <target>Scheme Templates</target>
+      </trans-unit>
+      <trans-unit id="6AB7tG0" resname="app-therapy-report-saved-templates-page-title">
+        <source>app-therapy-report-saved-templates-page-title</source>
+        <target>Saved therapy scheme templates</target>
+      </trans-unit>
+      <trans-unit id="X.UPFaR" resname="app-therapy-report-table-actions">
+        <source>app-therapy-report-table-actions</source>
+        <target>Actions</target>
+      </trans-unit>
+      <trans-unit id="l2O4Ff5" resname="app-therapy-report-saved-template-name">
+        <source>app-therapy-report-saved-template-name</source>
+        <target>Template saved at</target>
+      </trans-unit>
+      <trans-unit id="09mOZ6l" resname="app-therapy-report-saved-template-load">
+        <source>app-therapy-report-saved-template-load</source>
+        <target>Load</target>
+      </trans-unit>
+      <trans-unit id="SbfxC7_" resname="app-therapy-report-saved-template-delete">
+        <source>app-therapy-report-saved-template-delete</source>
+        <target>Delete</target>
+      </trans-unit>
+      <trans-unit id="OazNcif" resname="app-therapy-report-no-saved-templates">
+        <source>app-therapy-report-no-saved-templates</source>
+        <target>No saved templates</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

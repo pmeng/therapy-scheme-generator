@@ -6,24 +6,26 @@
     <div class="row">
         <h2>{{ 'app-new-therapy-scheme-page-title'|trans }}</h2>
     </div>
+    {% if template is defined and template is not null %}
+    <form class="row mb-3" action="{{ path('app_therapy_scheme_new', {'template': template}) }}" method="POST">
+    {% else %}
     <form class="row mb-3" action="{{ path('app_therapy_scheme_new') }}" method="POST">
-     
-            <div class="col-8">
-                <select 
-                    class="select2 form-select" name="labels[]" multiple="multiple" 
-                    placeholder="{{ 'app-new-therapy-scheme-labels-list'|trans }}" 
-                    aria-label="{{ 'app-new-therapy-scheme-labels-list'|trans }}" 
-                    aria-describedby="button-addon2"
-                >
-                {% for label in all %}
-                    <option value="{{ label.id }}"{% if label.id in selected %} selected{% endif %}>{{ label.shortName }}</option>
-                {% endfor %}
-                </select>
-            </div>
-            <div class="col-4 text-end">
-                <button class="btn btn-primary" type="submit">{{ 'app-load-therapy-labels-button'|trans }}</button>
-            </div>
-     
+    {% endif %}
+        <div class="col-8">
+            <select 
+                class="select2 form-select" name="labels[]" multiple="multiple" 
+                placeholder="{{ 'app-new-therapy-scheme-labels-list'|trans }}" 
+                aria-label="{{ 'app-new-therapy-scheme-labels-list'|trans }}" 
+                aria-describedby="button-addon2"
+            >
+            {% for label in all %}
+                <option value="{{ label.id }}"{% if label.id in selected %} selected{% endif %}>{{ label.shortName }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="col-4 text-end">
+            <button class="btn btn-primary" type="submit">{{ 'app-load-therapy-labels-button'|trans }}</button>
+        </div>
     </form>
     <form action="{{ path('app_therapy_scheme_generate_html') }}" name="report_form" method="POST">
         <div class="row mb-3">
@@ -46,13 +48,21 @@
                         {% for stub in label.stubs %}
                             <tr>
                                 <td class="text-end col-2">
+                                {% if targets|length > 0 %}
+                                    {% if targets[label.id][stub.id] is defined %}
+                                        <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input" checked>
+                                    {% else %}
+                                        <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input">
+                                    {% endif%}
+                                {% else %}
                                     <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input" checked>
+                                {% endif %}
                                 </td>
                                 <td class="col-1 border-start">{{ stub.name }}</td>
                                 <td class="col-3 border-start">{{ stub.description }}</td>
                                 <td class="col-3 border-start">{{ stub.background }}</td>
                                 <td class="border-start">
-                                    <textarea name="comments[{{ stub.id }}]" class="form-control"></textarea>
+                                    <textarea name="comments[{{ stub.id }}]" class="form-control">{% if targets[label.id][stub.id] is defined %}{{ targets[label.id][stub.id] }}{% endif %}</textarea>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -78,9 +88,15 @@
                     <button formaction="{{ path('app_therapy_scheme_generate_pdf') }}" class="btn btn-primary" type="submit">
                         {{ 'app-therapy-report-generate-report-button'|trans }} (PDF)
                     </button>
-                    {#<button formaction="{{ path('app_therapy_scheme_save_template') }}" class="btn btn-primary" type="submit">
+                    {% if template %}
+                    <button formaction="{{ path('app_therapy_scheme_save_template', {'templateId': template}) }}" class="btn btn-primary" type="submit">
+                        {{ 'app-therapy-report-update-template'|trans }}
+                    </button>
+                    {% else %}
+                    <button formaction="{{ path('app_therapy_scheme_save_template') }}" class="btn btn-primary" type="submit">
                         {{ 'app-therapy-report-save-as-template'|trans }}
-                    </button>#}
+                    </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
