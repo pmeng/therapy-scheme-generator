@@ -11,22 +11,22 @@
                 <h2></h2>
                 <ol>
                 {% for label in data %}
-                    <li>
                     {% if label.id in targets|keys %}
+                    <li>
                         <h5>{{ label.reportName }}</h5>
                         <ul>
                         {% for stub in label.stubs %}
-                            <li>
                             {% if stub.id in targets[label.id]|keys %}
+                            <li>
                                 <p class="text-black">
                                     {{ stub.description }}{% if not (stub.description ends with '.') %}.{% endif %} {{ comments[stub.id] }}{% if not (comments[stub.id] ends with '.') and (comments[stub.id]|length > 0) %}.{% endif %}
                                 </p>
-                            {% endif %}
                             </li>
+                            {% endif %}
                         {% endfor %}
                         </ul>
-                    {% endif %}
                     </li>
+                    {% endif %}
                 {% endfor %}
                 </ol>
             </div>
