@@ -137,4 +137,16 @@ class SchemeController extends AbstractController
             'templates' => $templates,
         ]);
     }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/delete/template/{templateId}', name: 'app_therapy_scheme_delete')]
+    public function deleteTemplate(Request $request, $templateId): Response
+    {
+        $template = $this->entityManager->getRepository(Template::class)->findOneBy([
+            'id' => $templateId,
+        ]);
+        $this->entityManager->remove($template);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('app_therapy_saved_templates');
+    }
 }

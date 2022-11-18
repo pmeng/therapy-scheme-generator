@@ -201,6 +201,10 @@
         <source>app-therapy-report-no-saved-templates</source>
         <target>Keine gespeicherten Vorlagen</target>
       </trans-unit>
+      <trans-unit id="Cpi8YVF" resname="app-therapy-report-update-template">
+        <source>app-therapy-report-update-template</source>
+        <target>Aktualisieren Sie die aktuelle Vorlage</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

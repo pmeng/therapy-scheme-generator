@@ -201,6 +201,10 @@
         <source>app-therapy-report-no-saved-templates</source>
         <target>No saved templates</target>
       </trans-unit>
+      <trans-unit id="Cpi8YVF" resname="app-therapy-report-update-template">
+        <source>app-therapy-report-update-template</source>
+        <target>Update current template</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
