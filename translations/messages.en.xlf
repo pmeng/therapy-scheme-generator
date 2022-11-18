@@ -165,6 +165,14 @@
         <source>app-therapy-label-edit-form-report-name</source>
         <target>Report name (shown in generated report)</target>
       </trans-unit>
+      <trans-unit id="WTfECjd" resname="app-therapy-report-save-as-template">
+        <source>app-therapy-report-save-as-template</source>
+        <target>Save as template</target>
+      </trans-unit>
+      <trans-unit id="ZjjsVVn" resname="app-therapy-report-blank-labels">
+        <source>app-therapy-report-blank-labels</source>
+        <target>Select labels to load</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

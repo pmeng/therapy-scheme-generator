@@ -38,24 +38,34 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for label in data %}
-                    <tr class="table-light">
-                        <th scope="row" colspan="5">{{ label.shortName }}</th>
-                    </tr>
-                    {% for stub in label.stubs %}
-                        <tr>
-                            <td class="text-end col-2">
-                                <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input" checked>
-                            </td>
-                            <td class="col-1 border-start">{{ stub.name }}</td>
-                            <td class="col-3 border-start">{{ stub.description }}</td>
-                            <td class="col-3 border-start">{{ stub.background }}</td>
-                            <td class="border-start">
-                                <textarea name="comments[{{ stub.id }}]" class="form-control"></textarea>
-                            </td>
+                {% if data|length > 0 %}
+                    {% for label in data %}
+                        <tr class="table-light">
+                            <th scope="row" colspan="5">{{ label.shortName }}</th>
                         </tr>
+                        {% for stub in label.stubs %}
+                            <tr>
+                                <td class="text-end col-2">
+                                    <input type="checkbox" name="targets[{{ label.id }}][{{ stub.id }}]" class="form-check-input" checked>
+                                </td>
+                                <td class="col-1 border-start">{{ stub.name }}</td>
+                                <td class="col-3 border-start">{{ stub.description }}</td>
+                                <td class="col-3 border-start">{{ stub.background }}</td>
+                                <td class="border-start">
+                                    <textarea name="comments[{{ stub.id }}]" class="form-control"></textarea>
+                                </td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
+                {% else %}
+                    <tr class="table-light">
+                        <th class="p-4" scope="row" colspan="5">
+                            <span class="d-flex justify-content-center fs-4 text-secondary">
+                            {{ 'app-therapy-report-blank-labels'|trans }}
+                            </span>
+                        </th>
+                    </tr>
+                {% endif %}
                 </tbody>
             </table>
         </div>
@@ -68,6 +78,9 @@
                     <button formaction="{{ path('app_therapy_scheme_generate_pdf') }}" class="btn btn-primary" type="submit">
                         {{ 'app-therapy-report-generate-report-button'|trans }} (PDF)
                     </button>
+                    {#<button formaction="{{ path('app_therapy_scheme_save_template') }}" class="btn btn-primary" type="submit">
+                        {{ 'app-therapy-report-save-as-template'|trans }}
+                    </button>#}
                 </div>
             </div>
         </div>

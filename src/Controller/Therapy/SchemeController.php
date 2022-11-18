@@ -25,8 +25,9 @@ class SchemeController extends AbstractController
     public function index(Request $request): Response
     {
         $data = $request->request->all();
+        $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
+        $labelsData = [];
 
-        $labelsData = $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
         if (isset($data['labels'])) {
             $qb = $this->entityManager->createQueryBuilder('l');
             $labelsData = $qb->select('lbl')
@@ -77,5 +78,15 @@ class SchemeController extends AbstractController
             $pdfGenerator->getOutputFromHtml($html),
             sprintf('report-%s.pdf', date('Y-m-d'))
         );
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save/template', name: 'app_therapy_scheme_save_template', methods: ['POST'])]
+    public function saveAsTemplate(Request $request): Response
+    {
+        $data = $request->request->all();
+        $targets = $data['targets'];
+        $comments = $data['comments'];
+
+        return new Response();
     }
 }
