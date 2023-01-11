@@ -6,9 +6,10 @@ use App\Entity\Therapy\Label;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\UX\Autocomplete\EntityAutocompleterInterface;
 
-
+#[AutoconfigureTag('ux.entity_autocompleter', ['alias' => 'therapy-label'])]
 class LabelAutocompleter implements EntityAutocompleterInterface
 {
     public function getEntityClass(): string

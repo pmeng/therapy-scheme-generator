@@ -13,9 +13,9 @@
                 name="labels-request"
                 class="form-control"
                 data-model="on(change)|labelsRequest"
-                {#{ stimulus_controller('symfony/ux-autocomplete/autocomplete', {
-                    url: path('ux_entity_autocomplete', { alias: 'therapy-labels' })
-                }) }#}
+                {{ stimulus_controller('symfony/ux-autocomplete/autocomplete', {
+                    url: path('ux_entity_autocomplete', { alias: 'therapy-label' })
+                }) }}
             >
         </div>
         <div class="col-4 text-end">
@@ -27,7 +27,7 @@
     <div class="row mt-3">
         {% if this.labelsRequest %}
         <p class="fw-lighter">
-            {{ 'app-therapy-report-requested-labels'|trans }}: <cite title="{{ this.labelsRequest }}">{{ this.labelsRequest }}</cite>
+            {{ 'app-therapy-report-requested-labels'|trans }}: <cite title="{{ this.labelsRequest }}">{{ this.labelsRequest.text }}</cite>
         </p>
         {% endif %}
     </div>
