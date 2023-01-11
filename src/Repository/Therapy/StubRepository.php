@@ -2,7 +2,7 @@
 
 namespace App\Repository\Therapy;
 
-use App\Entity\DTO\StubObject;
+use App\DTO\StubObject;
 use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Stub;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
