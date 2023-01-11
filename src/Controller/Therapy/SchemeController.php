@@ -143,7 +143,7 @@ class SchemeController extends AbstractController
         );
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save/template/{templateId}', name: 'app_therapy_scheme_save_template', methods: ['POST'])]
+    /*#[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save/template/{templateId}', name: 'app_therapy_scheme_save_template', methods: ['POST'])]
     public function saveAsTemplate(Request $request, $templateId = null): Response
     {
         $data = $request->request->all();
@@ -173,7 +173,7 @@ class SchemeController extends AbstractController
         $this->entityManager->flush();
 
         return $this->redirectToRoute('app_therapy_saved_templates');
-    }
+    }*/
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates')]
     public function loadTemplates(Request $request): Response
