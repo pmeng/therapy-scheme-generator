@@ -18,7 +18,7 @@ class Stub
     #[ORM\Column(type: 'string', length: 100)]
     private ?string $name;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 500)]
     private ?string $description;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
