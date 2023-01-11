@@ -17,6 +17,7 @@
                             <h5>{{ label.reportName }}</h5>
                             <ul>
                         {% endif %}
+
                         {% for stub in label.stubs %}
                             {% if stub.id in targets[label.id]|keys %}
                             <li>

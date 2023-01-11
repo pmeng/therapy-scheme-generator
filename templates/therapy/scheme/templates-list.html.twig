@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<div class="container">
+    <div class="row mb-3">
+        <h2>{{ 'app-therapy-report-saved-templates-page-title'|trans }}</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">{{ 'app-therapy-report-table-title'|trans }}</th>
+                    <th scope="col">{{ 'app-therapy-report-table-actions'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if templates|length > 0 %}
+                {% for template in templates %}
+                <tr class="table-light">
+                    <td>{{ 'app-therapy-report-saved-template-name'|trans }} {{ template.name }}</th>
+                    <td>
+                        <a href="{{ path('app_therapy_scheme_new', {'template': template.id}) }}" class="btn btn-info">{{ 'app-therapy-report-saved-template-load'|trans }}</a>
+                        <a href="{{ path('app_therapy_scheme_delete', {'templateId': template.id}) }}" class="btn btn-danger">{{ 'app-therapy-report-saved-template-delete'|trans }}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr class="table-light">
+                    <th class="p-4" scope="row" colspan="2">
+                        <span class="d-flex justify-content-center fs-4 text-secondary">
+                        {{ 'app-therapy-report-no-saved-templates'|trans }}
+                        </span>
+                    </th>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@ class Stub
     #[ORM\Column(type: 'integer')]
     private ?int $id;
 
-    #[ORM\Column(type: 'string', length: 100)]
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $name;
 
     #[ORM\Column(type: 'string', length: 500)]
