@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<div class="container">
+    {{ component('therapy-scheme', {
+        isSaved: true,
+        template: template
+    }) }}
+</div>
+{% endblock %}

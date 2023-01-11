@@ -4,7 +4,9 @@
 {% block body %}
     <div class="container">
         <h2>{{ formTitle }}</h2>
-        {{ form_start(stubForm) }}
+        {{ form_start(stubForm, {
+            attr: {'data-controller': 'main'}
+        }) }}
         <div class="row-cols-2">
             <div class="col">
                 <div class="mb-3">
@@ -14,6 +16,10 @@
                 <div class="mb-3">
                     {{ form_label(stubForm.description) }}
                     {{ form_widget(stubForm.description)}}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(stubForm.excerpt) }}
+                    {{ form_widget(stubForm.excerpt)}}
                 </div>
                 <div class="mb-3">
                     {{ form_label(stubForm.background) }}
@@ -27,6 +33,7 @@
         <div class="row">
             <div class="d-grid gap-2 d-md-block">
                 {{ form_widget(stubForm.save)}}
+                {{ form_widget(stubForm.saveAndNew)}}
                 {% if stubForm.delete_undo is defined %}
                     {{ form_widget(stubForm.delete_undo)}}
                 {% endif %}

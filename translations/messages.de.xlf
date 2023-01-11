@@ -165,45 +165,65 @@
         <source>app-therapy-label-edit-form-report-name</source>
         <target>Berichtsname (wird im generierten Bericht angezeigt)</target>
       </trans-unit>
-      <trans-unit id="WTfECjd" resname="app-therapy-report-save-as-template">
-        <source>app-therapy-report-save-as-template</source>
+      <trans-unit id="6HE969x" resname="app-modal-label-confirmation">
+        <source>app-modal-label-confirmation</source>
+        <target>Bist du dir sicher?</target>
+      </trans-unit>
+      <trans-unit id="QrvebFl" resname="app-modal-close">
+        <source>app-modal-close</source>
+        <target>Schließen</target>
+      </trans-unit>
+      <trans-unit id="XKdvlTf" resname="app-delete-button">
+        <source>app-delete-button</source>
+        <target>Löschen</target>
+      </trans-unit>
+      <trans-unit id="_zr_FWH" resname="app-therapy-stub-form-label-excerpt">
+        <source>app-therapy-stub-form-label-excerpt</source>
+        <target>Auszug</target>
+      </trans-unit>
+      <trans-unit id="JbMTt.T" resname="app-save-and-new-button">
+        <source>app-save-and-new-button</source>
+        <target>Speichern + Neu</target>
+      </trans-unit>
+      <trans-unit id="8AsGalb" resname="app-therapy-report-suppress-labels">
+        <source>app-therapy-report-suppress-labels</source>
+        <target>Labels unterdrücken</target>
+      </trans-unit>
+      <trans-unit id="cofIMtF" resname="app-therapy-report-use-excerpt">
+        <source>app-therapy-report-use-excerpt</source>
+        <target>Verwenden Sie 'excerpt' anstelle von 'description'</target>
+      </trans-unit>
+      <trans-unit id="A5mIo.v" resname="app-therapy-report-table-excerpt">
+        <source>app-therapy-report-table-excerpt</source>
+        <target>Auszug</target>
+      </trans-unit>
+      <trans-unit id="HD_Xnyg" resname="app-therapy-report-requested-labels">
+        <source>app-therapy-report-requested-labels</source>
+        <target>Angeforderte Etiketten</target>
+      </trans-unit>
+      <trans-unit id="0jVJ4L8" resname="app-therapy-report-save-as-template-button">
+        <source>app-therapy-report-save-as-template-button</source>
         <target>Als Vorlage speichern</target>
       </trans-unit>
-      <trans-unit id="ZjjsVVn" resname="app-therapy-report-blank-labels">
-        <source>app-therapy-report-blank-labels</source>
-        <target>Wählen Sie die zu ladenden Etiketten aus</target>
+      <trans-unit id="9HQRcL8" resname="app-therapy-scheme-templates">
+        <source>app-therapy-scheme-templates</source>
+        <target>Gespeicherte Therapieschemata</target>
       </trans-unit>
-      <trans-unit id="yQ_iNex" resname="app-therapy-saved-templates">
-        <source>app-therapy-saved-templates</source>
-        <target>Schema-Vorlagen</target>
+      <trans-unit id="D6nuB.." resname="app-new-therapy-save-scheme-template">
+        <source>app-new-therapy-save-scheme-template</source>
+        <target>Therapieschema zur Wiederverwendung speichern</target>
       </trans-unit>
-      <trans-unit id="6AB7tG0" resname="app-therapy-report-saved-templates-page-title">
-        <source>app-therapy-report-saved-templates-page-title</source>
-        <target>Gespeicherte Therapieschemavorlagen</target>
+      <trans-unit id="UZh.lrg" resname="app-new-therapy-scheme-templates">
+        <source>app-new-therapy-scheme-templates</source>
+        <target>Liste der gespeicherten Therapieschemata</target>
       </trans-unit>
-      <trans-unit id="X.UPFaR" resname="app-therapy-report-table-actions">
-        <source>app-therapy-report-table-actions</source>
-        <target>Aktionen</target>
+      <trans-unit id="Vgv6r_t" resname="app-scheme-template-form-label-name">
+        <source>app-scheme-template-form-label-name</source>
+        <target>Name der Vorlage</target>
       </trans-unit>
-      <trans-unit id="l2O4Ff5" resname="app-therapy-report-saved-template-name">
-        <source>app-therapy-report-saved-template-name</source>
-        <target>Vorlage gespeichert unter</target>
-      </trans-unit>
-      <trans-unit id="09mOZ6l" resname="app-therapy-report-saved-template-load">
-        <source>app-therapy-report-saved-template-load</source>
-        <target>Laden</target>
-      </trans-unit>
-      <trans-unit id="SbfxC7_" resname="app-therapy-report-saved-template-delete">
-        <source>app-therapy-report-saved-template-delete</source>
-        <target>Löschung</target>
-      </trans-unit>
-      <trans-unit id="OazNcif" resname="app-therapy-report-no-saved-templates">
-        <source>app-therapy-report-no-saved-templates</source>
-        <target>Keine gespeicherten Vorlagen</target>
-      </trans-unit>
-      <trans-unit id="Cpi8YVF" resname="app-therapy-report-update-template">
-        <source>app-therapy-report-update-template</source>
-        <target>Aktualisieren Sie die aktuelle Vorlage</target>
+      <trans-unit id="X9F88Gi" resname="app-new-therapy-scheme-template-title">
+        <source>app-new-therapy-scheme-template-title</source>
+        <target>Vorlage verwendet</target>
       </trans-unit>
     </body>
   </file>

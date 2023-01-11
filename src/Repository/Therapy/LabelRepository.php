@@ -3,9 +3,12 @@
 namespace App\Repository\Therapy;
 
 use App\Entity\Therapy\Label;
+use App\Entity\Therapy\Scheme;
+use App\Entity\Therapy\Stub;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -43,6 +46,61 @@ class LabelRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function findLabelsByRequest(string $query, bool $builder = false): QueryBuilder|array
+    {
+        $queryBuilder = $this->createQueryBuilder('entity')
+            ->leftJoin('entity.stubs', 'stubs')
+            ->addSelect('stubs')
+            ->andWhere('entity.shortName LIKE :filter OR entity.reportName LIKE :filter')
+            ->setParameter('filter', $query . '%')
+            ->orderBy('entity.id', 'ASC')
+        ;
+        if ($builder) {
+            return $queryBuilder;
+        } else {
+            return $queryBuilder->getQuery()->getArrayResult();
+        }
+    }
+
+    public function findLabelsByTemplate(string $query, bool $builder = false): QueryBuilder|array
+    {
+        $queryBuilder = $this->createQueryBuilder('entity')
+            ->leftJoin('entity.stubs', 'stubs')
+            ->addSelect('stubs')
+            ->andWhere('entity.shortName LIKE :filter OR entity.reportName LIKE :filter')
+            ->setParameter('filter', $query . '%')
+            ->orderBy('entity.id', 'ASC')
+        ;
+        if ($builder) {
+            return $queryBuilder;
+        } else {
+            return $queryBuilder->getQuery()->getArrayResult();
+        }
+    }
+
+    public function loadSavedTemplate(Scheme $scheme): array
+    {
+        if ($scheme) {
+            $labelsList = [];
+            $stubsList = [];
+
+            foreach ($scheme->getTargets() as $key => $val) {
+                $labelsList[] = $key;
+                //$stubsList[] = 
+            }
+
+            $queryBuilder = $this->createQueryBuilder('entity')
+                ->leftJoin('entity.stubs', 'stubs')
+                ->addSelect('stubs')
+                ->andWhere('entity.id IN (:labels_list)')
+                ->setParameter('labels_list', $labelsList)
+                ->orderBy('entity.id', 'ASC')
+            ;
+        }
+
+        return $queryBuilder->getQuery()->getArrayResult();
     }
 
     // /**

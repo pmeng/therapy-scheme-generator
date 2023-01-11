@@ -4,6 +4,8 @@ namespace App\DataFixtures;
 
 use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Stub;
+use Faker\Factory;
+use Faker\Generator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -11,18 +13,22 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        for ($l = 0; $l < 5; $l++) {
+        $generator = Factory::create('en_US');
+
+        for ($l = 0; $l < 25; $l++) {
             $label = new Label();
-            $label->setShortName('Title (label) #' . $l);
-            $label->setReportName('Title (label) #' . $l);
+            $labelTitle = $generator->words(mt_rand(6, 12), true);
+            $label->setShortName(substr($labelTitle, 0, 6));
+            $label->setReportName($labelTitle);
             $manager->persist($label);
         }
 
-        for ($s = 0; $s < 10; $s++) {
+        for ($s = 0; $s < 100; $s++) {
             $stub = new Stub();
-            $stub->setName('Stub #' . $s);
-            $stub->setDescription('description for stub #'. $s);
-            $stub->setBackground('background for stub #'. $s);
+            $stub->setName($generator->name);
+            $stub->setDescription($generator->realText(200));
+            $stub->setExcerpt($generator->realText(50));
+            $stub->setBackground($generator->realText(250));
             $manager->persist($stub);
         }
 

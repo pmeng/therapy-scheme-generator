@@ -18,10 +18,13 @@ class Stub
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $name;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: 'string', length: 500)]
     private ?string $description;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $excerpt;
+
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $background;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
@@ -66,6 +69,18 @@ class Stub
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getExcerpt(): ?string
+    {
+        return $this->excerpt;
+    }
+
+    public function setExcerpt(string $excerpt): self
+    {
+        $this->excerpt = $excerpt;
 
         return $this;
     }

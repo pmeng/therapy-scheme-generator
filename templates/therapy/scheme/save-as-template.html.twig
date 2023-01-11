@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<div class="container">
+    {{ component('scheme-template', {
+        scheme: scheme.id ? scheme : null,
+        targets: targets,
+        comments: comments,
+        form: form
+    }) }}
+</div>
+{% endblock %}

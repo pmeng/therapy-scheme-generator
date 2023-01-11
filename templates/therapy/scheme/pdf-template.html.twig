@@ -12,7 +12,13 @@
                     <thead>
                     <tr>
                         <th scope="col">{{ 'app-therapy-report-table-name'|trans }}</th>
-                        <th scope="col">{{ 'app-therapy-report-table-description'|trans }}</th>
+                        <th scope="col">
+                        {% if use_excerpt == 'on' %}
+                            {{ 'app-therapy-report-table-excerpt'|trans }}
+                        {% else %}
+                            {{ 'app-therapy-report-table-description'|trans }}
+                        {% endif %}
+                        </th>
                         <th scope="col">{{ 'app-therapy-report-table-background'|trans }}</th>
                         <th scope="col">{{ 'app-therapy-report-table-comment'|trans }}</th>
                     </tr>
@@ -20,19 +26,21 @@
                     <tbody>
                     {% for label in data %}
                         {% if label.id in targets|keys %}
+                            {% if not suppress_labels %}
                             <tr class="table-light">
                                 <th scope="row" colspan="5">
                                     {{ 'app-therapy-report-table-title'|trans }}: {{ label.reportName }}
                                 </th>
                             </tr>
+                            {% endif %}
                             {% for stub in label.stubs %}
                                 {% if stub.id in targets[label.id]|keys %}
                                 <tr>
                                     <td class="col-1 border-start">{{ stub.name }}</td>
-                                    <td class="col-3 border-start">{{ stub.description }}</td>
+                                    <td class="col-3 border-start">{{ use_excerpt == 'on' ? stub.excerpt : stub.description }}</td>
                                     <td class="col-3 border-start">{{ stub.background }}</td>
                                     <td class="border-start">
-                                        <span>{{ comments[stub.id] }}</span>
+                                        <span>{{ comments[label.id][stub.id]['comment'] }}</span>
                                     </td>
                                 </tr>
                                 {% endif %}

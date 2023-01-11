@@ -7,6 +7,7 @@ use App\Form\Therapy\LabelType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -84,6 +85,28 @@ class LabelController extends AbstractController
         
         return $this->render('therapy/label/edit.html.twig', [
             'labelForm' => $labelForm->createView(),
+            'currentId' => $id,
+        ]);
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/delete/label/{id<\d+>}', name: 'app_therapy_label_delete')]
+    public function deleteLabel(Request $request, int $id): Response
+    {
+        $label = $this->entityManager->getRepository(Label::class)->find($id);
+
+        if ($label) {
+            $this->entityManager->remove($label);
+            $this->entityManager->flush();
+
+            return new JsonResponse([
+                'success' => 1,
+                'redirect' => $this->generateUrl('app_therapy_labels_list'),
+            ]);
+        }
+
+        return new JsonResponse([
+            'success' => 0,
+            'message' => 'Label not exists'
         ]);
     }
 }

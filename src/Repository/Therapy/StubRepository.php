@@ -2,7 +2,7 @@
 
 namespace App\Repository\Therapy;
 
-use App\Entity\DTO\StubObject;
+use App\DTO\StubObject;
 use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Stub;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -53,6 +53,7 @@ class StubRepository extends ServiceEntityRepository
         $stub = new Stub();
         $stub->setName($data['name']);
         $stub->setDescription($data['description']);
+        $stub->setExcerpt($data['excerpt']);
         $stub->setBackground($data['background']);
 
         $this->_em->persist($stub);
@@ -64,6 +65,7 @@ class StubRepository extends ServiceEntityRepository
     {
         $stub->setName($dto->name);
         $stub->setDescription($dto->description);
+        $stub->setExcerpt($dto->excerpt);
         $stub->setBackground($dto->background);
 
         foreach ($stub->getLabels() as $label) {
@@ -81,6 +83,7 @@ class StubRepository extends ServiceEntityRepository
         $stubDto = new StubObject();
         $stubDto->id = $stub->getId();
         $stubDto->name = $stub->getName();
+        $stubDto->excerpt = $stub->getExcerpt();
         $stubDto->description = $stub->getDescription();
         $stubDto->background = $stub->getBackground();
 
