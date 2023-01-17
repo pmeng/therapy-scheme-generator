@@ -15,6 +15,7 @@ export default class extends Controller {
                     return row.getAttribute('data-label-row') !== null;
                 })
                 .forEach(function (row) {
+                    console.log(state);
                     row.style.display = state ? 'none' : '';
                     row.setAttribute('data-suppress-label', `${state}`);
                 });

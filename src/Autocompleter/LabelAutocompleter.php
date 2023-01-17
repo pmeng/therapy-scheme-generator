@@ -29,7 +29,7 @@ class LabelAutocompleter implements EntityAutocompleterInterface
 
     public function getValue(object $entity): string
     {
-        return $entity->getId();
+        return $entity->getShortName();
     }
 
     public function isGranted(Security $security): bool

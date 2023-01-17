@@ -19,7 +19,7 @@ class ArrayToLabelsTransformer implements DataTransformerInterface
         $this->entityManager = $entityManager;
     }
 
-    public function transform(mixed $value)
+    public function transform(mixed $value): mixed
     {
         if ($value === null) {
             return null;
@@ -28,7 +28,7 @@ class ArrayToLabelsTransformer implements DataTransformerInterface
         return $value;
     }
 
-    public function reverseTransform(mixed $value)
+    public function reverseTransform(mixed $value): mixed
     {
         if (!$value) {
             dump($value);

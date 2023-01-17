@@ -27,4 +27,4 @@ services:
 
     App\Autocompleter\LabelAutocompleter:
         tags:
-            - { name: ux.entity_autocompleter, alias: 'therapy-labels' }
+            - { name: ux.entity_autocompleter, alias: 'therapy-label' }

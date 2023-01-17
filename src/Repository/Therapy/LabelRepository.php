@@ -53,10 +53,16 @@ class LabelRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('entity')
             ->leftJoin('entity.stubs', 'stubs')
             ->addSelect('stubs')
-            ->andWhere('entity.shortName LIKE :filter OR entity.reportName LIKE :filter')
-            ->setParameter('filter', $query . '%')
             ->orderBy('entity.id', 'ASC')
         ;
+        $query = explode(',', $query);
+
+        foreach ($query as $f => $q) {
+            $queryBuilder
+                ->orWhere("entity.shortName LIKE :filter_$f OR entity.reportName LIKE :filter_$f")
+                ->setParameter("filter_$f", $q . '%');
+        }
+
         if ($builder) {
             return $queryBuilder;
         } else {
