@@ -225,6 +225,26 @@
         <source>app-new-therapy-scheme-template-title</source>
         <target>Vorlage verwendet</target>
       </trans-unit>
+      <trans-unit id="6AB7tG0" resname="app-therapy-report-saved-templates-page-title">
+        <source>app-therapy-report-saved-templates-page-title</source>
+        <target>Gespeicherte Vorlagen</target>
+      </trans-unit>
+      <trans-unit id="X.UPFaR" resname="app-therapy-report-table-actions">
+        <source>app-therapy-report-table-actions</source>
+        <target>Aktionen</target>
+      </trans-unit>
+      <trans-unit id="09mOZ6l" resname="app-therapy-report-saved-template-load">
+        <source>app-therapy-report-saved-template-load</source>
+        <target>Herunterladen</target>
+      </trans-unit>
+      <trans-unit id="SbfxC7_" resname="app-therapy-report-saved-template-delete">
+        <source>app-therapy-report-saved-template-delete</source>
+        <target>Löschen</target>
+      </trans-unit>
+      <trans-unit id="OazNcif" resname="app-therapy-report-no-saved-templates">
+        <source>app-therapy-report-no-saved-templates</source>
+        <target>Nicht gefunden</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

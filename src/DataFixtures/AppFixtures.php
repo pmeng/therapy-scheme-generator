@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Template;
 use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Stub;
 use Faker\Factory;
@@ -36,13 +37,25 @@ class AppFixtures extends Fixture
 
         $labels = $manager->getRepository(Label::class)->findAll();
         $stubs = $manager->getRepository(Stub::class)->findAll();
+        $targets = [];
 
         foreach ($labels as $label) {
+            $lid = $label->getId();
+            $targets[$lid] = [];
             for ($i = 0; $i < rand(2, 6); $i++) {
                 $stub = $stubs[array_rand($stubs)];
                 $label->addStub($stub);
+                $targets[$lid][] = $stub->getId();
             }
+            $targets[$lid] = array_unique($targets[$lid]);
             $manager->persist($label);
+        }
+
+        for ($t = 0; $t < 100; $t++) {
+            $template = new Template();
+            $template->setName($generator->name . ' - ' . $generator->date());
+            $template->setTargets($targets);
+            $manager->persist($template);
         }
 
         $manager->flush();

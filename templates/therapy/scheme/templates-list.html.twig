@@ -16,9 +16,9 @@
             {% if templates|length > 0 %}
                 {% for template in templates %}
                 <tr class="table-light">
-                    <td>{{ 'app-therapy-report-saved-template-name'|trans }} {{ template.name }}</th>
+                    <td>{{ template.name }}</th>
                     <td>
-                        <a href="{{ path('app_therapy_scheme_new', {'template': template.id}) }}" class="btn btn-info">{{ 'app-therapy-report-saved-template-load'|trans }}</a>
+                        <a href="{{ path('app_therapy_scheme_load', {'id': template.id}) }}" class="btn btn-info">{{ 'app-therapy-report-saved-template-load'|trans }}</a>
                         <a href="{{ path('app_therapy_scheme_delete', {'templateId': template.id}) }}" class="btn btn-danger">{{ 'app-therapy-report-saved-template-delete'|trans }}</a>
                     </td>
                 </tr>
