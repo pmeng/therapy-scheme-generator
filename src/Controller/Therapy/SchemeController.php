@@ -6,6 +6,7 @@ use App\Entity\Template;
 use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Scheme;
 use App\Form\SchemeTemplateType;
+use App\Repository\Therapy\SchemeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -175,25 +176,23 @@ class SchemeController extends AbstractController
         return $this->redirectToRoute('app_therapy_saved_templates');
     }*/
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates')]
-    public function loadTemplates(Request $request): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates', methods: ['GET'])]
+    public function loadTemplates(SchemeRepository $schemeRepository): Response
     {
-        $templates = $this->entityManager->getRepository(Template::class)->findAll();
-
+        $templates = $schemeRepository->findAll();
         return $this->render('therapy/scheme/templates-list.html.twig', [
             'templates' => $templates,
         ]);
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/delete/template/{templateId}', name: 'app_therapy_scheme_delete')]
-    public function deleteTemplate(Request $request, $templateId): Response
+    public function deleteTemplate(SchemeRepository $schemeRepository, $templateId): Response
     {
-        $template = $this->entityManager->getRepository(Template::class)->findOneBy([
-            'id' => $templateId,
-        ]);
-        $this->entityManager->remove($template);
-        $this->entityManager->flush();
-
+        $template = $schemeRepository->find($templateId);
+        if ($template) {
+            $this->entityManager->remove($template);
+            $this->entityManager->flush();
+        }
         return $this->redirectToRoute('app_therapy_saved_templates');
     }
 }
