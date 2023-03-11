@@ -45,6 +45,10 @@
         <source>app-search-for-therapy-button</source>
         <target>Search for therapy</target>
       </trans-unit>
+      <trans-unit id="Yc_.ACQ" resname="app-search-for-scheme-button">
+        <source>app-search-for-scheme-button</source>
+        <target>Search for Scheme</target>
+      </trans-unit>
       <trans-unit id="sgLNMUN" resname="app-new-therapy-stub-button">
         <source>app-new-therapy-stub-button</source>
         <target>New therapy stub</target>
