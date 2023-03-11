@@ -2,26 +2,42 @@
 
 
 {% block body %}
-<div class="container">
-    <h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
-    <div class="row">
-    {% for stub in pagination %}
-        <div class="list-group mb-3">
-            <a href="{{ path('app_therapy_stub_edit', {id: stub.id}) }}" class="list-group-item list-group-item-action" aria-current="true">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ stub.name }}</h5>
-                    <small>{{ stub.createdAt|format_datetime(locale=app.request.locale) }}</small>
-                </div>
-                <p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-description'|trans }}</p>
-                <small>{{ stub.description }}</small>
-                <p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-background'|trans }}</p>
-                <small>{{ stub.background }}</small>
-            </a>
-        </div>
-    {% endfor %}
-    </div>
-    <div class="row mb-3">
-        {{ knp_pagination_render(pagination) }}
-    </div>
-</div>
+	<div class="container mt-3">
+
+		<div class="row mb-3">
+			<div class="col">
+				{% if app.request.request.get('searchName_stub') is not null %}
+					<h2>{{ 'app-results-for-label-search-title'|trans({'%label_name%': app.request.request.get('searchName_stub')}) }}</h2>
+				</div>
+				<div class="col text-end">
+					<a href="{{ path('app_therapy_stubs_list') }}" class="btn btn-outline-secondary">{{ 'app-reset-search-button'|trans }}</a>
+				{% else %}
+					<h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
+				{% endif %}
+			</div>
+		</div>
+		<form name="search_stub" action="{{ path('app_therapy_stubs_list') }}" method="post">
+			<div class="input-group mb-3">
+				<input type="search" name="searchName_stub" required="required" class="form-control form-control" aria-describedby="button-addon2">
+				<button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
+			</div>
+		</form>
+		{% for stub in pagination %}
+			<div class="list-group mb-3">
+				<a href="{{ path('app_therapy_stub_edit', {id: stub.id}) }}" class="list-group-item list-group-item-action" aria-current="true">
+					<div class="d-flex w-100 justify-content-between">
+						<h5 class="mb-1">{{ stub.name }}</h5>
+						<small>{{ stub.createdAt|format_datetime(locale=app.request.locale) }}</small>
+					</div>
+					<p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-description'|trans }}</p>
+					<small>{{ stub.description }}</small>
+					<p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-background'|trans }}</p>
+					<small>{{ stub.background }}</small>
+				</a>
+			</div>
+		{% endfor %}
+		<div class="row mb-3">
+			{{ knp_pagination_render(pagination) }}
+		</div>
+	</div>
 {% endblock %}
