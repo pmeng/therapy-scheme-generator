@@ -4,6 +4,7 @@ namespace App\Controller\Therapy;
 
 use App\Entity\Therapy\Label;
 use App\Form\Therapy\LabelType;
+use App\Repository\Therapy\LabelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,24 +29,20 @@ class LabelController extends AbstractController
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/labels', name: 'app_therapy_labels_list')]
-    public function listLabels(Request $request): Response
+    public function listLabels(Request $request, LabelRepository $labelRepository): Response
     {
-        $repository = $this->entityManager->getRepository(Label::class);
         $search = $request->get('label_name');
 
-        $query = $repository
+        $query = $labelRepository
             ->createQueryBuilder('label')
             ->setFirstResult($request->query->getInt('page', 0))
-            ->setMaxResults(self::PAGINATION_PAGE)
-        ;
+            ->setMaxResults(self::PAGINATION_PAGE);
 
         if ($search !== null) {
-            $query->where(
-                $query->expr()->like(
-                    'label.shortName',
-                    ':search'
-                )
-            )->setParameter('search', '%' . $search . '%');
+            $query
+                ->where('label.reportName LIKE :search')
+                ->orWhere('label.shortName LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
         }
 
         $pagination = $this->paginator->paginate(
@@ -58,7 +55,7 @@ class LabelController extends AbstractController
             'pagination' => $pagination,
         ]);
     }
-    
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/label/{id<\d+>}', name: 'app_therapy_label_edit')]
     public function editLabel(Request $request, int $id): Response
     {
