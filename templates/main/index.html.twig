@@ -14,10 +14,22 @@
                     <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-label-button'|trans }}</button>
                 </div>
             </form>
-            <div class="input-group mb-3">
-                <input type="search" required="required" class="form-control form-control" aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
-            </div>
+            <form name="search_stub" action="{{ path('app_therapy_stubs_list') }}" method="post">
+                <div class="input-group mb-3">
+                    <input type="search" required="required" name="searchName_stub" class="form-control form-control" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
+                </div>
+            </form>
+
+            <form name="searchName_scheme" action="{{ path('app_therapy_saved_templates') }}" method="post">
+                <div class="input-group mb-3">
+                    <input type="search" required="required" name="searchName_scheme" class="form-control form-control" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">
+                        {{ 'app-search-for-scheme-button'|trans }}
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
     <div class="row">
