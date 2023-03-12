@@ -13,17 +13,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Component\Pager\PaginatorInterface;
 use Knp\Snappy\Pdf;
 
 class SchemeController extends AbstractController
 {
-    protected EntityManagerInterface $entityManager;
+    const ITEMS_PER_PAGE = 5;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    protected EntityManagerInterface $entityManager;
+    protected PaginatorInterface $paginator;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator
+    ) {
         $this->entityManager = $entityManager;
+        $this->paginator = $paginator;
     }
-    
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create')]
     public function create(Request $request): Response
     {
@@ -34,7 +41,7 @@ class SchemeController extends AbstractController
     public function load(Request $request, int $id): Response
     {
         $scheme = $this->entityManager->getRepository(Scheme::class)->find($id);
-        
+
         return $this->render('therapy/scheme/load.html.twig', [
             'template' => $scheme,
         ]);
@@ -91,7 +98,7 @@ class SchemeController extends AbstractController
             $labelsData = $qb->select('lbl')
                 ->where(
                     $qb->expr()->in(
-                        'lbl.id', 
+                        'lbl.id',
                         $data['labels']
                     )
                 )
@@ -99,7 +106,7 @@ class SchemeController extends AbstractController
                 ->getQuery()
                 ->getResult();
         }
-        
+
         return $this->render('therapy/scheme/index.html.twig', [
             'all' => $allLabels,
             'data' => $labelsData,
@@ -108,7 +115,7 @@ class SchemeController extends AbstractController
             'template' => $template,
         ]);
     }
-    
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/html', name: 'app_therapy_scheme_generate_html', methods: ['POST'])]
     public function generateHtml(Request $request): Response
     {
@@ -123,7 +130,7 @@ class SchemeController extends AbstractController
             'use_excerpt' => isset($data['use_excerpt']) ? $data['use_excerpt'] : false,
         ]);
     }
-    
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/pdf', name: 'app_therapy_scheme_generate_pdf', methods: ['POST'])]
     public function generatePdf(Request $request, Pdf $pdfGenerator): PdfResponse
     {
@@ -137,7 +144,7 @@ class SchemeController extends AbstractController
             'suppress_labels' => isset($data['suppress_labels']) ? $data['suppress_labels'] : false,
             'use_excerpt' => isset($data['use_excerpt']) ? $data['use_excerpt'] : false,
         ]);
-        
+
         return new PdfResponse(
             $pdfGenerator->getOutputFromHtml($html),
             sprintf('report-%s.pdf', date('Y-m-d'))
@@ -176,10 +183,27 @@ class SchemeController extends AbstractController
         return $this->redirectToRoute('app_therapy_saved_templates');
     }*/
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates', methods: ['GET'])]
-    public function loadTemplates(SchemeRepository $schemeRepository): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates', methods: ['GET', 'POST'])]
+    public function loadTemplates(Request $request, SchemeRepository $schemeRepository): Response
     {
-        $templates = $schemeRepository->findAll();
+        $searchValue = $request->get('searchName_scheme');
+
+        if ($searchValue) {
+            $templates = $schemeRepository->createQueryBuilder('t')
+                ->where('t.name LIKE :searchValue')
+                ->setParameter('searchValue', '%' . $searchValue . '%')
+                ->getQuery()
+                ->getResult();
+        } else {
+            $templates = $schemeRepository->findAll();
+        }
+
+        $templates = $this->paginator->paginate(
+            $templates,
+            $request->query->getInt('page', 1),
+            self::ITEMS_PER_PAGE
+        );
+
         return $this->render('therapy/scheme/templates-list.html.twig', [
             'templates' => $templates,
         ]);

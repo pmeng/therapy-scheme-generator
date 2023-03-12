@@ -2,38 +2,66 @@
 
 
 {% block body %}
-<div class="container">
-    <div class="row mb-3">
-        <h2>{{ 'app-therapy-report-saved-templates-page-title'|trans }}</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">{{ 'app-therapy-report-table-title'|trans }}</th>
-                    <th scope="col">{{ 'app-therapy-report-table-actions'|trans }}</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% if templates|length > 0 %}
-                {% for template in templates %}
-                <tr class="table-light">
-                    <td>{{ template.name }}</th>
-                    <td>
-                        <a href="{{ path('app_therapy_scheme_load', {'id': template.id}) }}" class="btn btn-info">{{ 'app-therapy-report-saved-template-load'|trans }}</a>
-                        <a href="{{ path('app_therapy_scheme_delete', {'templateId': template.id}) }}" class="btn btn-danger">{{ 'app-therapy-report-saved-template-delete'|trans }}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            {% else %}
-                <tr class="table-light">
-                    <th class="p-4" scope="row" colspan="2">
-                        <span class="d-flex justify-content-center fs-4 text-secondary">
-                        {{ 'app-therapy-report-no-saved-templates'|trans }}
-                        </span>
-                    </th>
-                </tr>
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
-</div>
+	<div class="container">
+		<div class="row mb-3 mt-3">
+			<div class="col">
+				{% if app.request.request.get('searchName_scheme') is not null %}
+					<h2>{{ 'app-results-for-label-search-title'|trans({'%label_name%': app.request.request.get('searchName_scheme')}) }}</h2>
+				</div>
+				<div class="col text-end">
+					<a href="{{ path('app_therapy_saved_templates') }}" class="btn btn-outline-secondary">{{ 'app-reset-search-button'|trans }}</a>
+				{% else %}
+					<h2>{{ 'app-therapy-report-saved-templates-page-title'|trans }}</h2>
+				{% endif %}
+			</div>
+		</div>
+
+		<form name="search_stub" action="{{ path('app_therapy_saved_templates') }}" method="post">
+			<div class="input-group mb-3">
+				<input type="search" name="searchName_scheme" required="required" class="form-control form-control" aria-describedby="button-addon2">
+				<button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-scheme-button'|trans }}</button>
+			</div>
+		</form>
+
+		<div class="row mb-3">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">{{ 'app-therapy-report-table-title'|trans }}</th>
+						<th scope="col">{{ 'app-therapy-report-table-actions'|trans }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% if templates|length > 0 %}
+						{% for template in templates %}
+							<tr class="table-light">
+								<td>{{ template.name }}</td>
+								<td>
+									<a href="{{ path('app_therapy_scheme_load', {'id': template.id}) }}" class="btn btn-info">{{ 'app-therapy-report-saved-template-load'|trans }}</a>
+									<a href="{{ path('app_therapy_scheme_delete', {'templateId': template.id}) }}" class="btn btn-danger">{{ 'app-therapy-report-saved-template-delete'|trans }}</a>
+								</td>
+							</tr>
+						{% endfor %}
+
+					{% else %}
+						<tr class="table-light">
+							<th class="p-4" scope="row" colspan="2">
+								<span class="d-flex justify-content-center fs-4 text-secondary">
+									{{ 'app-therapy-report-no-saved-templates'|trans }}
+								</span>
+							</th>
+						</tr>
+					{% endif %}
+				</tbody>
+			</table>
+
+			{% if templates|length >0 %}
+				<div class="row mb-3 mt-2">
+					{{ knp_pagination_render(templates) }}
+				</div>
+			{% endif %}
+
+
+		</div>
+	</div>
 {% endblock %}

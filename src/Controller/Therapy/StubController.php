@@ -5,6 +5,7 @@ namespace App\Controller\Therapy;
 
 use App\Entity\Therapy\Stub;
 use App\Form\Therapy\StubType;
+use App\Repository\Therapy\StubRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -38,18 +39,27 @@ class StubController extends AbstractController
      * @throws NoResultException
      */
     #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs', name: 'app_therapy_stubs_list')]
-    public function index(Request $request): Response
+    public function index(Request $request, StubRepository $stubRepository): Response
     {
-        $repository = $this->entityManager->getRepository(Stub::class);
 
-        $query = $repository
+        $searchValue = $request->get('searchName_stub');
+
+        $query = $stubRepository
             ->createQueryBuilder('stub')
             ->setFirstResult($request->query->getInt('page', 0))
-            ->setMaxResults(self::PAGINATION_PAGE)
-            ->getQuery()
-        ;
+            ->setMaxResults(self::PAGINATION_PAGE);
+
+        if ($searchValue !== null) {
+            $query
+                ->where('stub.name LIKE :search')
+                ->orWhere('stub.description LIKE :search')
+                ->orWhere('stub.excerpt LIKE :search')
+                ->orWhere('stub.background LIKE :search')
+                ->setParameter('search', '%' . $searchValue . '%');
+        }
+
         $pagination = $this->paginator->paginate(
-            $query,
+            $query->getQuery(),
             $request->query->getInt('page', 1),
             self::PAGINATION_PAGE
         );
