@@ -5,6 +5,7 @@ namespace App\Entity\Therapy;
 use App\Repository\Therapy\StubRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StubRepository::class)]
@@ -18,13 +19,13 @@ class Stub
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $name;
 
-    #[ORM\Column(type: 'string', length: 500)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $description;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $excerpt;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $background;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
