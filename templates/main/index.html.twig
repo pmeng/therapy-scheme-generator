@@ -14,7 +14,8 @@
                     <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-label-button'|trans }}</button>
                 </div>
             </form>
-            <form name="search_stub" action="{{ path('app_therapy_stubs_list') }}" method="post">
+
+            <form name="search_stub" action="{{ path('app_therapy_stubs_search_redirector') }}" method="post">
                 <div class="input-group mb-3">
                     <input type="search" required="required" name="searchName_stub" class="form-control form-control" aria-describedby="button-addon2">
                     <button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
