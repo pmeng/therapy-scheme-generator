@@ -183,12 +183,25 @@ class SchemeController extends AbstractController
         return $this->redirectToRoute('app_therapy_saved_templates');
     }*/
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates', methods: ['GET', 'POST'])]
-    public function loadTemplates(Request $request, SchemeRepository $schemeRepository): Response
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/searchRedirector', name: 'app_therapy_scheme_search_redirector')]
+    public function searchRedirector(Request $request): Response
     {
         $searchValue = $request->get('searchName_scheme');
+        if ($searchValue !== null && strlen($searchValue) > 0) {
+            return $this->redirectToRoute('app_therapy_labels_search', ['searchValue' => $searchValue]);
+        } else {
+            return $this->redirect($request->headers->get('referer'));
+        }
+    }
 
-        if ($searchValue) {
+
+    const NB_PER_PAGE = 5;
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/search?searchValue={searchValue}', name: 'app_therapy_labels_search')]
+    public function searchLabels(Request $request, SchemeRepository $schemeRepository, string $searchValue): Response
+    {
+        if ($searchValue !== null) {
             $templates = $schemeRepository->createQueryBuilder('t')
                 ->where('t.name LIKE :searchValue')
                 ->setParameter('searchValue', '%' . $searchValue . '%')
@@ -197,6 +210,23 @@ class SchemeController extends AbstractController
         } else {
             $templates = $schemeRepository->findAll();
         }
+
+        $pagination = $this->paginator->paginate(
+            $templates,
+            $request->query->getInt('page', 1),
+            self::NB_PER_PAGE
+        );
+
+        return $this->render('therapy/scheme/searchResult.html.twig', [
+            'templates' => $pagination,
+            'searchValue' => $searchValue,
+        ]);
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates', methods: ['GET', 'POST'])]
+    public function loadTemplates(Request $request, SchemeRepository $schemeRepository): Response
+    {
+        $templates = $schemeRepository->findAll();
 
         $templates = $this->paginator->paginate(
             $templates,
