@@ -42,7 +42,37 @@ class StubController extends AbstractController
     public function index(Request $request, StubRepository $stubRepository): Response
     {
 
+        $query = $stubRepository
+            ->createQueryBuilder('stub')
+            ->setFirstResult($request->query->getInt('page', 0))
+            ->setMaxResults(self::PAGINATION_PAGE);
+
+        $pagination = $this->paginator->paginate(
+            $query->getQuery(),
+            $request->query->getInt('page', 1),
+            self::PAGINATION_PAGE
+        );
+
+        return $this->render('therapy/stub/list.html.twig', [
+            'pagination' => $pagination,
+        ]);
+    }
+
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/searchRedirector', name: 'app_therapy_stubs_search_redirector')]
+    public function searchRedirector(Request $request): Response
+    {
         $searchValue = $request->get('searchName_stub');
+        if ($searchValue !== null && strlen($searchValue) > 0) {
+            return $this->redirectToRoute('app_therapy_stubs_search', ['searchValue' => $searchValue]);
+        } else {
+            return $this->redirect($request->headers->get('referer'));
+        }
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/search?searchValue={searchValue}', name: 'app_therapy_stubs_search')]
+    public function searchLabels(Request $request, StubRepository $stubRepository, string $searchValue): Response
+    {
 
         $query = $stubRepository
             ->createQueryBuilder('stub')
@@ -64,8 +94,9 @@ class StubController extends AbstractController
             self::PAGINATION_PAGE
         );
 
-        return $this->render('therapy/stub/list.html.twig', [
+        return $this->render('therapy/stub/searchResult.html.twig', [
             'pagination' => $pagination,
+            'searchValue' => $searchValue,
         ]);
     }
 

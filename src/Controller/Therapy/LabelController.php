@@ -31,19 +31,10 @@ class LabelController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/labels', name: 'app_therapy_labels_list')]
     public function listLabels(Request $request, LabelRepository $labelRepository): Response
     {
-        $search = $request->get('label_name');
-
         $query = $labelRepository
             ->createQueryBuilder('label')
             ->setFirstResult($request->query->getInt('page', 0))
             ->setMaxResults(self::PAGINATION_PAGE);
-
-        if ($search !== null) {
-            $query
-                ->where('label.reportName LIKE :search')
-                ->orWhere('label.shortName LIKE :search')
-                ->setParameter('search', '%' . $search . '%');
-        }
 
         $pagination = $this->paginator->paginate(
             $query->getQuery(),
@@ -53,6 +44,44 @@ class LabelController extends AbstractController
 
         return $this->render('therapy/label/list.html.twig', [
             'pagination' => $pagination,
+        ]);
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/label/searchRedirector', name: 'app_therapy_labels_search_redirector')]
+    public function searchRedirector(Request $request): Response
+    {
+        $searchValue = $request->get('label_name');
+        if ($searchValue !== null && strlen($searchValue) > 0) {
+            return $this->redirectToRoute('app_therapy_labels_search', ['searchValue' => $searchValue]);
+        } else {
+            return $this->redirect($request->headers->get('referer'));
+        }
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/labels/search?searchValue={searchValue}', name: 'app_therapy_labels_search')]
+    public function searchLabels(Request $request, LabelRepository $labelRepository, string $searchValue): Response
+    {
+        $query = $labelRepository
+            ->createQueryBuilder('label')
+            ->setFirstResult($request->query->getInt('page', 0))
+            ->setMaxResults(self::PAGINATION_PAGE);
+
+        if ($searchValue !== null) {
+            $query
+                ->where('label.reportName LIKE :search')
+                ->orWhere('label.shortName LIKE :search')
+                ->setParameter('search', '%' . $searchValue . '%');
+        }
+
+        $pagination = $this->paginator->paginate(
+            $query->getQuery(),
+            $request->query->getInt('page', 1),
+            self::PAGINATION_PAGE
+        );
+
+        return $this->render('therapy/label/searchResult.html.twig', [
+            'pagination' => $pagination,
+            'searchValue' => $searchValue,
         ]);
     }
 
