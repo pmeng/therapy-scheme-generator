@@ -5,18 +5,10 @@
 	<div class="container">
 		<div class="row mb-3 mt-3">
 			<div class="col">
-				{% if app.request.request.get('searchName_scheme') is not null %}
-					<h2>{{ 'app-results-for-label-search-title'|trans({'%label_name%': app.request.request.get('searchName_scheme')}) }}</h2>
-				</div>
-				<div class="col text-end">
-					<a href="{{ path('app_therapy_saved_templates') }}" class="btn btn-outline-secondary">{{ 'app-reset-search-button'|trans }}</a>
-				{% else %}
-					<h2>{{ 'app-therapy-report-saved-templates-page-title'|trans }}</h2>
-				{% endif %}
+				<h2>{{ 'app-therapy-report-saved-templates-page-title'|trans }}</h2>
 			</div>
 		</div>
-
-		<form name="search_stub" action="{{ path('app_therapy_saved_templates') }}" method="post">
+		<form name="search_stub" action="{{ path('app_therapy_scheme_search_redirector') }}" method="post">
 			<div class="input-group mb-3">
 				<input type="search" name="searchName_scheme" required="required" class="form-control form-control" aria-describedby="button-addon2">
 				<button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-scheme-button'|trans }}</button>

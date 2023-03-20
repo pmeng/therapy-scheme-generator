@@ -189,7 +189,7 @@ class SchemeController extends AbstractController
     {
         $searchValue = $request->get('searchName_scheme');
         if ($searchValue !== null && strlen($searchValue) > 0) {
-            return $this->redirectToRoute('app_therapy_labels_search', ['searchValue' => $searchValue]);
+            return $this->redirectToRoute('app_therapy_scheme_search', ['searchValue' => $searchValue]);
         } else {
             return $this->redirect($request->headers->get('referer'));
         }
@@ -198,7 +198,7 @@ class SchemeController extends AbstractController
 
     const NB_PER_PAGE = 5;
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/search?searchValue={searchValue}', name: 'app_therapy_labels_search')]
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/search?searchValue={searchValue}', name: 'app_therapy_scheme_search')]
     public function searchLabels(Request $request, SchemeRepository $schemeRepository, string $searchValue): Response
     {
         if ($searchValue !== null) {
@@ -233,7 +233,6 @@ class SchemeController extends AbstractController
             $request->query->getInt('page', 1),
             self::ITEMS_PER_PAGE
         );
-
         return $this->render('therapy/scheme/templates-list.html.twig', [
             'templates' => $templates,
         ]);
