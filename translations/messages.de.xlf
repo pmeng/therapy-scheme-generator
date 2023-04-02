@@ -249,6 +249,10 @@
         <source>app-therapy-report-saved-template-load</source>
         <target>Herunterladen</target>
       </trans-unit>
+      <trans-unit id="02msc4l" resname="app-therapy-report-saved-template-edit">
+        <source>app-therapy-report-saved-template-edit</source>
+        <target>Bearbeiten</target>
+      </trans-unit>
       <trans-unit id="SbfxC7_" resname="app-therapy-report-saved-template-delete">
         <source>app-therapy-report-saved-template-delete</source>
         <target>Löschen</target>

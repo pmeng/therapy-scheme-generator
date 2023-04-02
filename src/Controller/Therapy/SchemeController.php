@@ -5,22 +5,22 @@ namespace App\Controller\Therapy;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-use App\Entity\Template;
 use App\Entity\Therapy\Label;
+use App\Service\LabelService;
 use App\Entity\Therapy\Scheme;
+use App\Service\SchemeService;
 use App\Form\TherapySchemeType;
 use App\Form\SchemeTemplateType;
-use App\Repository\Therapy\SchemeRepository;
-use App\Service\SchemeService;
+use App\Form\EditTherapySchemeType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Knp\Component\Pager\PaginatorInterface;
+use App\Repository\Therapy\SchemeRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
-use Knp\Component\Pager\PaginatorInterface;
-use Knp\Snappy\Pdf;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class SchemeController extends AbstractController
 {
@@ -115,7 +115,6 @@ class SchemeController extends AbstractController
         return "";
     }
 
-
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generateForm', name: 'app_therapy_scheme_generateForm', methods: ['POST'])]
     public function generateForm(Request $request, SchemeService $schemeService): Response
     {
@@ -179,83 +178,148 @@ class SchemeController extends AbstractController
         return new JsonResponse(['success' => true], 200);
     }
 
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/edit/{id}', name: 'app_therapy_scheme_edit')]
+    public function edit(
+        int $id,
+        SchemeRepository $schemeRepository,
+        Request $request,
+        SchemeService $schemeService,
+        LabelService $labelService
+    ): Response {
+        $currentLanguage = $request->getLocale();
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/load/{id}', name: 'app_therapy_scheme_load')]
-    public function load(Request $request, int $id): Response
-    {
-        $scheme = $this->entityManager->getRepository(Scheme::class)->find($id);
+        $editedScheme = $schemeRepository->find($id);
 
-        return $this->render('therapy/scheme/load.html.twig', [
-            'template' => $scheme,
+        $selectedLabels = $editedScheme->getSelectedLabels(); // IDs
+
+        // * Going to be used in the form (Entity Type)
+        $selectedLabelsEntities = $labelService->getLabelsByIds($selectedLabels);
+
+        $currentComments = $editedScheme->getComments();
+        $notCheckedCheckboxes = $editedScheme->getTargets();
+
+        $suppress = $editedScheme->isSuppress();
+        $excerpt = $editedScheme->isExcerpt();
+
+        $oldTbody = $schemeService->generateTbody(
+            $selectedLabels,
+            $suppress,
+            $currentComments,
+            $notCheckedCheckboxes,
+            $excerpt,
+            $currentLanguage
+        );
+
+        $form = $this->createForm(EditTherapySchemeType::class, $editedScheme);
+        $form->add('labels', EntityType::class, [
+            'class' => Label::class,
+            'choice_label' => 'shortName',
+            'multiple' => true,
+            'mapped' => false,
+            'data' => $selectedLabelsEntities,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // Check if someone the user was able to submit the form with empty labels
+            $labels = $form->get('labels')->getData();
+            if (count($labels) === 0) {
+                return $this->redirect($request->headers->get('referer'));
+            }
+
+            $updateCurrent = $form->get('updateCurrent')->getData();
+
+            if ($updateCurrent) {
+                $scheme = $editedScheme;
+            } else {
+                $scheme = new Scheme();
+            }
+
+            $formData = $form->getData();
+
+            $targets = $formData->getTargets();
+            $scheme->setTargets($targets);
+
+            $comments = $formData->getComments();
+            $scheme->setComments($comments);
+
+            $suppress = $formData->isSuppress();
+            $scheme->setSuppress($suppress);
+
+            $excerpt = $formData->isExcerpt();
+            $scheme->setExcerpt($excerpt);
+
+            $scheme->setCreatedAt(new \DateTimeImmutable());
+            $scheme->setUpdatedAt(new \DateTimeImmutable());
+            $labelIDs = [];
+            foreach ($labels as $label) {
+                $labelIDs[] = $label->getId();
+            }
+            $scheme->setSelectedLabels($labelIDs);
+
+            // * Store the scheme in the session
+            $session = $request->getSession();
+            $session->set('scheme', $scheme);
+            return $this->redirectToRoute('app_therapy_scheme_saveAsTemplate');
+        }
+
+        return $this->render('therapy/scheme/edit.html.twig', [
+            'scheme' => $editedScheme,
+            'form' => $form->createView(),
+            'oldTbody' => $oldTbody,
+            'selectedLabelsEntities' => $selectedLabelsEntities,
+            'reportExcerpt' => $excerpt,
+            'reportSuppress' => $suppress,
+            'selectedLabels' => $selectedLabels
         ]);
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save-as-template', name: 'app_therapy_scheme_save_as_template')]
-    public function saveAsTemplate(Request $request): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save-as-template', name: 'app_therapy_scheme_saveAsTemplate', methods: ['GET', 'POST'])]
+    public function saveAsTemplate(Request $request, SchemeRepository $schemeRepository): Response
     {
-        $data = $request->request->all();
-
+        $session = $request->getSession();
+        $data = $session->get('scheme');
+        if (!$data) {
+            return $this->redirectToRoute('app_therapy_scheme_create');
+        }
         $scheme = new Scheme();
         $scheme->setName('Date: ' . date(DATE_RSS));
+
+        $isEditing = $data->getId() != null;
+        $toBeUpdatedScheme = null;
+
+        if ($isEditing) {
+            $toBeUpdatedScheme = $schemeRepository->find($data->getId());
+            $scheme->setName($toBeUpdatedScheme->getName());
+        }
 
         $form = $this->createForm(SchemeTemplateType::class, $scheme);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $data->setName($scheme->getName());
+            if ($isEditing) {
+                // * Update existing scheme
+                $toBeUpdatedScheme->setName($data->getName());
+                $toBeUpdatedScheme->setSelectedLabels($data->getSelectedLabels());
+                $toBeUpdatedScheme->setTargets($data->getTargets());
+                $toBeUpdatedScheme->setComments($data->getComments());
+                $toBeUpdatedScheme->setSuppress($data->isSuppress());
+                $toBeUpdatedScheme->setExcerpt($data->isExcerpt());
+                $toBeUpdatedScheme->setUpdatedAt(new \DateTimeImmutable());
+            } else {
+                $this->entityManager->persist($data);
+            }
             $this->entityManager->flush();
 
+            $session->set('scheme', null);
             return $this->redirectToRoute('app_therapy_scheme_templates_list');
         }
 
         return $this->render('therapy/scheme/save-as-template.html.twig', [
-            'scheme' => $scheme,
-            'targets' => $data['targets'] ?? [],
-            'comments' => $data['comments'] ?? [],
-            'form' => $form->createView()
-        ]);
-    }
-
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/new', name: 'app_therapy_scheme_new')]
-    public function index(Request $request): Response
-    {
-        $data = $request->request->all();
-        $allLabels = $this->entityManager->getRepository(Label::class)->findAll();
-        $labelsData = [];
-        $targets = [];
-
-        if (!is_null($template)) {
-            $templateObj = $this->entityManager->getRepository(Template::class)->findOneBy([
-                'id' => $template,
-            ]);
-            $targets = $templateObj->getTargets();
-
-            if (isset($data['labels'])) {
-                $data['labels'] = array_merge($data['labels'], array_keys($targets));
-            } else {
-                $data['labels'] = array_keys($targets);
-            }
-        }
-
-        if (isset($data['labels'])) {
-            $qb = $this->entityManager->createQueryBuilder('l');
-            $labelsData = $qb->select('lbl')
-                ->where(
-                    $qb->expr()->in(
-                        'lbl.id',
-                        $data['labels']
-                    )
-                )
-                ->from(Label::class, 'lbl')
-                ->getQuery()
-                ->getResult();
-        }
-
-        return $this->render('therapy/scheme/index.html.twig', [
-            'all' => $allLabels,
-            'data' => $labelsData,
-            'selected' => isset($data['labels']) ? array_map('intval', $data['labels']) : [],
-            'targets' => $targets,
-            'template' => $template,
+            'form' => $form->createView(),
+            'isEditing' => $isEditing
         ]);
     }
 
@@ -303,41 +367,6 @@ class SchemeController extends AbstractController
             "Attachment" => true
         ]);
     }
-
-
-
-    /*#[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save/template/{templateId}', name: 'app_therapy_scheme_save_template', methods: ['POST'])]
-    public function saveAsTemplate(Request $request, $templateId = null): Response
-    {
-        $data = $request->request->all();
-        $targets = [];
-        $comments = $data['comments'];
-        $templates = [];
-
-        foreach ($data['targets'] as $label => $stubs) {
-            $targets[$label] = [];
-            foreach (array_keys($stubs) as $key => $id) {
-                $targets[$label][$id] = trim($comments[$id]);
-            }
-        }
-
-        $name = date('Y-m-d H:i:s');
-
-        if (is_null($templateId)) {
-            $template = new Template();
-        } else {
-            $template = $this->entityManager->getRepository(Template::class)->findOneBy([
-                'id' => $templateId,
-            ]);
-        }
-        $template->setName($name);
-        $template->setTargets($targets);
-        $this->entityManager->persist($template);
-        $this->entityManager->flush();
-
-        return $this->redirectToRoute('app_therapy_saved_templates');
-    }*/
-
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/searchRedirector', name: 'app_therapy_scheme_search_redirector')]
     public function searchRedirector(Request $request): Response
