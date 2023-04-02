@@ -256,18 +256,19 @@ class SchemeController extends AbstractController
         ]);
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/html', name: 'app_therapy_scheme_generate_html', methods: ['POST'])]
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/html', name: 'app_therapy_scheme_generate_html', methods: ['GET'])]
     public function generateHtml(Request $request): Response
     {
-        $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
-        $data = $request->request->all();
-
+        $session = $request->getSession();
+        $reportContent = $session->get('reportContent');
+        $reportExcerpt = $session->get('reportExcerpt');
+        if (!$reportContent) {
+            return $this->redirectToRoute('app_therapy_scheme_create'); // todo changeName
+        }
+        $reportContent = "<tbody>$reportContent</tbody>";
         return $this->render('therapy/scheme/html-template.html.twig', [
-            'data' => $labelsData,
-            'targets' => $data['targets'],
-            'comments' => $data['comments'],
-            'suppress_labels' => isset($data['suppress_labels']) ? $data['suppress_labels'] : false,
-            'use_excerpt' => isset($data['use_excerpt']) ? $data['use_excerpt'] : false,
+            'reportContent' => $reportContent,
+            'reportExcerpt' => $reportExcerpt,
         ]);
     }
 
