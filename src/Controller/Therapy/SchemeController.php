@@ -103,6 +103,41 @@ class SchemeController extends AbstractController
         return new JsonResponse($newTbody);
     }
 
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generateReport', name: 'app_therapy_scheme_generateReport', methods: ['POST'])]
+    public function generateReport(Request $request, SchemeService $schemeService): Response
+    {
+        // * Validation
+        $requestData = json_decode($request->getContent(), true);
+        $validationError = $this->validateRequestData($requestData);
+        if (strlen($validationError) > 0) {
+            return new JsonResponse(['error' => $validationError], 400);
+        }
+
+        $selectedLabels = $requestData['selectedLabels'];
+        $currentLanguage = $requestData['currentLanguage'];
+        $currentComments = $requestData['currentComments'];
+        $notCheckedCheckboxes = $requestData['notCheckedCheckboxes'];
+        $suppress = $requestData['suppress'];
+        $excerpt = $requestData['excerpt'];
+
+        $reportContent = $schemeService->generateReport(
+            $selectedLabels,
+            $suppress,
+            $currentComments,
+            $notCheckedCheckboxes,
+            $excerpt,
+            $currentLanguage
+        );
+
+        $session = $request->getSession();
+        $session->set('reportContent', $reportContent);
+        $session->set('reportExcerpt', $excerpt);
+
+        return new JsonResponse(['success' => true], 200);
+    }
+
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/load/{id}', name: 'app_therapy_scheme_load')]
     public function load(Request $request, int $id): Response
     {
