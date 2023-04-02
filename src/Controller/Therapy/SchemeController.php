@@ -74,6 +74,45 @@ class SchemeController extends AbstractController
         ]);
     }
 
+    public function validateRequestData(array $requestData): ?string
+    {
+        if (!isset($requestData['selectedLabels'])) {
+            return 'Missing selectedLabels';
+        }
+
+        if (!isset($requestData['currentComments'])) {
+            return 'Missing currentComments';
+        }
+
+        if (!isset($requestData['notCheckedCheckboxes'])) {
+            return 'Missing notCheckedCheckboxes';
+        }
+
+        if (!isset($requestData['currentLanguage'])) {
+            return 'Missing currentLanguage';
+        }
+        if (!in_array($requestData['currentLanguage'], ['en', 'de'])) {
+            return 'Invalid currentLanguage';
+        }
+
+        if (!isset($requestData['suppress'])) {
+            return 'Missing suppress';
+        }
+        if (!is_bool($requestData['suppress'])) {
+            return 'Invalid suppress';
+        }
+
+        if (!isset($requestData['excerpt'])) {
+            return 'Missing excerpt';
+        }
+        if (!is_bool($requestData['excerpt'])) {
+            return 'Invalid excerpt';
+        }
+
+        return "";
+    }
+
+
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generateForm', name: 'app_therapy_scheme_generateForm', methods: ['POST'])]
     public function generateForm(Request $request, SchemeService $schemeService): Response
     {
