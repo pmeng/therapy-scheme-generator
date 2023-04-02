@@ -5,8 +5,10 @@ namespace App\Controller\Therapy;
 use App\Entity\Template;
 use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Scheme;
+use App\Form\TherapySchemeType;
 use App\Form\SchemeTemplateType;
 use App\Repository\Therapy\SchemeRepository;
+use App\Service\SchemeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Snappy\Pdf;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SchemeController extends AbstractController
 {
@@ -31,10 +34,73 @@ class SchemeController extends AbstractController
         $this->paginator = $paginator;
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create')]
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create', methods: ['GET', 'POST'])]
     public function create(Request $request): Response
     {
-        return $this->render('therapy/scheme/create.html.twig');
+        $form = $this->createForm(TherapySchemeType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $labels = $form->get('labels')->getData(); // * not mapped
+
+            $formData = $form->getData();
+
+            $scheme = new Scheme();
+            $targets = json_decode($formData['targets'], true);
+            $scheme->setTargets($targets);
+
+            $comments = json_decode($formData['comments'], true);
+            if ($comments === null) {
+                $comments = [];
+            }
+            $scheme->setComments($comments);
+
+            $scheme->setSuppress($formData['suppress']);
+            $scheme->setExcerpt($formData['excerpt']);
+
+            $scheme->setCreatedAt(new \DateTimeImmutable());
+            $scheme->setUpdatedAt(new \DateTimeImmutable());
+            $labelIDs = $labels->map(fn (Label $label) => $label->getId())->toArray();
+            $scheme->setSelectedLabels($labelIDs);
+
+            // * Store the scheme in the session
+            $session = $request->getSession();
+            $session->set('scheme', $scheme);
+            return $this->redirectToRoute('app_therapy_scheme_saveAsTemplate');
+        }
+
+        return $this->render('therapy/scheme/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generateForm', name: 'app_therapy_scheme_generateForm', methods: ['POST'])]
+    public function generateForm(Request $request, SchemeService $schemeService): Response
+    {
+        // * Validation
+        $requestData = json_decode($request->getContent(), true);
+        $validationError = $this->validateRequestData($requestData);
+        if (strlen($validationError) > 0) {
+            return new JsonResponse(['error' => $validationError], 400);
+        }
+
+        $selectedLabels = $requestData['selectedLabels'];
+        $currentLanguage = $requestData['currentLanguage'];
+        $currentComments = $requestData['currentComments'];
+        $notCheckedCheckboxes = $requestData['notCheckedCheckboxes'];
+        $suppress = $requestData['suppress'];
+        $excerpt = $requestData['excerpt'];
+
+        $newTbody = $schemeService->generateTbody(
+            $selectedLabels,
+            $suppress,
+            $currentComments,
+            $notCheckedCheckboxes,
+            $excerpt,
+            $currentLanguage
+        );
+
+        return new JsonResponse($newTbody);
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/load/{id}', name: 'app_therapy_scheme_load')]
