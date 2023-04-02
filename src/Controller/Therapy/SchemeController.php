@@ -2,6 +2,9 @@
 
 namespace App\Controller\Therapy;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 use App\Entity\Template;
 use App\Entity\Therapy\Label;
 use App\Entity\Therapy\Scheme;
@@ -273,24 +276,35 @@ class SchemeController extends AbstractController
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generate/pdf', name: 'app_therapy_scheme_generate_pdf', methods: ['POST'])]
-    public function generatePdf(Request $request, Pdf $pdfGenerator): PdfResponse
+    public function generatePdf(Request $request): Response
     {
-        $labelsData = $this->entityManager->getRepository(Label::class)->findAll();
-        $data = $request->request->all();
+        $session = $request->getSession();
+        $reportContent = $session->get('reportContent');
+        $reportExcerpt = $session->get('reportExcerpt');
+        if (!$reportContent) {
+            return $this->redirectToRoute('app_therapy_scheme_create');
+        }
+        $reportContent = "<tbody>$reportContent</tbody>";
+
+
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($pdfOptions);
 
         $html = $this->renderView('therapy/scheme/pdf-template.html.twig', [
-            'data' => $labelsData,
-            'targets' => $data['targets'],
-            'comments' => $data['comments'],
-            'suppress_labels' => isset($data['suppress_labels']) ? $data['suppress_labels'] : false,
-            'use_excerpt' => isset($data['use_excerpt']) ? $data['use_excerpt'] : false,
+            'reportContent' => $reportContent,
+            'reportExcerpt' => $reportExcerpt,
         ]);
 
-        return new PdfResponse(
-            $pdfGenerator->getOutputFromHtml($html),
-            sprintf('report-%s.pdf', date('Y-m-d'))
-        );
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("report-" . date('Y-m-d') . ".pdf", [
+            "Attachment" => true
+        ]);
     }
+
+
 
     /*#[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/save/template/{templateId}', name: 'app_therapy_scheme_save_template', methods: ['POST'])]
     public function saveAsTemplate(Request $request, $templateId = null): Response
