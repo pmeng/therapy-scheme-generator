@@ -209,6 +209,10 @@
         <source>app-therapy-report-save-as-template-button</source>
         <target>Save as template</target>
       </trans-unit>
+      <trans-unit id="c4VJ4c8" resname="app-therapy-report-update-template-button">
+        <source>app-therapy-report-update-template-button</source>
+        <target>Update current template</target>
+      </trans-unit>
       <trans-unit id="9HQRcL8" resname="app-therapy-scheme-templates">
         <source>app-therapy-scheme-templates</source>
         <target>Saved therapy schemes</target>
@@ -216,6 +220,10 @@
       <trans-unit id="D6nuB.." resname="app-new-therapy-save-scheme-template">
         <source>app-new-therapy-save-scheme-template</source>
         <target>Save therapy scheme for re-use</target>
+      </trans-unit>
+      <trans-unit id="Dxueq" resname="app-update-therapy-scheme-template-title">
+        <source>app-update-therapy-scheme-template-title</source>
+        <target>Update Scheme template title</target>
       </trans-unit>
       <trans-unit id="UZh.lrg" resname="app-new-therapy-scheme-templates">
         <source>app-new-therapy-scheme-templates</source>
