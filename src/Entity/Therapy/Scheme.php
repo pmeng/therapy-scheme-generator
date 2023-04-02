@@ -2,8 +2,8 @@
 
 namespace App\Entity\Therapy;
 
-use App\Repository\Therapy\SchemeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\Therapy\SchemeRepository;
 
 #[ORM\Entity(repositoryClass: SchemeRepository::class)]
 class Scheme
@@ -27,6 +27,20 @@ class Scheme
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column]
+    private ?bool $suppress = null;
+
+    #[ORM\Column]
+    private ?bool $excerpt = null;
+
+    #[ORM\Column]
+    private array $selectedLabels = [];
+
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
 
     public function getId(): ?int
     {
@@ -92,4 +106,41 @@ class Scheme
 
         return $this;
     }
+
+    public function isSuppress(): ?bool
+    {
+        return $this->suppress;
+    }
+
+    public function setSuppress(bool $suppress): self
+    {
+        $this->suppress = $suppress;
+
+        return $this;
+    }
+
+    public function isExcerpt(): ?bool
+    {
+        return $this->excerpt;
+    }
+
+    public function setExcerpt(bool $excerpt): self
+    {
+        $this->excerpt = $excerpt;
+
+        return $this;
+    }
+
+    public function getSelectedLabels(): array
+    {
+        return $this->selectedLabels;
+    }
+
+    public function setSelectedLabels(array $selectedLabels): self
+    {
+        $this->selectedLabels = $selectedLabels;
+
+        return $this;
+    }
+
 }
