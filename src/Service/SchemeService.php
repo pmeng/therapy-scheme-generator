@@ -106,8 +106,8 @@ class SchemeService
 
     return $newTbody;
   }
-  // generateReport is almost the same as generateTbody but does not have any inputs or textareas. It is used to generate the report.
-  public function generateReport(
+  // generatePDFReport is almost the same as generateTbody but does not have any inputs or textareas. It is used to generate the report.
+  public function generatePDFReport(
     $selectedLabels,
     $suppress,
     $currentComments,
@@ -121,13 +121,13 @@ class SchemeService
       $label = $this->labelRepository->find($labelID);
       $labelStubs = $label->getStubs();
 
-      $trClass = 'table-light hideLabels';
-      if ($suppress) {
-        $trClass .= ' d-none';
-      }
-      $newTbody .= '<tr class="' . $trClass . '" id="rowLabel|' . $label->getId() . '">' .
+      $trLabel = '';
+      if (!$suppress) {
+        $trLabel .= '<tr class="table-light" id="rowLabel|' . $label->getId() . '">' .
         '<th colspan="5">' . $label->getShortName() . '</th>' .
         '</tr>';
+      }
+      $newTbody .= $trLabel;
 
       if (count($labelStubs) > 0) {
         foreach ($labelStubs as $stub) {
