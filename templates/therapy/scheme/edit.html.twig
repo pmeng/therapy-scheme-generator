@@ -1,0 +1,368 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<div class="container">
+		{{ form_start(form, {'attr': {'id': 'edit_create_therapy_scheme_form'}}) }}
+		<h2 class="mt-3">{{ 'app-new-therapy-scheme-template-title'|trans }}:
+			<i>{{ scheme.name }}</i>
+		</h2>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_widget(form.labels, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+
+		<div class="row mt-3">
+			<p class="fw-lighter">
+				<b>{{ 'app-therapy-report-requested-labels'|trans }}:</b>
+				<cite title="" id="selectedLabels">
+					{% for label in selectedLabelsEntities %}
+						{{ label.shortName }}
+						{% if not loop.last %},
+						{% endif %}
+					{% endfor %}
+				</cite>
+			</p>
+		</div>
+
+		<div id="contentDisplayedWhenLabelsAreSelected" class="d-none">
+			<div class="row mt-3">
+				<div class="form-check form-switch col-3 m-3">
+					{{ form_widget(form.suppress) }}
+				</div>
+				<div class="form-check form-switch col-5 m-3">
+					{{ form_widget(form.excerpt) }}
+				</div>
+			</div>
+			<div class="row mt-3">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>
+								{{ 'app-therapy-report-table-title'|trans }}
+							</th>
+							<th>
+								{{ 'app-therapy-report-table-name'|trans }}
+							</th>
+
+							{% if reportExcerpt == true %}
+								<th class="excerptItem">
+									{{ 'app-therapy-report-table-excerpt'|trans }}
+								</th>
+								<th class="descriptionItem d-none">
+									{{ 'app-therapy-report-table-description'|trans }}
+								</th>
+							{% else %}
+								<th class="excerptItem d-none">
+									{{ 'app-therapy-report-table-excerpt'|trans }}
+								</th>
+								<th class="descriptionItem">
+									{{ 'app-therapy-report-table-description'|trans }}
+								</th>
+							{% endif %}
+
+
+							<th>
+								{{ 'app-therapy-report-table-background'|trans }}
+							</th>
+							<th>
+								{{ 'app-therapy-report-table-comment'|trans }}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{ oldTbody|raw }}
+					</tbody>
+				</table>
+			</div>
+
+			<div class="row mb-3">
+				<div class="col">
+					<div class="d-grid gap-2 d-md-block">
+						<button class="btn btn-primary" type="button" id="generateHTMLButton">
+							{{ 'app-therapy-report-generate-report-button'|trans }}
+							(HTML)
+						</button>
+						<button class="btn btn-primary" type="button" id="generatePDFButton">
+							{{ 'app-therapy-report-generate-report-button'|trans }}
+							(PDF)
+						</button>
+						<button class="btn btn-primary" type="button" id="updateTemplateButton">
+							{{ 'app-therapy-report-update-template-button'|trans }}
+						</button>
+						<button class="btn btn-primary" type="button" id="saveAsTemplateButton">
+							{{ 'app-therapy-report-save-as-template-button'|trans }}
+						</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div id="contentDisplayedWhenNoLabelsAreSelected">
+			<div class="list-group mb-3">
+					<div class="alert alert-secondary" role="alert">
+							<h5 class="mb-1">{{ 'app-no-results-message'|trans }}</h5>
+					</div>
+			</div>
+		</div>
+
+		{{ form_widget(form.targets) }}
+		{{ form_widget(form.comments) }}
+		{{ form_widget(form.updateCurrent) }}
+		{{ form_end(form) }}
+	</div>
+
+
+<div style="display:none">
+	<form action="{{ path('app_therapy_scheme_generate_pdf') }}" method="post" id="generatePDFForm">
+	</form>
+	<a href="{{path('app_therapy_scheme_generate_html')}}" id="generateHTMLLink" target="_blank">
+	</a>
+</div>
+{% endblock %}
+
+
+{% block javascripts %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+
+	let selectedLabels = [];
+	$(document).ready(function () {
+		$("#edit_therapy_scheme_labels")
+			.select2({
+				placeholder: "Select labels",
+				allowClear: true,
+				tags: true,
+				tokenSeparators: [",", " "],
+			})
+			.on("change", async (e) => {
+					const labelsSelect2 = $("#edit_therapy_scheme_labels").select2("data");
+					const selectedValuesList = labelsSelect2.map((item) => item.text).join(", ");
+					$("#selectedLabels").text(selectedValuesList);
+					$("#selectedLabels").attr("title", selectedValuesList);
+
+					const selectedValues = labelsSelect2.map((item) => item.id);
+					selectedLabels = selectedValues;
+
+					const currentComments = getCurrentComments();
+					const notCheckedCheckboxes = getNotCheckedCheckboxes();
+					const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
+					const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
+					await generateDynamicForm(selectedValues, currentComments, notCheckedCheckboxes, suppress, excerpt);
+
+					{# * Show/hide content #}
+					if (selectedValues.length > 0) {
+						$("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
+						$("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
+					} else {
+						$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
+						$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
+					}
+
+			});
+	});
+
+	// * A function that returns an array of the comments
+	const getCurrentComments = () => {
+		const textAreas = document.querySelectorAll("textarea[name^='labelID=']");
+
+		const comments = [];
+		textAreas.forEach((textArea) => {
+			comments.push({
+				key: textArea.name,
+				comment: textArea.value,
+			});
+		});
+		return comments;
+	};
+
+	// * A function that returns an array of the NOT CHECKED checkboxes
+	const getNotCheckedCheckboxes = () => {
+		const checkboxes = document.querySelectorAll("input[name^='targets|labelID=']");
+
+		const notCheckedCheckboxes = [];
+		checkboxes.forEach((checkbox) => {
+			if (!checkbox.checked) {
+				notCheckedCheckboxes.push(checkbox.name);
+			}
+		});
+		return notCheckedCheckboxes;
+	};
+
+
+	// * Generate the dynamic form
+	const generateDynamicForm = async (selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt) => {
+		const tableBody = document.querySelector("table tbody");
+		if (selectedLabels.length === 0) {
+			tableBody.innerHTML = "";
+		} else {
+			const currentLanguage = "{{ app.request.locale }}";
+			const url = "{{ path('app_therapy_scheme_generateForm') }}";
+			const requestBody = {
+				selectedLabels,
+				currentLanguage,
+				currentComments,
+				notCheckedCheckboxes,
+				suppress,
+				excerpt
+			};
+			const response = await axios.post(url, requestBody);
+			tableBody.innerHTML = response.data;
+		}
+	};
+
+	// * Generate the Report
+	const generateReport = async (selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt) => {
+		if (selectedLabels.length > 0) {
+			const currentLanguage = "{{ app.request.locale }}";
+			const url = "{{ path('app_therapy_scheme_generateReport') }}";
+			const requestBody = {
+				selectedLabels,
+				currentLanguage,
+				currentComments,
+				notCheckedCheckboxes,
+				suppress,
+				excerpt
+			};
+			const result = await axios.post(url, requestBody);
+			return result;
+		}
+	};
+
+	// * Setting labels for the checkboxes
+	$(document).ready(function () {
+			const suppressLabelsSwitch = document.getElementById("edit_therapy_scheme_suppress");
+			const suppressLabelsSwitchLabel = suppressLabelsSwitch?.parentElement?.querySelector("label");
+			suppressLabelsSwitchLabel.innerText = "{{ 'app-therapy-report-suppress-labels'|trans }}";
+
+			const excerptSwitch = document.getElementById("edit_therapy_scheme_excerpt");
+			const excerptSwitchLabel = excerptSwitch?.parentElement?.querySelector("label");
+			const replaceString = new RegExp("&#039;", 'g');
+			const label = "{{ 'app-therapy-report-use-excerpt'|trans }}".replace(replaceString , "'");
+			excerptSwitchLabel.innerText = label;
+	});
+
+	// * Resetting when page is refreshed
+	$(document).ready(function () {
+		// * Resetting the select2
+		const currentSelectedLabelsIDs = JSON.parse(
+			`[{% for id in selectedLabels %}{% if loop.last %}{{ id }}{% else %}{{ id }},{% endif %}{% endfor %}]`
+		);
+		$("#edit_therapy_scheme_labels")
+			.val(currentSelectedLabelsIDs)
+			.trigger("change");
+
+		// * Resetting the SwitchBox, to it's original value from DB
+		const excerptSwitch = document.getElementById("edit_therapy_scheme_excerpt");
+		const excerptValue = "{{ reportExcerpt }}";
+		if (excerptValue == "1") {
+			excerptSwitch.checked = true;
+		} else {
+			excerptSwitch.checked = false;
+		}
+
+		const suppressLabelsSwitch = document.getElementById(
+			"edit_therapy_scheme_suppress"
+		);
+		const suppressValue = "{{ reportSuppress }}";
+		if (suppressValue == "1") {
+			suppressLabelsSwitch.checked = true;
+		} else {
+			suppressLabelsSwitch.checked = false;
+		}
+	});
+
+	// * Use excerpt Switch
+	$(document).ready(function () {
+		const excerptSwitch = document.getElementById("edit_therapy_scheme_excerpt");
+		excerptSwitch?.addEventListener("change", function (event) {
+				const descriptionItems = document.querySelectorAll(".descriptionItem");
+				const excerptItems = document.querySelectorAll(".excerptItem");
+				if (event.target.checked) {
+						descriptionItems.forEach((item) => item.classList.add("d-none"));
+						excerptItems.forEach((item) => item.classList.remove("d-none"));
+				} else {
+						descriptionItems.forEach((item) => item.classList.remove("d-none"));
+						excerptItems.forEach((item) => item.classList.add("d-none"));
+				}
+		});
+	});
+
+	// * Suppress labels Switch
+	$(document).ready(function () {
+		const suppressLabelsSwitch = document.getElementById("edit_therapy_scheme_suppress");
+		suppressLabelsSwitch?.addEventListener("change", function (event) {
+				const rows = document.querySelectorAll("tr.hideLabels");
+				if (event.target.checked) {
+						rows.forEach((row) => row.classList.add("d-none"));
+				} else {
+						rows.forEach((row) => row.classList.remove("d-none"));
+				}
+		});
+	});
+
+	// * Generate PDF, Save as template, Save as HTML
+	$(document).ready(function () {
+
+		// * Function that will be used when saving as template or updating the current template
+		function handleSubmit(updateCurrent) {
+			// Set the updateCurrent checkbox based on the input parameter
+			$("#edit_therapy_scheme_updateCurrent").prop("checked", updateCurrent);
+
+			// Get the comments and not-checked checkboxes
+			const comments = getCurrentComments();
+			const notCheckedCheckboxes = getNotCheckedCheckboxes();
+
+			// Set the values of the hidden input fields
+			$("#edit_therapy_scheme_comments").val(JSON.stringify(comments));
+			$("#edit_therapy_scheme_targets").val(JSON.stringify(notCheckedCheckboxes));
+
+			// Submit the form
+			$("#edit_create_therapy_scheme_form").submit();
+		}
+
+		$("#saveAsTemplateButton").click(() => handleSubmit(false));
+		$("#updateTemplateButton").click(() => handleSubmit(true));
+
+		$("#generatePDFButton").click(async function () {
+			const currentComments = getCurrentComments();
+			const notCheckedCheckboxes = getNotCheckedCheckboxes();
+			const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
+			const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
+			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt);
+			const responseStatus = response.status;
+			if (responseStatus === 200) {
+				const form = document.getElementById("generatePDFForm");
+				form.submit();
+			}
+		});
+
+		$("#generateHTMLButton").click(async function (e) {
+			e.preventDefault();
+			const currentComments = getCurrentComments();
+			const notCheckedCheckboxes = getNotCheckedCheckboxes();
+			const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
+			const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
+			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt);
+			const responseStatus = response.status;
+			if (responseStatus === 200) {
+				const generateHTMLLink = document.getElementById("generateHTMLLink");
+				generateHTMLLink.click();
+			}
+		});
+
+	});
+
+</script>
+{% endblock %}
+
+
+{% block stylesheets %}
+	<style>
+		.d-none {
+			display: none;
+		}
+	</style>
+{% endblock %}
