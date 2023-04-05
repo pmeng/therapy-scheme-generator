@@ -162,7 +162,7 @@ class SchemeController extends AbstractController
         $suppress = $requestData['suppress'];
         $excerpt = $requestData['excerpt'];
 
-        $reportContent = $schemeService->generateReport(
+        $reportContent = $schemeService->generatePDFReport(
             $selectedLabels,
             $suppress,
             $currentComments,
