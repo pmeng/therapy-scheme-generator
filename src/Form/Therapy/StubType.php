@@ -5,11 +5,10 @@ namespace App\Form\Therapy;
 
 use App\Entity\Therapy\Label;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -31,14 +30,23 @@ class StubType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'app-therapy-stub-form-label-name',
             ])
-            ->add('description', TextareaType::class, [
+            ->add('description', CKEditorType::class, [
                 'label' => 'app-therapy-stub-form-label-description',
+                'config' => [
+                    'removePlugins' => 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+                ],
             ])
-            ->add('excerpt', TextareaType::class, [
+            ->add('excerpt', CKEditorType::class, [
                 'label' => 'app-therapy-stub-form-label-excerpt',
+                'config' => [
+                    'removePlugins' => 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+                ],
             ])
-            ->add('background', TextareaType::class, [
+            ->add('background', CKEditorType::class, [
                 'label' => 'app-therapy-stub-form-label-background',
+                'config' => [
+                    'removePlugins' => 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+                ],
             ])
             ->add('labels', ChoiceType::class, [
                 'label' => 'app-therapy-stub-form-label-labels',
@@ -70,14 +78,13 @@ class StubType extends AbstractType
             ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
                 $stub = $event->getData();
                 $form = $event->getForm();
-                
+
                 if (isset($stub->id)) {
                     $form->add('delete_undo', SubmitType::class, [
                         'label' => 'app-delete-undo-button'
                     ]);
                 }
-            })
-        ;
+            });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
