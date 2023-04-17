@@ -67,7 +67,7 @@ class Stub
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription($description): self
     {
         $this->description = $description;
 
@@ -79,7 +79,7 @@ class Stub
         return $this->excerpt;
     }
 
-    public function setExcerpt(string $excerpt): self
+    public function setExcerpt($excerpt): self
     {
         $this->excerpt = $excerpt;
 
@@ -91,7 +91,7 @@ class Stub
         return $this->background;
     }
 
-    public function setBackground(string $background): self
+    public function setBackground($background): self
     {
         $this->background = $background;
 
