@@ -129,6 +129,7 @@ class StubController extends AbstractController
             'formTitle' => $this->translator->trans('app-new-therapy-stub-form-title'),
             'stubForm' => $stubForm->createView(),
             "status" => "add",
+            'stub' => null,
         ]);
     }
 
@@ -195,6 +196,22 @@ class StubController extends AbstractController
             ]),
             'stubForm' => $stubForm->createView(),
             "status" => "edit",
+            'stub' => $stub,
         ]);
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/deleteUndelete/{id<\d+>}', name: 'app_therapy_stub_delete_undelete')]
+    public function deleteUndeleteStub(int $id, StubRepository $stubRepository): Response
+    {
+        $stub = $stubRepository->find($id);
+        if ($stub === null) {
+            return $this->redirectToRoute('app_therapy_stubs_list');
+        }
+
+        $stub->setIsDeleted(!$stub->getIsDeleted());
+        $this->entityManager->persist($stub);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('app_therapy_stubs_list');
     }
 }
