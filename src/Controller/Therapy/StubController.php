@@ -2,8 +2,6 @@
 
 namespace App\Controller\Therapy;
 
-
-use App\Entity\Therapy\Stub;
 use App\Form\Therapy\StubType;
 use App\Repository\Therapy\StubRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +17,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class StubController extends AbstractController
 {
     const PAGINATION_PAGE = 5;
-    
+
     protected EntityManagerInterface $entityManager;
     protected TranslatorInterface $translator;
     protected PaginatorInterface $paginator;
@@ -101,7 +99,7 @@ class StubController extends AbstractController
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/new', name: 'app_therapy_stub_new')]
-    public function newStub(Request $request): Response
+    public function newStub(Request $request, StubRepository $stubRepository): Response
     {
         $stubForm = $this->createForm(StubType::class);
         $stubForm->handleRequest($request);
@@ -109,40 +107,86 @@ class StubController extends AbstractController
         if ($stubForm->isSubmitted() && $stubForm->isValid()) {
             $data = $stubForm->getData();
 
-            $stub = $this->entityManager
-                ->getRepository(Stub::class)
-                ->getNewStubObjectFromArray($data);
+            if ($data["description"] === null) {
+                $data["description"] = "";
+            }
+            if ($data["excerpt"] === null) {
+                $data["excerpt"] = "";
+            }
+            if ($data["background"] === null) {
+                $data["background"] = "";
+            }
 
-            $nextAction = $stubForm->get('saveAndNew')->isClicked()
-                ? 'app_therapy_stub_new'
-                : 'app_main';
+            $submitAndNew = $stubForm->get('submitAndNew')->getData();
 
+            $stubRepository->getNewStubObjectFromArray($data);
+
+            $nextAction = $submitAndNew ? 'app_therapy_stub_new' : 'app_main';
             return $this->redirectToRoute($nextAction);
         }
 
         return $this->render('therapy/stub/index.html.twig', [
             'formTitle' => $this->translator->trans('app-new-therapy-stub-form-title'),
             'stubForm' => $stubForm->createView(),
+            "status" => "add",
         ]);
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/edit/{id<\d+>}', name: 'app_therapy_stub_edit')]
-    public function editStub(Request $request, int $id): Response
+    public function editStub(Request $request, int $id, StubRepository $stubRepository): Response
     {
-        $repository = $this->entityManager->getRepository(Stub::class);
-        $stub = $repository->find($id);
-
-        if (!$stub) {
-            // TODO exception about stub not exists
+        $stub = $stubRepository->find($id);
+        if ($stub === null) {
+            return $this->redirectToRoute('app_therapy_stubs_list');
         }
 
-        $stubForm = $this->createForm(StubType::class, $repository->getStubObjectFromEntity($stub));
+        // * Getting the list of oldLabels
+        $oldLabels = [];
+        foreach ($stub->getLabels() as $old) {
+            $oldLabels[] = $old;
+        }
+
+        $stubForm = $this->createForm(StubType::class, $stub);
         $stubForm->handleRequest($request);
 
         if ($stubForm->isSubmitted() && $stubForm->isValid()) {
             $data = $stubForm->getData();
 
-            $repository->updateEntityFromDto($stub, $data);
+
+            if ($data->getDescription() === null) {
+                $data->setDescription("");
+            }
+            if ($data->getExcerpt() === null) {
+                $data->setExcerpt("");
+            }
+            if ($data->getBackground() === null) {
+                $data->setBackground("");
+            }
+
+            // * Getting the list of newLabels
+            $newLabels = [];
+            foreach ($data->getLabels() as $newL) {
+                $newLabels[] = $newL;
+            }
+
+            // * Removing the old labels
+            foreach ($oldLabels as $old) {
+                $old->removeStub($stub);
+                $this->entityManager->persist($old);
+            }
+
+            // * Adding the new labels
+            foreach ($newLabels as $new) {
+                $new->addStub($stub);
+                $this->entityManager->persist($new);
+            }
+
+            $this->entityManager->flush();
+
+            $submitAndNew = $stubForm->get('submitAndNew')->getData();
+            $nextAction = $submitAndNew ? 'app_therapy_stub_new' : 'app_therapy_stubs_list';
+            return $this->redirectToRoute($nextAction);
+
         }
 
         return $this->render('therapy/stub/index.html.twig', [
@@ -150,6 +194,7 @@ class StubController extends AbstractController
                 'stub_name' => $stub->getName()
             ]),
             'stubForm' => $stubForm->createView(),
+            "status" => "edit",
         ]);
     }
 }
