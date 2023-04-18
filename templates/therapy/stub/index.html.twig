@@ -5,7 +5,7 @@
     <div class="container">
         <h2>{{ formTitle }}</h2>
         {{ form_start(stubForm, {
-            attr: {'data-controller': 'main'}
+            attr: {'data-controller': 'main', 'id': 'stubForm'}
         }) }}
         <div class="row-cols-2">
             <div class="col">
@@ -31,14 +31,57 @@
             </div>
         </div>
         <div class="row">
-            <div class="d-grid gap-2 d-md-block">
-                {{ form_widget(stubForm.save)}}
-                {{ form_widget(stubForm.saveAndNew)}}
-                {% if stubForm.delete_undo is defined %}
-                    {{ form_widget(stubForm.delete_undo)}}
-                {% endif %}
+            <div class="d-grid gap-2 d-md-block mb-4">
+                {{ form_row(stubForm.submitAndNew)}}
                 <a href="{{ path('app_main') }}" class="btn-secondary btn">{{ 'app-cancel-button'|trans }}</a>
+                {% if stub %}
+                    <button class="btn-dark btn" id="deleteUndoBTN" type="button">
+                        {% if stub.isDeleted %}{{ 'app-undelete-button'|trans }}{% else %}{{ 'app-delete-button'|trans }}{% endif %}
+                    </button>
+                {% endif %}
+                <button class="btn-primary btn" id="submitBTN" type="submit">{{ 'app-save-button'|trans }}</button>
+                <button class="btn-primary btn" id="submitAndNewBTN" type="submit">{{ 'app-save-and-new-button'|trans }}</button>
             </div>
         </div>
+        {{ form_end(stubForm) }}
+
+        {% if stub %}
+            <form action="{{ path('app_therapy_stub_delete_undelete', {'id': stub.id}) }}" method="post" id="deleteUndoForm">
+            </form>
+        {% endif %}
+
     </div>
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const submitAndNew = document.getElementById('submitAndNewBTN');
+        submitAndNew.addEventListener('click', function () {
+            const checkbox = document.getElementById('stub_submitAndNew');
+            checkbox.checked = true;
+            const form = document.getElementById('stubForm');
+            form.submit();
+        });
+
+        const submit = document.getElementById('submitBTN');
+        submit.addEventListener('click', function () {
+            const checkbox = document.getElementById('stub_submitAndNew');
+            checkbox.checked = false;
+            const form = document.getElementById('stubForm');
+            form.submit();
+        });
+
+        {% if stub %}
+            const deleteUndo = document.getElementById('deleteUndoBTN');
+            deleteUndo.addEventListener('click', function () {
+                const form = document.getElementById('deleteUndoForm');
+                form.submit();
+            });
+        {% endif %}
+
+    });
+</script>
+
 {% endblock %}

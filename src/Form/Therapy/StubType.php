@@ -4,26 +4,16 @@ namespace App\Form\Therapy;
 
 
 use App\Entity\Therapy\Label;
-use Doctrine\ORM\EntityManagerInterface;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class StubType extends AbstractType
 {
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -48,43 +38,20 @@ class StubType extends AbstractType
                     'removePlugins' => 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
                 ],
             ])
-            ->add('labels', ChoiceType::class, [
+            ->add('labels', EntityType::class, [
                 'label' => 'app-therapy-stub-form-label-labels',
                 'attr' => ['class' => 'select2 form-control select2-widget'],
-                'row_attr' => ['class' => 'form-group'],
+                'class' => Label::class,
+                'choice_label' => 'shortName',
                 'multiple' => true,
-                'choices' => $this->entityManager->getRepository(Label::class)->findAll(),
-                'choice_label' => function ($choice, $key, $value) {
-                    return $value;
-                },
-                'choice_value' => function ($choice) {
-                    return $choice;
-                }
+                'required' => true,
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'app-save-button',
-            ])
-            ->add('saveAndNew', SubmitType::class, [
-                'label' => 'app-save-and-new-button'
-            ])
-            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-                $stub = $event->getData();
-                $form = $event->getForm();
-
-                $options = $form->get('labels')->getConfig()->getOptions();
-                $options['choices'] = $stub['labels'];
-                $form->add('labels', ChoiceType::class, $options);
-            })
-            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-                $stub = $event->getData();
-                $form = $event->getForm();
-
-                if (isset($stub->id)) {
-                    $form->add('delete_undo', SubmitType::class, [
-                        'label' => 'app-delete-undo-button'
-                    ]);
-                }
-            });
+            ->add('submitAndNew', CheckboxType::class, [
+                'required' => false,
+                'label' => false,
+                'mapped' => false,
+                'attr' => ['style' => 'display: none;'],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
