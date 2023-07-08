@@ -146,7 +146,7 @@ class SchemeController extends AbstractController
 
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/generateReport', name: 'app_therapy_scheme_generateReport', methods: ['POST'])]
-    public function generateReport(Request $request, SchemeService $schemeService): Response
+    public function generateReport(Request $request, SchemeService $schemeService): JsonResponse
     {
         // * Validation
         $requestData = json_decode($request->getContent(), true);
@@ -156,19 +156,18 @@ class SchemeController extends AbstractController
         }
 
         $selectedLabels = $requestData['selectedLabels'];
-        $currentLanguage = $requestData['currentLanguage'];
         $currentComments = $requestData['currentComments'];
         $notCheckedCheckboxes = $requestData['notCheckedCheckboxes'];
         $suppress = $requestData['suppress'];
         $excerpt = $requestData['excerpt'];
+
 
         $reportContent = $schemeService->generatePDFReport(
             $selectedLabels,
             $suppress,
             $currentComments,
             $notCheckedCheckboxes,
-            $excerpt,
-            $currentLanguage
+            $excerpt
         );
 
         $session = $request->getSession();
@@ -333,7 +332,7 @@ class SchemeController extends AbstractController
             return $this->redirectToRoute('app_therapy_scheme_create'); // todo changeName
         }
         $reportContent = "<tbody>$reportContent</tbody>";
-        return $this->render('therapy/scheme/html-template.html.twig', [
+        return $this->render('therapy/scheme/pdf-template.html.twig', [
             'reportContent' => $reportContent,
             'reportExcerpt' => $reportExcerpt,
         ]);
@@ -366,6 +365,7 @@ class SchemeController extends AbstractController
         $dompdf->stream("report-" . date('Y-m-d') . ".pdf", [
             "Attachment" => true
         ]);
+        return new Response();
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/searchRedirector', name: 'app_therapy_scheme_search_redirector')]
