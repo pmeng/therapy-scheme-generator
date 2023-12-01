@@ -79,13 +79,13 @@ class SchemeService
             $stub->getName() .
             '</td>' .
             '<td class="' . $descriptionItemClass . '">' .
-            $stub->getDescription() .
+            substr($stub->getDescription(), 0, 40) .
             '</td>' .
             '<td class="' . $excerptItemClass . '">' .
-            $stub->getExcerpt() .
+            substr($stub->getExcerpt(), 0, 40) .
             '</td>' .
             '<td class="col-3">' .
-            $stub->getBackground() .
+            substr($stub->getBackground(), 0, 40) .
             '</td>' .
             '<td class="border-start">' .
             $textArea .
