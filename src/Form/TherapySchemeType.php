@@ -21,6 +21,11 @@ class TherapySchemeType extends AbstractType
                 'multiple' => true,
                 'mapped' => false,
             ])
+            ->add('selectAll', CheckboxType::class, [
+                'required' => false,
+                'label' => false,
+                'data' => true
+            ])
             ->add('suppress', CheckboxType::class, [
                 'required' => false,
                 'label' => false
