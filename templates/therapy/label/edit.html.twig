@@ -26,7 +26,11 @@
                     <h3>{{ 'app-therapy-stubs-list-page-title'|trans }}</h3>
                     <ul>
                         {% for stub in stubs %}
-                            <li>{{ stub.name }}</li>
+                            <li>
+                              <a href="{{ url('app_therapy_stub_edit', {id: stub.id}) }}">
+                                {{ stub.name }}
+                              </a>
+                            </li>
                         {% endfor %}
                     </ul>
             </div>
