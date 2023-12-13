@@ -15,6 +15,12 @@ class EditTherapySchemeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('selectAll', CheckboxType::class, [
+                'required' => false,
+                'label' => false,
+                'data' => false,
+                'mapped' => false
+            ])
             ->add('suppress', CheckboxType::class, [
                 'required' => false,
                 'label' => false
