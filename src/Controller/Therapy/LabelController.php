@@ -3,6 +3,7 @@
 namespace App\Controller\Therapy;
 
 use App\Entity\Therapy\Label;
+use App\Entity\Therapy\Stub;
 use App\Form\Therapy\LabelType;
 use App\Repository\Therapy\LabelRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -93,7 +94,9 @@ class LabelController extends AbstractController
         if (!$label) {
             // TODO throw exception
         }
-        
+
+        $stubs =  $label->getStubs();
+
         $labelForm = $this->createForm(LabelType::class, $label);
         $labelForm->handleRequest($request);
         
@@ -112,6 +115,7 @@ class LabelController extends AbstractController
         return $this->render('therapy/label/edit.html.twig', [
             'labelForm' => $labelForm->createView(),
             'currentId' => $id,
+            'stubs' => $stubs
         ]);
     }
 
