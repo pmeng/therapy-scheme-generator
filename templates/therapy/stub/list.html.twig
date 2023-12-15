@@ -8,6 +8,30 @@
         	<h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
 		</div>
 
+		<div class="mb-3">
+			<form name="search_stub" action="{{ path('app_therapy_stubs_search_redirector') }}" method="post">
+				<div class="row g-2">
+					<div class="col-md-8">
+						<input type="search" name="searchName_stub" required="required" class="form-control" aria-describedby="button-addon2">
+					</div>
+					<div class="col-md-2">
+						<select id="searchCriteria" name="searchCriteria" class="form-select">
+							<option value="All">All</option>
+							<option value="Name">Name</option>
+							<option value="Description">Description</option>
+							<option value="Excerpt">Excerpt</option>
+							<option value="Background">Background</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+
+
 
         <table id="stubsTable" class="table table-striped">
             <thead>

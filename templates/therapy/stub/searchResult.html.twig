@@ -1,44 +1,100 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-	<div class="container mt-3">
+    <div class="container mt-3">
+    
+        <div class="row mb-3">
+        	<h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
+		</div>
 
-		<div class="row mb-3">
-			<div class="col">
-					<h2>{{ 'app-results-for-label-search-title'|trans({'%label_name%': searchValue}) }}</h2>
+        <div class="mb-3">
+			<form name="search_stub" action="{{ path('app_therapy_stubs_search_redirector') }}" method="post">
+				<div class="row g-2">
+					<div class="col-md-8">
+						<input type="search" name="searchName_stub" required="required" class="form-control" aria-describedby="button-addon2" value="{{ searchValue }}">
+					</div>
+					<div class="col-md-2">
+						<select id="searchCriteria" name="searchCriteria" class="form-select" value="{{ searchCriteria }}>
+							<option value="All">All</option>
+							<option value="Name">Name</option>
+							<option value="Description">Description</option>
+							<option value="Excerpt">Excerpt</option>
+							<option value="Background">Background</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
+					</div>
 				</div>
-				<div class="col text-end">
-					<a href="{{ path('app_therapy_stubs_list') }}" class="btn btn-outline-secondary">{{ 'app-reset-search-button'|trans }}</a>
-			</div>
+			</form>
 		</div>
-		<form name="search_stub" action="{{ path('app_therapy_stubs_search_redirector') }}" method="post">
-			<div class="input-group mb-3">
-				<input type="search" name="searchName_stub" required="required" class="form-control form-control" aria-describedby="button-addon2" value="{{ searchValue }}">
-				<button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
-			</div>
-		</form>
-		{% for stub in pagination %}
-			<div class="list-group mb-3">
-				<a href="{{ path('app_therapy_stub_edit', {id: stub.id}) }}" class="list-group-item list-group-item-action" aria-current="true">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">{{ stub.name }}</h5>
-						<small>{{ stub.createdAt|format_datetime(locale=app.request.locale) }}</small>
-					</div>
-					<p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-description'|trans }}</p>
-					<small>{{ stub.description }}</small>
-					<p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-background'|trans }}</p>
-					<small>{{ stub.background }}</small>
-				</a>
-			</div>
-		{% else %}
-			<div class="list-group mb-3">
-					<div class="alert alert-secondary" role="alert">
-							<h5 class="mb-1">{{ 'app-no-results-message'|trans }}</h5>
-					</div>
-			</div>
-		{% endfor %}
-		<div class="row mb-3">
-			{{ knp_pagination_render(pagination) }}
-		</div>
-	</div>
+
+
+        {% if pagination.getTotalItemCount() > 0 %}
+            <table id="stubsTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Excerpt</th>
+                        <th>Background</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stub in pagination %}
+                        <tr class="stub-item" data-full-description="{{ stub.description }}" data-full-excerpt="{{ stub.excerpt }}" data-full-background="{{ stub.background }}">
+                            <td>{{ stub.id }}</td>
+                            <td>{{ stub.name }}</td>
+                            <td>{{ stub.description[:40]|raw }}{{ stub.description|length > 40 ? '...' : '' }}</td>
+                            <td>{{ stub.excerpt[:40]|raw }}{{ stub.excerpt|length > 40 ? '...' : '' }}</td>
+                            <td>{{ stub.background[:40]|raw }}{{ stub.background|length > 40 ? '...' : '' }}</td>
+                            <td>
+                                <a href="{{ path('app_therapy_stub_edit', {id: stub.id}) }}" class="btn btn-primary">Edit</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="row mb-3">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        {% else %}
+            <div class="alert alert-secondary" role="alert">
+                <h5 class="mb-1">{{ 'app-no-results-message'|trans }}</h5>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchStub");
+            const searchCriteria = document.getElementById("searchCriteria");
+            const stubRows = document.querySelectorAll(".stub-item");
+
+            searchInput.addEventListener("input", function () {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedCriteria = searchCriteria.value;
+                stubRows.forEach(function (row) {
+                    let rowText = '';
+
+                    if (selectedCriteria === 'All') {
+                        rowText = Object.values(row.dataset).join(' ').toLowerCase() + row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    } else if (selectedCriteria === 'Name') {
+                        rowText = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    } else {
+                        rowText = row.dataset[`full${selectedCriteria}`].toLowerCase();
+                    }
+
+                    if (rowText.includes(searchTerm)) {
+                        row.style.display = "table-row";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

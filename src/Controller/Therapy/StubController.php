@@ -16,7 +16,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StubController extends AbstractController
 {
-    const PAGINATION_PAGE = 5;
+    const PAGINATION_PAGE = 50;
 
     protected EntityManagerInterface $entityManager;
     protected TranslatorInterface $translator;
@@ -61,30 +61,43 @@ class StubController extends AbstractController
     public function searchRedirector(Request $request): Response
     {
         $searchValue = $request->get('searchName_stub');
+        $searchCriteria = $request->get('searchCriteria');
         if ($searchValue !== null && strlen($searchValue) > 0) {
-            return $this->redirectToRoute('app_therapy_stubs_search', ['searchValue' => $searchValue]);
+            return $this->redirectToRoute('app_therapy_stubs_search', [
+                'searchValue' => $searchValue ,
+                'searchCriteria' => $searchCriteria
+            ]);
         } else {
             return $this->redirect($request->headers->get('referer'));
         }
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/search?searchValue={searchValue}', name: 'app_therapy_stubs_search')]
-    public function searchLabels(Request $request, StubRepository $stubRepository, string $searchValue): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/search?searchValue={searchValue}?searchCriteria={searchCriteria}', name: 'app_therapy_stubs_search')]
+    public function searchLabels(Request $request, StubRepository $stubRepository, string $searchValue, string $searchCriteria ): Response
     {
+
+        // Access the selected criteria from the form data
+        $searchCriteria = strtolower($searchCriteria);
 
         $query = $stubRepository
             ->createQueryBuilder('stub')
             ->setFirstResult($request->query->getInt('page', 0))
             ->setMaxResults(self::PAGINATION_PAGE);
-
+            
         if ($searchValue !== null) {
-            $query
-                ->where('stub.name LIKE :search')
-                ->orWhere('stub.description LIKE :search')
-                ->orWhere('stub.excerpt LIKE :search')
-                ->orWhere('stub.background LIKE :search')
-                ->setParameter('search', '%' . $searchValue . '%');
+            if ($searchCriteria === 'all') {
+                // Search in all columns
+                $query
+                    ->where('stub.name LIKE :search OR stub.description LIKE :search OR stub.excerpt LIKE :search OR stub.background LIKE :search')
+                    ->setParameter('search', '%' . $searchValue . '%');
+            } else {
+                // Search in a specific column based on the selected criteria
+                $query
+                    ->where('stub.' . $searchCriteria . ' LIKE :search')
+                    ->setParameter('search', '%' . $searchValue . '%');
+            }
         }
+        
 
         $pagination = $this->paginator->paginate(
             $query->getQuery(),
@@ -95,6 +108,7 @@ class StubController extends AbstractController
         return $this->render('therapy/stub/searchResult.html.twig', [
             'pagination' => $pagination,
             'searchValue' => $searchValue,
+            'searchCriteria' => $searchCriteria,
         ]);
     }
 
