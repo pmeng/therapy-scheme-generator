@@ -2,35 +2,43 @@
 
 
 {% block body %}
-	<div class="container mt-3">
+    <div class="container mt-3">
+    
+		<div class="row mb-3">
+        	<h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
+		</div>
 
-		<div class="row mb-3">
-			<div class="col">
-					<h2>{{ 'app-therapy-stubs-list-page-title'|trans }}</h2>
-			</div>
-		</div>
-		<form name="search_stub" action="{{ path('app_therapy_stubs_search_redirector') }}" method="post">
-			<div class="input-group mb-3">
-				<input type="search" name="searchName_stub" required="required" class="form-control form-control" aria-describedby="button-addon2">
-				<button class="btn btn-outline-secondary" type="submit" id="button-addon2">{{ 'app-search-for-therapy-button'|trans }}</button>
-			</div>
-		</form>
-		{% for stub in pagination %}
-			<div class="list-group mb-3">
-				<a href="{{ path('app_therapy_stub_edit', {id: stub.id}) }}" class="list-group-item list-group-item-action" aria-current="true">
-					<div class="d-flex w-100 justify-content-between">
-						<h5 class="mb-1">{{ stub.name|raw }}</h5>
-						<small>{{ stub.createdAt|format_datetime(locale=app.request.locale) }}</small>
-					</div>
-					<p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-description'|trans }}</p>
-					<small>{{ stub.description|raw }}</small>
-					<p class="mt-2 text-black">{{ 'app-therapy-stubs-list-label-background'|trans }}</p>
-					<small>{{ stub.background|raw }}</small>
-				</a>
-			</div>
-		{% endfor %}
-		<div class="row mb-3">
-			{{ knp_pagination_render(pagination) }}
-		</div>
-	</div>
+
+        <table id="stubsTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Excerpt</th>
+                    <th>Background</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stub in pagination %}
+                    <tr class="stub-item" data-full-description="{{ stub.description }}" data-full-excerpt="{{ stub.excerpt }}" data-full-background="{{ stub.background }}">
+                        <td>{{ stub.id }}</td>
+                        <td>{{ stub.name }}</td>
+                        <td>{{ stub.description[:40]|raw }}{{ stub.description|length > 40 ? '...' : '' }}</td>
+                        <td>{{ stub.excerpt[:40]|raw }}{{ stub.excerpt|length > 40 ? '...' : '' }}</td>
+                        <td>{{ stub.background[:40]|raw }}{{ stub.background|length > 40 ? '...' : '' }}</td>
+                        <td>
+                            <a href="{{ path('app_therapy_stub_edit', {id: stub.id}) }}" class="btn btn-primary">Edit</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="row mb-3">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+
 {% endblock %}
