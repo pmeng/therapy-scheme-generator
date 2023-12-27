@@ -39,11 +39,14 @@ class StubController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs', name: 'app_therapy_stubs_list')]
     public function index(Request $request, StubRepository $stubRepository): Response
     {
-
+        $sortField = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'asc');     
         $query = $stubRepository
-            ->createQueryBuilder('stub')
-            ->setFirstResult($request->query->getInt('page', 0))
-            ->setMaxResults(self::PAGINATION_PAGE);
+        ->createQueryBuilder('stub')
+        ->setFirstResult($request->query->getInt('page', 0))
+        ->setMaxResults(self::PAGINATION_PAGE);
+        
+        $query->orderBy("stub.$sortField", $direction);
 
         $pagination = $this->paginator->paginate(
             $query->getQuery(),
@@ -53,8 +56,11 @@ class StubController extends AbstractController
 
         return $this->render('therapy/stub/list.html.twig', [
             'pagination' => $pagination,
+            'sort' => $sortField,
+            'direction' => $direction,
         ]);
     }
+    
 
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/searchRedirector', name: 'app_therapy_stubs_search_redirector')]
