@@ -68,22 +68,31 @@ class StubController extends AbstractController
     {
         $searchValue = $request->get('searchName_stub');
         $searchCriteria = $request->get('searchCriteria');
+          
+        $sortField = $request->get('sort','id');
+        $direction = $request->get('direction', 'asc'); 
+      
         if ($searchValue !== null && strlen($searchValue) > 0) {
             return $this->redirectToRoute('app_therapy_stubs_search', [
                 'searchValue' => $searchValue ,
-                'searchCriteria' => $searchCriteria
+                'searchCriteria' => $searchCriteria,
+                'sort' => $sortField,
+                'direction' => $direction,
             ]);
         } else {
             return $this->redirect($request->headers->get('referer'));
         }
     }
 
-    #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/search?searchValue={searchValue}?searchCriteria={searchCriteria}', name: 'app_therapy_stubs_search')]
-    public function searchLabels(Request $request, StubRepository $stubRepository, string $searchValue, string $searchCriteria ): Response
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/search?searchValue={searchValue}?searchCriteria={searchCriteria}?sort={sort}?direction={direction}', name: 'app_therapy_stubs_search')]
+    public function searchLabels(Request $request, StubRepository $stubRepository, string $searchValue, string $searchCriteria): Response
     {
 
         // Access the selected criteria from the form data
         $searchCriteria = strtolower($searchCriteria);
+
+        $sort = $request->get('sort');
+        $direction = $request->get('direction'); 
 
         $query = $stubRepository
             ->createQueryBuilder('stub')
@@ -104,6 +113,7 @@ class StubController extends AbstractController
             }
         }
         
+        $query->orderBy("stub.$sort", $direction);
 
         $pagination = $this->paginator->paginate(
             $query->getQuery(),
@@ -115,6 +125,8 @@ class StubController extends AbstractController
             'pagination' => $pagination,
             'searchValue' => $searchValue,
             'searchCriteria' => $searchCriteria,
+            'sort' => $sort,
+            'direction' => $direction,
         ]);
     }
 

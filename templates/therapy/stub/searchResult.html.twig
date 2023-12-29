@@ -34,11 +34,43 @@
             <table id="stubsTable" class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Excerpt</th>
-                        <th>Background</th>
+                        <th>
+                            <a href="{{ path('app_therapy_stubs_search_redirector', {'sort': 'id', 'direction': (sort == 'id' and direction == 'asc') ? 'desc' : 'asc', 'searchCriteria': searchCriteria, 'searchName_stub': searchValue}) }}" style="display: flex; align-items: center;">
+                                ID{% if sort is defined and sort == 'id' %}
+                                    <span style="margin-left: 0.2em;">{% if direction == 'asc' %} &#9650; {% else %} &#9660; {% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('app_therapy_stubs_search_redirector', {'sort': 'name', 'direction': (sort == 'name' and direction == 'asc') ? 'desc' : 'asc', 'searchCriteria': searchCriteria, 'searchName_stub': searchValue}) }}">
+                                Name {% if sort is defined and sort == 'name' %} 
+                                    {% if direction == 'asc' %} &#9650; {% else %} &#9660; {% endif %} 
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('app_therapy_stubs_search_redirector', {'sort': 'description', 'direction': (sort == 'description' and direction == 'asc') ? 'desc' : 'asc', 'searchCriteria': searchCriteria, 'searchName_stub': searchValue}) }}">
+                                Description {% if sort is defined and sort == 'description' %} 
+                                    {% if direction == 'asc' %} &#9650; {% else %} &#9660; {% endif %} 
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('app_therapy_stubs_search_redirector', {'sort': 'excerpt', 'direction': (sort == 'excerpt' and direction == 'asc') ? 'desc' : 'asc', 'searchCriteria': searchCriteria, 'searchName_stub': searchValue}) }}">
+                                Excerpt {% if sort is defined and sort == 'excerpt' %} 
+                                    {% if direction == 'asc' %} &#9650; {% else %} &#9660; {% endif %} 
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('app_therapy_stubs_search_redirector', {'sort': 'background', 'direction': (sort == 'background' and direction == 'asc') ? 'desc' : 'asc', 'searchCriteria': searchCriteria, 'searchName_stub': searchValue}) }}">
+                                Background {% if sort is defined and sort == 'background' %} 
+                                    {% if direction == 'asc' %} &#9650; {% else %} &#9660; {% endif %} 
+                                {% endif %}
+                            </a>
+                        </th>
+                        <!-- Add similar <th> elements for other columns as needed -->
+
                         <th>Edit</th>
                     </tr>
                 </thead>
@@ -58,9 +90,12 @@
                 </tbody>
             </table>
 
-            <div class="row mb-3">
-                {{ knp_pagination_render(pagination) }}
-            </div>
+        <div class="row mb-3">
+            {{ knp_pagination_render(pagination, null, {
+                'route': 'app_therapy_stubs_search_redirector',
+                'routeParams': {'searchCriteria': searchCriteria, 'searchName_stub': searchValue, 'sort': sort, 'direction': direction}
+            }) }}
+        </div>
         {% else %}
             <div class="alert alert-secondary" role="alert">
                 <h5 class="mb-1">{{ 'app-no-results-message'|trans }}</h5>
