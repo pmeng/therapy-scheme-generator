@@ -67,7 +67,7 @@ class StubController extends AbstractController
     public function searchRedirector(Request $request): Response
     {
         $searchValue = $request->get('searchName_stub');
-        $searchCriteria = $request->get('searchCriteria');
+        $searchCriteria = $request->get('searchCriteria','all');
           
         $sortField = $request->get('sort','id');
         $direction = $request->get('direction', 'asc'); 
