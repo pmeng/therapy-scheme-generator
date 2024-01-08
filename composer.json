@@ -12,7 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.11",
         "dompdf/dompdf": "^2.0",
-        "friendsofsymfony/ckeditor-bundle": "^2.4",
+        "friendsofsymfony/ckeditor-bundle": "*",
         "knplabs/knp-paginator-bundle": "^5.8",
         "knplabs/knp-snappy-bundle": "^1.9",
         "pagerfanta/doctrine-dbal-adapter": "^3.6",
@@ -81,6 +81,7 @@
     },
     "scripts": {
         "auto-scripts": {
+            "ckeditor:install --tag=4.22.1": "symfony-cmd",
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
