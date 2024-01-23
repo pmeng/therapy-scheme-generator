@@ -38,14 +38,6 @@
             {{ form_label(labelForm.reportName) }}
             {{ form_widget(labelForm.reportName) }}
         </div>
-        <div class="row">
-            <div class="col-1 mb-3">
-                {{ form_widget(labelForm.save) }}
-            </div>
-            <div class="col-2 mb-3">
-                {{ form_widget(labelForm.delete) }}
-            </div>
-        </div>
         <div class="mb-3">
             <h3>{{ 'app-therapy-stubs-list-page-title'|trans }}</h3>
             <div class="sorting-options">
@@ -62,6 +54,16 @@
                 {% endfor %}
             </ul>
         </div>
+        <div class="row">
+            <div class="col-1 mb-3">
+                {{ form_widget(labelForm.save) }}
+            </div>
+            <div class="col-2 mb-3">
+                {{ form_widget(labelForm.delete) }}
+            </div>
+        </div>
+        {{ form_widget(labelForm.stubsOrder, {'attr': {'class': 'sortable-order'}}) }}
+
     </div>
     {{ form_end(labelForm) }}
 </div>
@@ -91,6 +93,7 @@
         var sortableList = document.getElementById('sortableList');
         var sortAZButton = document.getElementById('sortAZ');
         var sortZAButton = document.getElementById('sortZA');
+        var orderInput = document.querySelector('.sortable-order');
 
         var sortable = new Sortable(sortableList, {
             animation: 150,
@@ -99,10 +102,21 @@
                 var movedItem = evt.from.children[evt.oldIndex];
                 var movedItemId = movedItem.dataset.id;
                 console.log('Reordered!', evt.newIndex, evt.oldIndex, movedItemId);
-                // Example: Make an AJAX call to update the order on the server
-                // UpdateOrder(movedItemId, evt.newIndex);
+
+                // Update the order input value with the new order
+                updateOrderInput();
+
             },
         });
+
+        function updateOrderInput() {
+            var items = Array.from(sortableList.children);
+            var order = items.map(function (item) {
+                return item.dataset.id;
+            }).join(',');
+
+            orderInput.value = order;
+        }
 
         sortAZButton.addEventListener('click', function (event) {
             event.preventDefault();
@@ -118,6 +132,9 @@
             items.forEach(function (item) {
                 sortableList.appendChild(item);
             });
+
+            updateOrderInput();
+
         });
 
         sortZAButton.addEventListener('click', function (event) {
@@ -134,6 +151,9 @@
             items.forEach(function (item) {
                 sortableList.appendChild(item);
             });
+
+            updateOrderInput();
+
         });
     });
 </script>
