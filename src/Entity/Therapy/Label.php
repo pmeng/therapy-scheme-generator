@@ -21,12 +21,12 @@ class Label
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $reportName;
 
-    #[ORM\ManyToMany(targetEntity: Stub::class, inversedBy: 'labels')]
-    private ?Collection $stubs;
+    #[ORM\OneToMany(mappedBy: "label", targetEntity: LabelStub::class, cascade: ["persist", "remove"])]
+    private ?Collection $labelStubs;
 
     public function __construct()
     {
-        $this->stubs = new ArrayCollection();
+        $this->labelStubs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -58,25 +58,76 @@ class Label
         return $this;
     }
 
-    public function getStubs(): Collection
+    public function getLabelStubs(): ?Collection
     {
-        return $this->stubs;
+        return $this->labelStubs;
     }
 
-    public function addStub(Stub $stub): self
+    public function addLabelStub(LabelStub $labelStub): self
     {
-        if (!$this->stubs->contains($stub)) {
-            $this->stubs[] = $stub;
+        if (!$this->labelStubs->contains($labelStub)) {
+            $this->labelStubs[] = $labelStub;
+            $labelStub->setLabel($this);
         }
 
         return $this;
     }
 
-    public function removeStub(Stub $stub): self
+    public function removeLabelStub(LabelStub $labelStub): self
     {
-        $this->stubs->removeElement($stub);
+        if ($this->labelStubs->removeElement($labelStub)) {
+            // set the owning side to null (unless already changed)
+            if ($labelStub->getLabel() === $this) {
+                $labelStub->setLabel(null);
+            }
+        }
 
         return $this;
+    }
+
+    public function getStubs(): Collection
+    {
+        $stubs = new ArrayCollection();
+        foreach ($this->labelStubs as $labelStub) {
+            $stubs[] = $labelStub->getStub();
+        }
+
+        return $stubs;
+    }
+
+    public function getStubsSortedByPosition(): Collection
+    {
+        $labelStubs = $this->labelStubs->toArray();
+
+        usort($labelStubs, function ($a, $b) {
+            return $a->getPosition() <=> $b->getPosition();
+        });
+
+        $stubs = new ArrayCollection();
+        foreach ($labelStubs as $labelStub) {
+            $stubs[] = $labelStub->getStub();
+        }
+
+        return $stubs;
+    }
+
+    public function addStub(Stub $stub): void
+    {
+        $labelStub = new LabelStub();
+        $labelStub->setLabel($this);
+        $labelStub->setStub($stub);
+
+        $this->labelStubs[] = $labelStub;
+    }
+
+    public function deleteStub(Stub $stub): void
+    {
+        foreach ($this->labelStubs as $labelStub) {
+            if ($labelStub->getStub() === $stub) {
+                $this->labelStubs->removeElement($labelStub);
+                break;
+            }
+        }
     }
 
     public function __toString(): string
