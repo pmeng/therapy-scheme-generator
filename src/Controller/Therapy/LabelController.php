@@ -110,15 +110,20 @@ class LabelController extends AbstractController
             $orderArray = explode(',', $labelForm->get('stubsOrder')->getData());
 
             // Iterate over the array
+
+
             foreach ($orderArray as $index => $stubId) {
                 // Find the corresponding label_stub record
-                $labelStub = $this->entityManager->getRepository(LabelStub::class)->findOneBy(['stub' => $stubId]);
+                if( $stubId ) {
 
-                // Update the position
-                $labelStub->setPosition($index + 1);
-
-                // Persist the changes
-                $this->entityManager->persist($labelStub);
+                    $labelStub = $this->entityManager->getRepository(LabelStub::class)->findOneBy(['stub' => $stubId]);
+                    
+                    // Update the position
+                    $labelStub->setPosition($index + 1);
+    
+                    // Persist the changes
+                    $this->entityManager->persist($labelStub);
+                }
             }
             
             $this->entityManager->persist($label);
