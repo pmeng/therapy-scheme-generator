@@ -29,7 +29,8 @@ class SchemeService
 
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
-      $labelStubs = $label->getStubs();
+
+      $labelStubs = $label->getStubsSortedByPosition();
 
       $trClass = 'table-light hideLabels';
       if ($suppress) {
@@ -119,7 +120,7 @@ class SchemeService
 
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
-      $labelStubs = $label->getStubs();
+      $labelStubs = $label->getStubsSortedByPosition();
 
       $trLabel = '';
       if (!$suppress) {
