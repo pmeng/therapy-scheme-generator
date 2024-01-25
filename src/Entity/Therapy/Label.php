@@ -100,7 +100,22 @@ class Label
         $labelStubs = $this->labelStubs->toArray();
 
         usort($labelStubs, function ($a, $b) {
-            return $a->getPosition() <=> $b->getPosition();
+            // Order by position if both positions are not zero.
+            if ($a->getPosition() !== 0 && $b->getPosition() !== 0) {
+                return $a->getPosition() <=> $b->getPosition();
+            }
+    
+            // If one has position not equal to zero, prioritize it.
+            if ($a->getPosition() !== 0) {
+                return -1;
+            }
+    
+            if ($b->getPosition() !== 0) {
+                return 1;
+            }
+    
+            // If both have position equal to zero, maintain their original order.
+            return 0;
         });
 
         $stubs = new ArrayCollection();
