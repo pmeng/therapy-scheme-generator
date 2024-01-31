@@ -36,7 +36,7 @@ class SchemeService
         $trClass .= ' d-none';
       }
       $newTbody .= '<tr class="' . $trClass . '" id="rowLabel|' . $label->getId() . '">' .
-        '<th colspan="5">' . $label->getShortName() . '</th>' .
+        '<th colspan="5">' . $label->getReportName() . '</th>' .
         '</tr>';
 
       if (count($labelStubs) > 0) {
@@ -124,7 +124,7 @@ class SchemeService
       $trLabel = '';
       if (!$suppress) {
         $trLabel .= '<tr class="table-light" id="rowLabel|' . $label->getId() . '">' .
-          '<th colspan="5">' . $label->getShortName() . '</th>' .
+          '<th colspan="5">' . $label->getReportName() . '</th>' .
           '</tr>';
       }
       $newTbody .= $trLabel;
