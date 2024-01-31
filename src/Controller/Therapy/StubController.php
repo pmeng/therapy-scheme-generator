@@ -40,13 +40,19 @@ class StubController extends AbstractController
     public function index(Request $request, StubRepository $stubRepository): Response
     {
         $sortField = $request->query->get('sort', 'id');
-        $direction = $request->query->get('direction', 'asc');     
+        $direction = $request->query->get('direction', 'asc');   
+        $showDeleted = $request->query->get('showDeleted', 0);;  
         $query = $stubRepository
         ->createQueryBuilder('stub')
         ->setFirstResult($request->query->getInt('page', 0))
         ->setMaxResults(self::PAGINATION_PAGE);
         
         $query->orderBy("stub.$sortField", $direction);
+
+        // Check if you want to hide deleted stubs
+        if ($showDeleted != true) {
+            $query->andWhere('stub.isDeleted IS NULL');
+        }
 
         $pagination = $this->paginator->paginate(
             $query->getQuery(),
@@ -58,6 +64,7 @@ class StubController extends AbstractController
             'pagination' => $pagination,
             'sort' => $sortField,
             'direction' => $direction,
+            'showDeleted' => $showDeleted
         ]);
     }
     
