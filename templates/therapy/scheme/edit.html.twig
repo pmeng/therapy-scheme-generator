@@ -128,8 +128,26 @@
 
 {% block javascripts %}
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/sortablejs@1.14.0/Sortable.min.js"></script>
 
 <script>
+
+
+	document.addEventListener('DOMContentLoaded', function() {
+		// Initialize Sortable for each table body
+		const tbodyElements = document.querySelectorAll('.sortable');
+
+		tbodyElements.forEach(tbody => {
+			const sortable = new Sortable(tbody, {
+				filter: '.filtered',
+				onMove(evt, oe) {
+					// Check if the related element has the class 'filtered'
+					return evt.related.className.indexOf('filtered') === -1;
+				},
+				preventOnFilter: true,
+			});
+		});
+	});
 
 	let selectedLabels = [];
 	$(document).ready(function () {
@@ -212,7 +230,18 @@
 				excerpt
 			};
 			const response = await axios.post(url, requestBody);
-			tableBody.innerHTML = response.data;
+			// Create a temporary div to hold the parsed HTML
+			const tempDiv = document.createElement("div");
+			tempDiv.innerHTML = response.data;
+
+			// Extract all the <tbody> elements
+			const newTbodies = tempDiv.querySelectorAll("tbody");
+
+			// Replace the existing content of the table body with the new <tbody> elements
+			tableBody.innerHTML = "";
+			newTbodies.forEach((newTbody) => {
+				tableBody.appendChild(newTbody);
+			});
 		}
 	};
 
@@ -388,6 +417,9 @@
 	<style>
 		.d-none {
 			display: none;
+		}
+		#oldTbody .handle {
+			cursor: grab;
 		}
 	</style>
 {% endblock %}

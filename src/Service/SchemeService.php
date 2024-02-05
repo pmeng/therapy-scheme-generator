@@ -29,10 +29,13 @@ class SchemeService
 
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
+      
+      $tbodyId = 'oldTbody' . $label->getId();
+      $newTbody .= '<tbody id="' . $tbodyId . '" class="sortable">';      
 
       $labelStubs = $label->getStubsSortedByPosition();
 
-      $trClass = 'table-light hideLabels';
+      $trClass = 'table-light hideLabels filtered';
       if ($suppress) {
         $trClass .= ' d-none';
       }
@@ -103,6 +106,9 @@ class SchemeService
           '</th>' .
           '</tr>';
       }
+
+      $newTbody .= '</tbody>'; // Close the tbody for each label
+
     }
 
     return $newTbody;
