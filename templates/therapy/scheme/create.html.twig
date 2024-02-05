@@ -101,8 +101,10 @@
 {% endblock %}
 {% block javascripts %}
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/sortablejs@1.14.0/Sortable.min.js"></script>
 
 <script>
+    
 let selectedLabels = [];
 $(document).ready(function () {
     $("#therapy_scheme_labels")
@@ -126,6 +128,7 @@ $(document).ready(function () {
                 const suppress = $("#therapy_scheme_suppress").is(":checked");
                 const excerpt = $("#therapy_scheme_excerpt").is(":checked");
                 await generateDynamicForm(selectedValues, currentComments, notCheckedCheckboxes, suppress, excerpt);
+                initializeSortableForTables();
 
                 {# * Show/hide content #}
                 if (selectedValues.length > 0) {
@@ -138,6 +141,22 @@ $(document).ready(function () {
 
         });
 });
+
+// Function to initialize Sortable for each tbody
+function initializeSortableForTables() {
+    const tbodyElements = document.querySelectorAll('.sortable');
+
+    tbodyElements.forEach(tbody => {
+        const sortable = new Sortable(tbody, {
+            filter: '.filtered',
+            onMove(evt, oe) {
+                // Check if the related element has the class 'filtered'
+                return evt.related.className.indexOf('filtered') === -1;
+            },
+            preventOnFilter: true,
+        });
+    });
+}
 
 // * A function that returns an array of the comments
 const getCurrentComments = () => {
@@ -183,7 +202,9 @@ const generateDynamicForm = async (selectedLabels, currentComments, notCheckedCh
             excerpt
         };
         const response = await axios.post(url, requestBody);
-        tableBody.innerHTML = response.data;
+
+        tableBody.outerHTML = response.data;
+
     }
 };
 
