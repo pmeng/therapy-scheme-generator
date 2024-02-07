@@ -158,6 +158,40 @@ function initializeSortableForTables() {
     });
 }
 
+function getStubsOrder() {
+    // Get all tbody elements with the class 'sortable'
+    const tbodyElements = document.querySelectorAll('tbody.sortable');
+
+    const labelOrderArray = []; // Define an array to store JSON representations
+
+    tbodyElements.forEach(tbody => {
+        // Get all rows in the current tbody
+        const rows = Array.from(tbody.children);
+
+        const labelOrderMap = new Map(); // Define a map for each tbody
+
+        rows
+            .filter((_, index) => index !== 0) // Skip the first row
+            .forEach(function(row) {
+                const match = row.id.match(/rowLabel\|(\d+)\|stub\|(\d+)/);
+                const labelId = match[1];
+                const stubId = match[2];
+
+                if (!labelOrderMap.has(labelId)) {
+                    labelOrderMap.set(labelId, []);
+                }
+
+                labelOrderMap.get(labelId).push(stubId);
+            });
+
+        // Convert labelOrderMap to JSON and push it to labelOrderArray
+        labelOrderArray.push([...labelOrderMap]);
+    });
+
+    // Return the array if needed
+    return labelOrderArray;
+}
+
 // * A function that returns an array of the comments
 const getCurrentComments = () => {
     const textAreas = document.querySelectorAll("textarea[name^='labelID=']");
@@ -187,24 +221,42 @@ const getNotCheckedCheckboxes = () => {
 
 {# ! Generate the dynamic form #}
 const generateDynamicForm = async (selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt) => {
-    const tableBody = document.querySelector("table tbody");
+    // Get all tbody elements
+    const tbodyElements = document.querySelectorAll("table tbody");
+
     if (selectedLabels.length === 0) {
-        tableBody.innerHTML = "";
+        // Clear the content of all tbody elements
+        tbodyElements.forEach(tbody => {
+            tbody.remove();
+        });
     } else {
         const currentLanguage = "{{ app.request.locale }}";
         const url = "{{ path('app_therapy_scheme_generateForm') }}";
+        const stubsOrder = [];
         const requestBody = {
             selectedLabels,
             currentLanguage,
             currentComments,
             notCheckedCheckboxes,
+            stubsOrder,
             suppress,
             excerpt
         };
-        const response = await axios.post(url, requestBody);
 
-        tableBody.outerHTML = response.data;
+        try {
+            // Send a POST request
+            const response = await axios.post(url, requestBody);
 
+            // Remove all existing tbody elements
+            tbodyElements.forEach(tbody => {
+                tbody.remove();
+            });
+
+            // Append new tbody sections from the response HTML
+            document.querySelector("table").insertAdjacentHTML('beforeend', response.data);
+        } catch (error) {
+            console.error("Error:", error);
+        }
     }
 };
 
@@ -315,6 +367,9 @@ $(document).ready(function () {
         const notCheckedCheckboxes = getNotCheckedCheckboxes();
         const targetsInput = document.getElementById("therapy_scheme_targets");
         targetsInput.value = JSON.stringify(notCheckedCheckboxes);
+
+        const stubsOrder = document.getElementById("therapy_scheme_stubsOrder");
+        stubsOrder.value = JSON.stringify(getStubsOrder());
 
         const form = document.getElementById("create_therapy_scheme_form");
         form.submit();

@@ -3,17 +3,20 @@
 namespace App\Service;
 
 use App\Repository\Therapy\LabelRepository;
+use App\Repository\Therapy\StubRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SchemeService
 {
 
   private $labelRepository;
+  private $stubRepository;
   private $translator;
 
-  public function __construct(LabelRepository $labelRepository, TranslatorInterface $translator)
+  public function __construct(LabelRepository $labelRepository, StubRepository $stubRepository, TranslatorInterface $translator)
   {
     $this->labelRepository = $labelRepository;
+    $this->stubRepository = $stubRepository;
     $this->translator = $translator;
   }
 
@@ -22,18 +25,48 @@ class SchemeService
     $suppress,
     $currentComments,
     $notCheckedCheckboxes,
+    $stubsOrder = [],
     $excerpt,
     $currentLanguage
   ): string {
     $newTbody = '';
+    
+    foreach ($stubsOrder as $order) {
+        $labelID = $order[0][0];
+        $stubIDs = $order[0][1];
 
+        if (in_array($labelID, $selectedLabels)) {
+            $index = array_search($labelID, $selectedLabels);
+            unset($selectedLabels[$index]);
+
+            $label = $this->labelRepository->find($labelID);
+            $labelStubs = [];
+
+            foreach ($stubIDs as $stubID) {
+                $stub = $this->stubRepository->find($stubID);
+                if ($stub) {
+                    $labelStubs[] = $stub;
+                }
+            }
+
+            $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt, $currentLanguage);
+        }
+    }
+    
+    // Generate tbody for remaining selected labels
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
-      
+      $labelStubs = $label->getStubsSortedByPosition();
+      $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt, $currentLanguage);
+    }
+
+    return $newTbody;
+  }
+
+  private function generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt, $currentLanguage) {
+      $newTbody = '';
       $tbodyId = 'oldTbody' . $label->getId();
       $newTbody .= '<tbody id="' . $tbodyId . '" class="sortable">';      
-
-      $labelStubs = $label->getStubsSortedByPosition();
 
       $trClass = 'table-light hideLabels filtered';
       if ($suppress) {
@@ -108,12 +141,8 @@ class SchemeService
       }
 
       $newTbody .= '</tbody>'; // Close the tbody for each label
-
-    }
-
-    return $newTbody;
+      return $newTbody;
   }
-
   public function generatePDFReport(
     $selectedLabels,
     $suppress,
