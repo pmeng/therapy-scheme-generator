@@ -68,13 +68,24 @@ class SchemeService
       $tbodyId = 'oldTbody' . $label->getId();
       $newTbody .= '<tbody id="' . $tbodyId . '" class="sortable">';      
 
+
       $trClass = 'table-light hideLabels filtered';
       if ($suppress) {
-        $trClass .= ' d-none';
+          $trClass .= ' d-none';
       }
       $newTbody .= '<tr class="' . $trClass . '" id="rowLabel|' . $label->getId() . '">' .
-        '<th colspan="5">' . $label->getReportName() . '</th>' .
-        '</tr>';
+          '<th colspan="5">' . $label->getReportName() . '</th>' .
+          '</tr>';
+      
+      // Sorting buttons
+      $newTbody .= '<tr class="sorting-buttons-row filtered">' .
+          '<td colspan="5">' . // Extend colspan to cover all columns
+          '<div class="d-flex justify-content-start">' . // Flex container for left alignment
+          '<button class="btn btn-sm btn-secondary sortAZ me-2" data-tbody="' . $tbodyId . '"><i class="fas fa-sort-alpha-down"></i> A-Z</button>' .
+          '<button class="btn btn-sm btn-secondary sortZA" data-tbody="' . $tbodyId . '"><i class="fas fa-sort-alpha-up"></i> Z-A</button>' .
+          '</div>' .
+          '</td>' .
+          '</tr>';
 
       if (count($labelStubs) > 0) {
         foreach ($labelStubs as $stub) {

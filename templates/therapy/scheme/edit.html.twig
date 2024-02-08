@@ -129,6 +129,8 @@
 {% block javascripts %}
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/sortablejs@1.14.0/Sortable.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 <script>
 
@@ -151,7 +153,7 @@
 			});
 		});
 	}
-	
+
 	function getStubsOrder() {
 		// Get all tbody elements with the class 'sortable'
 		const tbodyElements = document.querySelectorAll('tbody.sortable');
@@ -168,14 +170,18 @@
 				.filter((_, index) => index !== 0) // Skip the first row
 				.forEach(function(row) {
 					const match = row.id.match(/rowLabel\|(\d+)\|stub\|(\d+)/);
-					const labelId = match[1];
-					const stubId = match[2];
+					if(match) {
 
-					if (!labelOrderMap.has(labelId)) {
-						labelOrderMap.set(labelId, []);
+						const labelId = match[1];
+						const stubId = match[2];
+
+						if (!labelOrderMap.has(labelId)) {
+							labelOrderMap.set(labelId, []);
+						}
+
+						labelOrderMap.get(labelId).push(stubId);
+
 					}
-
-					labelOrderMap.get(labelId).push(stubId);
 				});
 
 			// Convert labelOrderMap to JSON and push it to labelOrderArray
@@ -284,6 +290,9 @@
 
 				// Append new tbody sections from the response HTML
 				document.querySelector("table").insertAdjacentHTML('beforeend', response.data);
+
+				sortInit();
+
 			} catch (error) {
 				console.error("Error:", error);
 			}
@@ -327,6 +336,55 @@
 			const label = "{{ 'app-therapy-report-use-excerpt'|trans }}".replace(replaceString , "'");
 			excerptSwitchLabel.innerText = label;
 	});
+
+
+	function sortInit() {
+
+		$('.sortAZ').each(function() {
+			$(this).on('click', function(event) {
+				event.preventDefault(); // Prevent the default form submission behavior
+				var tbodyId = $(this).data('tbody');
+				sortTable(tbodyId, 'asc');
+			});
+		});
+
+		$('.sortZA').each(function() {
+			$(this).on('click', function(event) {
+				event.preventDefault(); // Prevent the default form submission behavior
+				var tbodyId = $(this).data('tbody');
+				sortTable(tbodyId, 'desc');
+			});
+		});
+	}
+
+	function sortTable(tbodyId, order) {
+		var $tbody = $('#' + tbodyId);
+		var rows = $tbody.find('tr').toArray();
+
+		// Exclude the first two rows from sorting
+		var rowsToSort = rows.slice(2);
+
+		rowsToSort.sort(function(a, b) {
+			var nameA = $(a).find('.col-2').text().toUpperCase();
+			var nameB = $(b).find('.col-2').text().toUpperCase();
+			
+			if (order === 'asc') {
+				return nameA.localeCompare(nameB);
+			} else {
+				return nameB.localeCompare(nameA);
+			}
+		});
+
+		// Remove subsequent rows after the second one
+		rows.slice(2).forEach(function(row) {
+			row.remove();
+		});
+
+		// Append the sorted rows after the second row
+		rowsToSort.forEach(function(row) {
+			$tbody.append(row);
+		});
+	}
 
 	// * Resetting when page is refreshed
 	$(document).ready(function () {
