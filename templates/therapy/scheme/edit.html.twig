@@ -291,7 +291,7 @@
 	};
 
 	// * Generate the Report
-	const generateReport = async (selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt) => {
+	const generateReport = async (selectedLabels, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt) => {
 		if (selectedLabels.length > 0) {
 			const currentLanguage = "{{ app.request.locale }}";
 			const url = "{{ path('app_therapy_scheme_generateReport') }}";
@@ -300,10 +300,12 @@
 				currentLanguage,
 				currentComments,
 				notCheckedCheckboxes,
+				stubsOrder,
 				suppress,
 				excerpt
 			};
 			const result = await axios.post(url, requestBody);
+			console.log(result);
 			return result;
 		}
 	};
@@ -430,9 +432,10 @@
 		$("#generatePDFButton").click(async function () {
 			const currentComments = getCurrentComments();
 			const notCheckedCheckboxes = getNotCheckedCheckboxes();
+			const stubsOrder = getStubsOrder();
 			const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
 			const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
-			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt);
+			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt);
 			const responseStatus = response.status;
 			if (responseStatus === 200) {
 				const form = document.getElementById("generatePDFForm");
@@ -444,9 +447,10 @@
 			e.preventDefault();
 			const currentComments = getCurrentComments();
 			const notCheckedCheckboxes = getNotCheckedCheckboxes();
+			const stubsOrder = getStubsOrder();
 			const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
 			const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
-			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, suppress, excerpt);
+			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt);
 			const responseStatus = response.status;
 			if (responseStatus === 200) {
 				const generateHTMLLink = document.getElementById("generateHTMLLink");

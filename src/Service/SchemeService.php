@@ -148,74 +148,105 @@ class SchemeService
     $suppress,
     $currentComments,
     $notCheckedCheckboxes,
+    $stubsOrder,
     $excerpt,
   ): string {
-
+  
     $newTbody = '';
-
+    foreach ($stubsOrder as $order) {
+      $labelID = $order[0][0];
+      $stubIDs = $order[0][1];
+  
+      if (in_array($labelID, $selectedLabels)) {
+          $index = array_search($labelID, $selectedLabels);
+          unset($selectedLabels[$index]);
+  
+          $label = $this->labelRepository->find($labelID);
+          $labelStubs = [];
+  
+          foreach ($stubIDs as $stubID) {
+              $stub = $this->stubRepository->find($stubID);
+              if ($stub) {
+                  $labelStubs[] = $stub;
+              }
+          }
+  
+          $newTbody .= $this->generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt);
+      }
+    }
+  
+    // Generate tbody for remaining selected labels
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
       $labelStubs = $label->getStubsSortedByPosition();
-
-      $trLabel = '';
-      if (!$suppress) {
-        $trLabel .= '<tr class="table-light" id="rowLabel|' . $label->getId() . '">' .
-          '<th colspan="5">' . $label->getReportName() . '</th>' .
-          '</tr>';
+      $newTbody .= $this->generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt);
+    }
+  
+    return $newTbody;
+  
+  }
+  private function generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt) {
+  
+    $newTbody = '';
+    $trLabel = '';
+    if (!$suppress) {
+      $trLabel .= '<tr class="table-light" id="rowLabel|' . $label->getId() . '">' .
+        '<th colspan="5">' . $label->getReportName() . '</th>' .
+        '</tr>';
+    }
+    $newTbody .= $trLabel;
+  
+    foreach ($labelStubs as $stub) {
+  
+      // todo: dont show the line, if checkbox is not checked and show comments in a new row
+      // // * Start Checkbox
+      $inputKey = 'targets|labelID=' . $label->getId() . '|stubID=' . $stub->getId();
+      // check $inputKey if exist in $notCheckedCheckboxes
+      $exists = false;
+      foreach ($notCheckedCheckboxes as $checkboxKey) {
+        if ($checkboxKey == $inputKey) {
+          $exists = true;
+        }
       }
-      $newTbody .= $trLabel;
-
-      foreach ($labelStubs as $stub) {
-
-        // todo: dont show the line, if checkbox is not checked and show comments in a new row
-        // // * Start Checkbox
-        $inputKey = 'targets|labelID=' . $label->getId() . '|stubID=' . $stub->getId();
-        // check $inputKey if exist in $notCheckedCheckboxes
-        $exists = false;
-        foreach ($notCheckedCheckboxes as $checkboxKey) {
-          if ($checkboxKey == $inputKey) {
-            $exists = true;
-          }
+  
+      if ($exists) {
+        continue;
+      }
+  
+      $descriptionExcerptItem = '';
+      if ($excerpt) {
+        $descriptionExcerptItem = '<td ></td><td>' .
+          $stub->getExcerpt() .
+          '</td>';
+      } else {
+        // 100px;
+        $descriptionExcerptItem = '<td ></td><td>' .
+          $stub->getDescription() .
+          '</td>';
+      }
+   
+      $newTbody .= '<tr id="rowLabel|' . $label->getId() . '|stub|' . $stub->getId() . '">' .
+        '<td class="col-2">' .
+        $stub->getName() .
+        '</td>' .
+        $descriptionExcerptItem .
+        '</tr>';
+  
+      // Comment Section
+      $commentKey = 'labelID=' . $label->getId() . '|stubID=' . $stub->getId();
+  
+      $comment = '';
+      foreach ($currentComments as $currentComment) {
+        if ($currentComment['key'] == $commentKey) {
+          $comment = $currentComment['comment'];
         }
-
-        if ($exists) {
-          continue;
-        }
-
-        $descriptionExcerptItem = '';
-        if ($excerpt) {
-          $descriptionExcerptItem = '<td ></td><td>' .
-            $stub->getExcerpt() .
-            '</td>';
-        } else {
-          // 100px;
-          $descriptionExcerptItem = '<td ></td><td>' .
-            $stub->getDescription() .
-            '</td>';
-        }
-
-
-        $newTbody .= '<tr id="rowLabel|' . $label->getId() . '|stub|' . $stub->getId() . '">' .
-          '<td class="col-2">' .
-          $stub->getName() .
-          '</td>' .
-          $descriptionExcerptItem .
-          '</tr>';
-
-        // Comment Section
-        $commentKey = 'labelID=' . $label->getId() . '|stubID=' . $stub->getId();
-
-        $comment = '';
-        foreach ($currentComments as $currentComment) {
-          if ($currentComment['key'] == $commentKey) {
-            $comment = $currentComment['comment'];
-          }
-        }
-        if ($comment != '') {
-          $newTbody .= '<tr><td colspan="3">' . $comment . '</td></tr>';
-        }
+      }
+      if ($comment != '') {
+        $newTbody .= '<tr><td colspan="3">' . $comment . '</td></tr>';
       }
     }
+
     return $newTbody;
   }
+  
 }

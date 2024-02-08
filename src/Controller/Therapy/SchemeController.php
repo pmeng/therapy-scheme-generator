@@ -164,22 +164,24 @@ class SchemeController extends AbstractController
         $selectedLabels = $requestData['selectedLabels'];
         $currentComments = $requestData['currentComments'];
         $notCheckedCheckboxes = $requestData['notCheckedCheckboxes'];
+        $stubsOrder = $requestData['stubsOrder'];
         $suppress = $requestData['suppress'];
         $excerpt = $requestData['excerpt'];
-
-
+            
         $reportContent = $schemeService->generatePDFReport(
             $selectedLabels,
             $suppress,
             $currentComments,
             $notCheckedCheckboxes,
+            $stubsOrder,
             $excerpt
         );
+        
 
         $session = $request->getSession();
         $session->set('reportContent', $reportContent);
         $session->set('reportExcerpt', $excerpt);
-
+        
         return new JsonResponse(['success' => true], 200);
     }
 
@@ -360,7 +362,7 @@ class SchemeController extends AbstractController
     {
         $session = $request->getSession();
         $reportContent = $session->get('reportContent');
-        $reportExcerpt = $session->get('reportExcerpt');
+        $reportExcerpt = $session->get('reportExcerpt');        
         if (!$reportContent) {
             return $this->redirectToRoute('app_therapy_scheme_create');
         }
