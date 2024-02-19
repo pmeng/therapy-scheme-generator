@@ -49,9 +49,11 @@ class StubController extends AbstractController
         
         $query->orderBy("stub.$sortField", $direction);
 
-        // Check if you want to hide deleted stubs
         if ($showDeleted != true) {
-            $query->andWhere('stub.isDeleted IS NULL');
+            $query->andWhere($query->expr()->orX(
+                $query->expr()->isNull('stub.isDeleted'),
+                $query->expr()->eq('stub.isDeleted', 0)
+            ));
         }
 
         $pagination = $this->paginator->paginate(
@@ -236,6 +238,7 @@ class StubController extends AbstractController
             'stubForm' => $stubForm->createView(),
             "status" => "edit",
             'stub' => $stub,
+            'usedSchemes' => $stubRepository->findSchemesByStubId($id)
         ]);
     }
 

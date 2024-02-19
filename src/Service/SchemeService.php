@@ -21,7 +21,7 @@ class SchemeService
     $selectedLabels,
     $suppress,
     $currentComments,
-    $notCheckedCheckboxes,
+    $checkedCheckboxes,
     $excerpt,
     $currentLanguage
   ): string {
@@ -29,6 +29,9 @@ class SchemeService
 
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
+      if(is_null($label)) {
+        continue;
+      }
       $labelStubs = $label->getStubs();
 
       $trClass = 'table-light hideLabels';
@@ -55,10 +58,10 @@ class SchemeService
           // * Start Checkbox
           $inputKey = 'targets|labelID=' . $label->getId() . '|stubID=' . $stub->getId();
 
-          $checked = 'checked';
-          foreach ($notCheckedCheckboxes as $checkboxKey) {
+          $checked = '';
+          foreach ($checkedCheckboxes as $checkboxKey) {
             if ($checkboxKey == $inputKey) {
-              $checked = '';
+              $checked = 'checked';
             }
           }
           $checkboxInput = '<input type="checkbox" name="' . $inputKey . '" class="form-check-input" ' . $checked . ' />';
@@ -111,7 +114,7 @@ class SchemeService
     $selectedLabels,
     $suppress,
     $currentComments,
-    $notCheckedCheckboxes,
+    $checkedCheckboxes,
     $excerpt,
   ): string {
 
@@ -119,6 +122,9 @@ class SchemeService
 
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
+      if(is_null($label)) {
+        continue;
+      }
       $labelStubs = $label->getStubs();
 
       $trLabel = '';
@@ -134,11 +140,11 @@ class SchemeService
         // todo: dont show the line, if checkbox is not checked and show comments in a new row
         // // * Start Checkbox
         $inputKey = 'targets|labelID=' . $label->getId() . '|stubID=' . $stub->getId();
-        // check $inputKey if exist in $notCheckedCheckboxes
-        $exists = false;
-        foreach ($notCheckedCheckboxes as $checkboxKey) {
+        // check $inputKey if exist in $checkedCheckboxes
+        $exists = true;
+        foreach ($checkedCheckboxes as $checkboxKey) {
           if ($checkboxKey == $inputKey) {
-            $exists = true;
+            $exists = false;
           }
         }
 
