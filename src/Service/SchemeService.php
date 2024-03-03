@@ -50,6 +50,7 @@ class SchemeService
             }
 
             $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $currentLanguage);
+
         }
     }
     
@@ -186,6 +187,7 @@ class SchemeService
           }
   
           $newTbody .= $this->generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt);
+
       }
     }
   
@@ -203,6 +205,7 @@ class SchemeService
   
   }
   private function generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt) {
+
   
     $newTbody = '';
     $trLabel = '';

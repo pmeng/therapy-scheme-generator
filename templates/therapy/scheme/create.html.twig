@@ -227,6 +227,7 @@ const getCheckedCheckboxes = () => {
 
 {# ! Generate the dynamic form #}
 const generateDynamicForm = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
+
     // Get all tbody elements
     const tbodyElements = document.querySelectorAll("table tbody");
 
@@ -317,6 +318,7 @@ function sortTable(tbodyId, order) {
 
 {# ! Generate the Report #}
 const generateReport = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
+
     if (selectedLabels.length > 0) {
         const currentLanguage = "{{ app.request.locale }}";
         const url = "{{ path('app_therapy_scheme_generateReport') }}";
@@ -434,7 +436,7 @@ $(document).ready(function () {
 	$("#generatePDFButton").click(async function () {
 		const currentComments = getCurrentComments();
 		const checkedCheckboxes = getCheckedCheckboxes();
-        const stubsOrder = getStubsOrder();
+    const stubsOrder = getStubsOrder();
 		const suppress = $("#therapy_scheme_suppress").is(":checked");
 		const excerpt = $("#therapy_scheme_excerpt").is(":checked");
 		const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
@@ -449,7 +451,7 @@ $(document).ready(function () {
 		e.preventDefault();
 		const currentComments = getCurrentComments();
 		const checkedCheckboxes = getCheckedCheckboxes();
-        const stubsOrder = getStubsOrder();
+    const stubsOrder = getStubsOrder();
 		const suppress = $("#therapy_scheme_suppress").is(":checked");
 		const excerpt = $("#therapy_scheme_excerpt").is(":checked");
 		const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);

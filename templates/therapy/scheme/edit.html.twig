@@ -259,6 +259,7 @@
 
 	{# ! Generate the dynamic form #}
 	const generateDynamicForm = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
+
 		// Get all tbody elements
 		const tbodyElements = document.querySelectorAll("table tbody");
 		if (selectedLabels.length === 0) {
