@@ -211,11 +211,11 @@
 					selectedLabels = selectedValues;
 
 					const currentComments = getCurrentComments();
-					const checkedCheckboxes = getCheckedCheckboxes();
+					const notCheckedCheckboxes = getNotCheckedCheckboxes();
 					const stubsOrder = getStubsOrder();
 					const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
 					const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
-					await generateDynamicForm(selectedValues, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+					await generateDynamicForm(selectedValues, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt);
 					initializeSortableForTables()
 					{# * Show/hide content #}
 					if (selectedValues.length > 0) {
@@ -244,22 +244,21 @@
 	};
 
 	// * A function that returns an array of the NOT CHECKED checkboxes
-	const getCheckedCheckboxes = () => {
+	const getNotCheckedCheckboxes = () => {
 		const checkboxes = document.querySelectorAll("input[name^='targets|labelID=']");
 
-		const checkedCheckboxes = [];
+		const notCheckedCheckboxes = [];
 		checkboxes.forEach((checkbox) => {
-			if (checkbox.checked) {
-				checkedCheckboxes.push(checkbox.name);
+			if (!checkbox.checked) {
+				notCheckedCheckboxes.push(checkbox.name);
 			}
 		});
-		return checkedCheckboxes;
+		return notCheckedCheckboxes;
 	};
 
 
 	{# ! Generate the dynamic form #}
-	const generateDynamicForm = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
-
+	const generateDynamicForm = async (selectedLabels, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt) => {
 		// Get all tbody elements
 		const tbodyElements = document.querySelectorAll("table tbody");
 		if (selectedLabels.length === 0) {
@@ -274,7 +273,7 @@
 				selectedLabels,
 				currentLanguage,
 				currentComments,
-				checkedCheckboxes,
+				notCheckedCheckboxes,
 				stubsOrder,
 				suppress,
 				excerpt
@@ -301,7 +300,7 @@
 	};
 
 	// * Generate the Report
-	const generateReport = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
+	const generateReport = async (selectedLabels, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt) => {
 		if (selectedLabels.length > 0) {
 			const currentLanguage = "{{ app.request.locale }}";
 			const url = "{{ path('app_therapy_scheme_generateReport') }}";
@@ -309,7 +308,7 @@
 				selectedLabels,
 				currentLanguage,
 				currentComments,
-				checkedCheckboxes,
+				notCheckedCheckboxes,
 				stubsOrder,
 				suppress,
 				excerpt
@@ -473,12 +472,12 @@
 
 			// Get the comments and not-checked checkboxes
 			const comments = getCurrentComments();
-			const checkedCheckboxes = getCheckedCheckboxes();
+			const notCheckedCheckboxes = getNotCheckedCheckboxes();
 			const stubsOrder = getStubsOrder();
 
 			// Set the values of the hidden input fields
 			$("#edit_therapy_scheme_comments").val(JSON.stringify(comments));
-			$("#edit_therapy_scheme_targets").val(JSON.stringify(checkedCheckboxes));
+			$("#edit_therapy_scheme_targets").val(JSON.stringify(notCheckedCheckboxes));
 			$("#edit_therapy_scheme_stubsOrder").val(JSON.stringify(stubsOrder));
 
 			// Submit the form
@@ -490,11 +489,11 @@
 
 		$("#generatePDFButton").click(async function () {
 			const currentComments = getCurrentComments();
-			const checkedCheckboxes = getCheckedCheckboxes();
+			const notCheckedCheckboxes = getNotCheckedCheckboxes();
 			const stubsOrder = getStubsOrder();
 			const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
 			const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
-			const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt);
 			const responseStatus = response.status;
 			if (responseStatus === 200) {
 				const form = document.getElementById("generatePDFForm");
@@ -505,11 +504,11 @@
 		$("#generateHTMLButton").click(async function (e) {
 			e.preventDefault();
 			const currentComments = getCurrentComments();
-			const checkedCheckboxes = getCheckedCheckboxes();
+			const notCheckedCheckboxes = getNotCheckedCheckboxes();
 			const stubsOrder = getStubsOrder();
 			const suppress = $("#edit_therapy_scheme_suppress").is(":checked");
 			const excerpt = $("#edit_therapy_scheme_excerpt").is(":checked");
-			const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+			const response = await generateReport(selectedLabels, currentComments, notCheckedCheckboxes, stubsOrder, suppress, excerpt);
 			const responseStatus = response.status;
 			if (responseStatus === 200) {
 				const generateHTMLLink = document.getElementById("generateHTMLLink");
