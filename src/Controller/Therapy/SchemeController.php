@@ -91,8 +91,8 @@ class SchemeController extends AbstractController
             return 'Missing currentComments';
         }
 
-        if (!isset($requestData['checkedCheckboxes'])) {
-            return 'Missing checkedCheckboxes';
+        if (!isset($requestData['notCheckedCheckboxes'])) {
+            return 'Missing notCheckedCheckboxes';
         }
 
         if (!isset($requestData['currentLanguage'])) {
@@ -132,7 +132,7 @@ class SchemeController extends AbstractController
         $selectedLabels = $requestData['selectedLabels'];
         $currentLanguage = $requestData['currentLanguage'];
         $currentComments = $requestData['currentComments'];
-        $checkedCheckboxes = $requestData['checkedCheckboxes'];
+        $notCheckedCheckboxes = $requestData['notCheckedCheckboxes'];
         $stubsOrder = $requestData['stubsOrder'];
         $suppress = $requestData['suppress'];
         $excerpt = $requestData['excerpt'];
@@ -141,7 +141,7 @@ class SchemeController extends AbstractController
             $selectedLabels,
             $suppress,
             $currentComments,
-            $checkedCheckboxes,
+            $notCheckedCheckboxes,
             $stubsOrder,
             $excerpt,
             $currentLanguage
@@ -163,7 +163,7 @@ class SchemeController extends AbstractController
 
         $selectedLabels = $requestData['selectedLabels'];
         $currentComments = $requestData['currentComments'];
-        $checkedCheckboxes = $requestData['checkedCheckboxes'];
+        $notCheckedCheckboxes = $requestData['notCheckedCheckboxes'];
         $stubsOrder = $requestData['stubsOrder'];
         $suppress = $requestData['suppress'];
         $excerpt = $requestData['excerpt'];
@@ -172,7 +172,7 @@ class SchemeController extends AbstractController
             $selectedLabels,
             $suppress,
             $currentComments,
-            $checkedCheckboxes,
+            $notCheckedCheckboxes,
             $stubsOrder,
             $excerpt
         );
@@ -203,7 +203,7 @@ class SchemeController extends AbstractController
         $selectedLabelsEntities = $labelService->getLabelsByIds($selectedLabels);
                   
         $currentComments = $editedScheme->getComments();
-        $checkedCheckboxes = $editedScheme->getTargets();
+        $notCheckedCheckboxes = $editedScheme->getTargets();
         $stubsOrder = $editedScheme->getStubsOrder();
         $suppress = $editedScheme->isSuppress();
         $excerpt = $editedScheme->isExcerpt();
@@ -212,7 +212,7 @@ class SchemeController extends AbstractController
             $selectedLabels,
             $suppress,
             $currentComments,
-            $checkedCheckboxes,
+            $notCheckedCheckboxes,
             $stubsOrder,
             $excerpt,
             $currentLanguage
