@@ -24,7 +24,7 @@ class SchemeService
     $selectedLabels,
     $suppress,
     $currentComments,
-    $notCheckedCheckboxes,
+    $checkedCheckboxes,
     $stubsOrder = [],
     $excerpt,
     $currentLanguage
@@ -49,21 +49,25 @@ class SchemeService
                 }
             }
 
-            $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt, $currentLanguage);
+            $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $currentLanguage);
+
         }
     }
     
     // Generate tbody for remaining selected labels
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
+      if(is_null($label)) {
+        continue;
+      }
       $labelStubs = $label->getStubsSortedByPosition();
-      $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt, $currentLanguage);
+      $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $currentLanguage);
     }
 
     return $newTbody;
   }
 
-  private function generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt, $currentLanguage) {
+  private function generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $currentLanguage) {
       $newTbody = '';
       $tbodyId = 'oldTbody' . $label->getId();
       $newTbody .= '<tbody id="' . $tbodyId . '" class="sortable">';      
@@ -103,10 +107,10 @@ class SchemeService
           // * Start Checkbox
           $inputKey = 'targets|labelID=' . $label->getId() . '|stubID=' . $stub->getId();
 
-          $checked = 'checked';
-          foreach ($notCheckedCheckboxes as $checkboxKey) {
+          $checked = '';
+          foreach ($checkedCheckboxes as $checkboxKey) {
             if ($checkboxKey == $inputKey) {
-              $checked = '';
+              $checked = 'checked';
             }
           }
           $checkboxInput = '<input type="checkbox" name="' . $inputKey . '" class="form-check-input" ' . $checked . ' />';
@@ -158,7 +162,7 @@ class SchemeService
     $selectedLabels,
     $suppress,
     $currentComments,
-    $notCheckedCheckboxes,
+    $checkedCheckboxes,
     $stubsOrder,
     $excerpt,
   ): string {
@@ -182,21 +186,26 @@ class SchemeService
               }
           }
   
-          $newTbody .= $this->generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt);
+          $newTbody .= $this->generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt);
+
       }
     }
   
     // Generate tbody for remaining selected labels
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
+      if(is_null($label)) {
+        continue;
+      }
       $labelStubs = $label->getStubsSortedByPosition();
-      $newTbody .= $this->generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt);
+      $newTbody .= $this->generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt);
     }
   
     return $newTbody;
   
   }
-  private function generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $notCheckedCheckboxes, $excerpt) {
+  private function generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt) {
+
   
     $newTbody = '';
     $trLabel = '';
@@ -212,11 +221,11 @@ class SchemeService
       // todo: dont show the line, if checkbox is not checked and show comments in a new row
       // // * Start Checkbox
       $inputKey = 'targets|labelID=' . $label->getId() . '|stubID=' . $stub->getId();
-      // check $inputKey if exist in $notCheckedCheckboxes
-      $exists = false;
-      foreach ($notCheckedCheckboxes as $checkboxKey) {
+      // check $inputKey if exist in $checkedCheckboxes
+      $exists = true;
+      foreach ($checkedCheckboxes as $checkboxKey) {
         if ($checkboxKey == $inputKey) {
-          $exists = true;
+          $exists = false;
         }
       }
   
