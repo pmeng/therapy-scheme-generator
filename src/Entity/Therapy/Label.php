@@ -5,6 +5,7 @@ namespace App\Entity\Therapy;
 use App\Repository\Therapy\LabelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LabelRepository::class)]
@@ -128,21 +129,29 @@ class Label
 
     public function addStub(Stub $stub): void
     {
+        foreach ($this->labelStubs as $labelStub) {
+            if ($labelStub->getStub() === $stub) {
+                return;
+            }
+        }
         $labelStub = new LabelStub();
         $labelStub->setLabel($this);
         $labelStub->setStub($stub);
-
-        $this->labelStubs[] = $labelStub;
+        $this->labelStubs[] = $labelStub;        
     }
 
-    public function deleteStub(Stub $stub): void
+    public function deleteStub(Stub $stub, EntityManagerInterface $entityManager): void
     {
+        // Remove the LabelStub entities associated with the given Stub
+        
         foreach ($this->labelStubs as $labelStub) {
             if ($labelStub->getStub() === $stub) {
-                $this->labelStubs->removeElement($labelStub);
-                break;
+                $entityManager->remove($labelStub);
             }
         }
+    
+        // Flush the changes to the database
+        $entityManager->flush();
     }
 
     public function __toString(): string

@@ -225,14 +225,12 @@ class StubController extends AbstractController
 
             // * Removing the old labels
             foreach ($oldLabels as $old) {
-                $old->removeStub($stub);
-                $this->entityManager->persist($old);
+                $old->deleteStub($stub, $this->entityManager);
             }
 
             // * Adding the new labels
             foreach ($newLabels as $new) {
                 $new->addStub($stub);
-                $this->entityManager->persist($new);
             }
 
             $this->entityManager->flush();

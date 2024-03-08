@@ -7,7 +7,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -22,8 +21,10 @@ class LabelType extends AbstractType
             ->add('reportName', TextType::class, [
                 'label' => 'app-therapy-label-edit-form-report-name',
             ])
-            ->add('stubsOrder', HiddenType::class, ['mapped' => false], [
-                'label' => 'app-therapy-label-edit-form-report-name',
+            ->add('stubsOrder', TextType::class, [
+                'label' => false,
+                'mapped' => false,
+                'attr' => ['style' => 'display:none', 'readonly' => true],
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'app-save-button',
@@ -35,8 +36,8 @@ class LabelType extends AbstractType
                     'data-bs-toggle' => 'modal',
                     'data-bs-target' => '#confirmModal'
                 ]
-            ])
-        ;
+            ]);
+            
     }
 
     public function configureOptions(OptionsResolver $resolver): void
