@@ -25,12 +25,12 @@ class SchemeService
     $suppress,
     $currentComments,
     $checkedCheckboxes,
-    $stubsOrder = [],
+    $stubsOrder,
     $excerpt,
     $currentLanguage
   ): string {
     $newTbody = '';
-    
+    $stubsOrder = $stubsOrder ?? [];
     foreach ($stubsOrder as $order) {
         $labelID = $order[0][0];
         $stubIDs = $order[0][1];
