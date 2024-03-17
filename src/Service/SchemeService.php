@@ -48,6 +48,14 @@ class SchemeService
                     $labelStubs[] = $stub;
                 }
             }
+            
+            // Fetch all stubs associated with the label
+            $allStubs = $label->getStubs()->toArray();
+            foreach ($allStubs as $stub) {
+                if (!in_array($stub, $labelStubs)) {
+                    $labelStubs[] = $stub;
+                }
+            }
 
             $newTbody .= $this->generateLabelTbody($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $currentLanguage);
 
