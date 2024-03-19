@@ -246,9 +246,6 @@ class SchemeService
       }
    
       $newTbody .= '<tr id="rowLabel|' . $label->getId() . '|stub|' . $stub->getId() . '">' .
-        '<td class="col-2">' .
-        $stub->getName() .
-        '</td>' .
         $descriptionExcerptItem .
         '</tr>';
   
