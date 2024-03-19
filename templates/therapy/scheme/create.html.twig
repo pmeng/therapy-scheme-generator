@@ -60,7 +60,7 @@
 
 				<div class="row mb-3">
 					<div class="col">
-						<div class="d-grid gap-2 d-md-block">
+						<div class="float-button-container d-grid gap-2 d-md-block">
 							<button class="btn btn-primary" type="button" id="generateHTMLButton">
 								{{ 'app-therapy-report-generate-report-button'|trans }}
 								(HTML)
@@ -472,4 +472,17 @@ $(document).ready(function () {
 			display: none;
 		}
 	</style>
+    <style>
+        .float-button-container {
+            position: fixed;
+            bottom: 20px; /* Adjust as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        .float-button-container button {
+            margin-top: 10px; /* Add some spacing between buttons */
+        }
+    </style>
 {% endblock %}
