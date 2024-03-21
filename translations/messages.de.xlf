@@ -29,6 +29,10 @@
         <source>app-therapy-stubs</source>
         <target>Therapiestummel</target>
       </trans-unit>
+      <trans-unit id="yT7XFT7" resname="app-therapy-stub-categories">
+        <source>app-therapy-stub-categories</source>
+        <target>Kategorien von Therapie-Stubs</target>
+      </trans-unit>
       <trans-unit id="KIKVxKE" resname="app-toggle-navigation">
         <source>app-toggle-navigation</source>
         <target>Navigation umschalten</target>

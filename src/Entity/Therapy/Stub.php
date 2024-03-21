@@ -31,6 +31,10 @@ class Stub
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $isDeleted;
 
+    #[ORM\ManyToOne(targetEntity: StubCategory::class, inversedBy: "stubs")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?StubCategory $category;
+
     #[ORM\OneToMany(mappedBy: "stub", targetEntity: LabelStub::class, cascade: ["persist", "remove"])]
     private ?Collection $labelStubs;
 
@@ -164,6 +168,18 @@ class Stub
                 break;
             }
         }
+    }
+
+    public function getCategory(): ?StubCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?StubCategory $category): self
+    {
+        $this->category = $category;
+
+        return $this;
     }
     
     public function getCreatedAt(): ?\DateTimeImmutable
