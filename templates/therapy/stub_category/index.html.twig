@@ -1,0 +1,158 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-3">
+
+        <div class="row mb-3">
+            <h2>Stub Categories</h2>
+        </div>
+
+        <form id="editCategoryForm" method="post">
+            {{ form_start(stubCategoryForm) }}
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        {{ form_widget(stubCategoryForm.name, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="categoryOrder">Order</label>
+                        {{ form_widget(stubCategoryForm.categoryOrder, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        {{ form_widget(stubCategoryForm.save, {'attr': {'class': 'btn btn-primary form-control'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            {{ form_end(stubCategoryForm) }}
+        </form>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <table id="categoriesTable" class="table table-striped" style="table-layout: fixed;">
+                    <colgroup>
+                        <col style="width: 50%;">
+                        <col style="width: 10%;">
+                        <col style="width: 5%;">
+                        <col style="width: 5%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Order</th>
+                            <th>     </th>
+                            <th>     </th>
+                        </tr>
+                    </thead>
+                    <tbody id="sortableTable">
+                        {% for category in pagination %}
+                        <tr>
+                            <td>
+                                <span id="categoryName_{{ category.id }}">{{ category.name }}</span>
+                                <input type="text" id="editCategoryName_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.name }}">
+                            </td>
+                            <td>
+                                <span id="categoryOrder_{{ category.id }}">{{ category.categoryOrder }}</span>
+                                <input type="number" id="editCategoryOrder_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.categoryOrder }}">
+                            </td>
+                            <td>
+                                <button class="btn btn-primary edit-category" data-id="{{ category.id }}">Edit</button>
+                                <button class="btn btn-success save-category" data-id="{{ category.id }}" style="display: none;">Save</button>
+
+                                <form action="{{ path('app_therapy_stub_category_edit', {'id': category.id}) }}" method="post" id="editForm_{{category.id}}"  >
+                                </form>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger delete-category" data-id="{{ category.id }}">Delete</button>
+                                <form action="{{ path('app_therapy_stub_category_delete', {'id': category.id}) }}" method="post" id="deleteForm_{{category.id}}"  >
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sortable.js initialization
+            new Sortable(document.getElementById('sortableTable'), {
+                animation: 150,
+                onEnd: function(evt) {
+                    // Perform actions after sorting
+                    console.log(evt.oldIndex, ' -> ', evt.newIndex);
+                }
+            });
+
+            // Edit button click event handler
+            document.querySelectorAll('.edit-category').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var categoryId = this.getAttribute('data-id');
+                    document.getElementById('categoryName_' + categoryId).style.display = 'none';
+                    document.getElementById('editCategoryName_' + categoryId).style.display = 'block';
+
+                    document.getElementById('categoryOrder_' + categoryId).style.display = 'none';
+                    document.getElementById('editCategoryOrder_' + categoryId).style.display = 'block';
+
+                    this.style.display = 'none';
+                    document.querySelector('.save-category[data-id="' + categoryId + '"]').style.display = 'inline-block';
+                });
+            });
+
+
+            // Save button click event handler
+            document.querySelectorAll('.save-category').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var categoryId = this.getAttribute('data-id');
+                    var newName = document.getElementById('editCategoryName_' + categoryId).value;
+                    var newOrder = document.getElementById('editCategoryOrder_' + categoryId).value;
+
+                    // Add values to the form
+                    var editForm = document.getElementById('editForm_' + categoryId);
+                    var nameInput = document.createElement('input');
+                    nameInput.setAttribute('type', 'hidden');
+                    nameInput.setAttribute('name', 'name');
+                    nameInput.setAttribute('value', newName);
+                    editForm.appendChild(nameInput);
+
+                    var orderInput = document.createElement('input');
+                    orderInput.setAttribute('type', 'hidden');
+                    orderInput.setAttribute('name', 'categoryOrder');
+                    orderInput.setAttribute('value', newOrder);
+                    editForm.appendChild(orderInput);
+
+                    // Submit the form
+                    editForm.submit();
+                });
+            });
+
+            // Delete button click event handler
+            document.querySelectorAll('.delete-category').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var categoryId = this.getAttribute('data-id');
+                    document.getElementById('deleteForm_' + categoryId).submit();
+                });
+            });
+
+        });
+    </script>
+
+
+
+
+{% endblock %}
+    
