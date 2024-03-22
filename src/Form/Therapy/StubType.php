@@ -4,6 +4,7 @@ namespace App\Form\Therapy;
 
 
 use App\Entity\Therapy\Label;
+use App\Entity\Therapy\StubCategory;
 use Symfony\Component\Form\FormEvents;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
@@ -57,6 +58,14 @@ class StubType extends AbstractType
                 'class' => Label::class,
                 'choice_label' => 'shortName',
                 'multiple' => true,
+                'required' => true,
+            ])
+            ->add('category', EntityType::class, [
+                'label' => 'Category',
+                'attr' => ['class' => 'select2 form-control select2-widget'],
+                'class' => StubCategory::class,
+                'choice_label' => 'name',
+                'multiple' => false,
                 'required' => true,
             ])
             ->add('submitAndNew', CheckboxType::class, [

@@ -51,7 +51,7 @@
                             <th>     </th>
                         </tr>
                     </thead>
-                    <tbody id="sortableTable">
+                    <tbody>
                         {% for category in pagination %}
                         <tr>
                             <td>
@@ -85,19 +85,9 @@
             {{ knp_pagination_render(pagination) }}
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Sortable.js initialization
-            new Sortable(document.getElementById('sortableTable'), {
-                animation: 150,
-                onEnd: function(evt) {
-                    // Perform actions after sorting
-                    console.log(evt.oldIndex, ' -> ', evt.newIndex);
-                }
-            });
-
             // Edit button click event handler
             document.querySelectorAll('.edit-category').forEach(function(button) {
                 button.addEventListener('click', function() {
