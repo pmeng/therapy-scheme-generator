@@ -16,8 +16,11 @@ class StubCategory
     #[ORM\Column(type: "integer")]
     private ?int $id;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private string $name;
+    #[ORM\Column(type: 'string', length: 50)]
+    private ?string $shortName;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $reportName;
 
     #[ORM\Column(type: "integer")]
     private int $categoryOrder;
@@ -35,14 +38,26 @@ class StubCategory
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getShortName(): ?string
     {
-        return $this->name;
+        return $this->shortName;
     }
 
-    public function setName(string $name): self
+    public function setShortName(string $shortName): self
     {
-        $this->name = $name;
+        $this->shortName = $shortName;
+
+        return $this;
+    }
+
+    public function getReportName(): ?string
+    {
+        return $this->reportName;
+    }
+
+    public function setReportName(?string $reportName): self
+    {
+        $this->reportName = $reportName;
 
         return $this;
     }

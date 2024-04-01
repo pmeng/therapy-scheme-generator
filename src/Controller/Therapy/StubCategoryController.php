@@ -48,8 +48,8 @@ class StubCategoryController extends AbstractController
 
         $categories = $repository
             ->createQueryBuilder('stub_category')
-            ->select('stub_category.id', 'stub_category.name')
-            ->orderBy('stub_category.name', 'ASC')
+            ->select('stub_category.id', 'stub_category.shortName')
+            ->orderBy('stub_category.categoryOrder', 'ASC')
             ->getQuery()
             ->getResult()
         ;
@@ -61,7 +61,8 @@ class StubCategoryController extends AbstractController
             $data = $stubCategoryForm->getData();
 
             return $this->redirectToRoute('app_new_stub_category', [
-                'name' => $data['name'],
+                'shortName' => $data['shortName'],
+                'reportName' => $data['reportName'],
                 'categoryOrder' => $data['categoryOrder']
             ]);
 
@@ -77,13 +78,16 @@ class StubCategoryController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/category/new', name: 'app_new_stub_category')]
     public function new(Request $request): Response
     {
-        $name = $request->query->get('name');
+        $shortName = $request->query->get('shortName');
+        $reportName = $request->query->get('reportName');
         $order = $request->query->get('categoryOrder');
         $order = (int)$order;
     
         // Create a new StubCategory entity and set its properties
         $category = new StubCategory();
-        $category->setName($name);
+
+        $category->setshortName($shortName);
+        $category->setreportName($reportName);
         $category->setCategoryOrder($order);
     
         // Persist the entity to the database
@@ -98,7 +102,8 @@ class StubCategoryController extends AbstractController
     public function edit(Request $request, int $id): Response
     {
         // Retrieve the name and order parameters
-        $name = $request->request->get('name');
+        $shortName = $request->request->get('shortName');
+        $reportName = $request->request->get('reportName');
         $order = $request->request->get('categoryOrder');
         $order = (int)$order;
     
@@ -106,7 +111,8 @@ class StubCategoryController extends AbstractController
         $stubCategory = $this->entityManager->getRepository(StubCategory::class)->find($id);
     
         // Update the entity with the new data
-        $stubCategory->setName($name);
+        $stubCategory->setshortName($shortName);
+        $stubCategory->setreportName($reportName);
         $stubCategory->setCategoryOrder($order);
     
         // Persist the changes to the database

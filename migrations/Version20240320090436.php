@@ -24,13 +24,6 @@ final class Version20240320090436 extends AbstractMigration
         $this->addSql('ALTER TABLE stub ADD category_id INT DEFAULT NULL, CHANGE created_at created_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', CHANGE updated_at updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\'');
         $this->addSql('ALTER TABLE stub ADD CONSTRAINT FK_FAC29D2512469DE2 FOREIGN KEY (category_id) REFERENCES stub_category (id)');
         $this->addSql('CREATE INDEX IDX_FAC29D2512469DE2 ON stub (category_id)');
-
-        // Add a default category
-        $this->addSql("INSERT INTO stub_category (name, `category_order`) VALUES ('Default Category', 1)");
-
-        // Update existing stubs to the default category
-        $this->addSql('UPDATE stub SET category_id = (SELECT id FROM stub_category WHERE name = \'Default Category\') WHERE category_id IS NULL');
-
     }
 
     public function down(Schema $schema): void

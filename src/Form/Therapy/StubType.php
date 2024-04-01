@@ -64,7 +64,7 @@ class StubType extends AbstractType
                 'label' => 'Category',
                 'attr' => ['class' => 'select2 form-control select2-widget'],
                 'class' => StubCategory::class,
-                'choice_label' => 'name',
+                'choice_label' => 'shortName',
                 'multiple' => false,
                 'required' => true,
             ])
