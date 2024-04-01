@@ -25,8 +25,12 @@ class StubCategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, [
-                'label' => 'app-therapy-stub-category-form-label-name',
+            ->add('shortName', TextType::class, [
+                'label' => 'app-therapy-stub-category-form-label-short-name',
+                'translation_domain' => 'messages',
+            ])
+            ->add('reportName', TextType::class, [
+                'label' => 'app-therapy-stub-category-form-label-report-name',
                 'translation_domain' => 'messages',
             ])
             ->add('categoryOrder', IntegerType::class, [

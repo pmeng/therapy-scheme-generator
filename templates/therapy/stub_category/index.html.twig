@@ -11,13 +11,19 @@
             {{ form_start(stubCategoryForm) }}
 
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <div class="form-group">
-                        <label for="name">Name</label>
-                        {{ form_widget(stubCategoryForm.name, {'attr': {'class': 'form-control'}}) }}
+                        <label for="shortName">Short Name</label>
+                        {{ form_widget(stubCategoryForm.shortName, {'attr': {'class': 'form-control'}}) }}
                     </div>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="reportName">Report Name</label>
+                        {{ form_widget(stubCategoryForm.reportName, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="col-lg-1">
                     <div class="form-group">
                         <label for="categoryOrder">Order</label>
                         {{ form_widget(stubCategoryForm.categoryOrder, {'attr': {'class': 'form-control'}}) }}
@@ -38,14 +44,16 @@
             <div class="col-lg-12">
                 <table id="categoriesTable" class="table table-striped" style="table-layout: fixed;">
                     <colgroup>
-                        <col style="width: 50%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
                         <col style="width: 10%;">
                         <col style="width: 5%;">
                         <col style="width: 5%;">
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Short Name</th>
+                            <th>Report Name</th>
                             <th>Order</th>
                             <th>     </th>
                             <th>     </th>
@@ -55,8 +63,12 @@
                         {% for category in pagination %}
                         <tr>
                             <td>
-                                <span id="categoryName_{{ category.id }}">{{ category.name }}</span>
-                                <input type="text" id="editCategoryName_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.name }}">
+                                <span id="categoryShortName_{{ category.id }}">{{ category.shortName }}</span>
+                                <input type="text" id="editCategoryShortName_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.shortName }}">
+                            </td>
+                            <td>
+                                <span id="categoryReportName_{{ category.id }}">{{ category.reportName }}</span>
+                                <input type="text" id="editCategoryReportName_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.reportName }}">
                             </td>
                             <td>
                                 <span id="categoryOrder_{{ category.id }}">{{ category.categoryOrder }}</span>
@@ -102,7 +114,7 @@
                                 <label for="categorySelect">Select Category</label>
                                 <select class="form-select" id="categorySelect">
                                     {% for category in categories %}
-                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                        <option value="{{ category.id }}">{{ category.shortName }}</option>
                                     {% endfor %}
                                 </select>
                                 <input type="hidden" id="categoryId" value="">
@@ -130,8 +142,11 @@
             document.querySelectorAll('.edit-category').forEach(function(button) {
                 button.addEventListener('click', function() {
                     var categoryId = this.getAttribute('data-id');
-                    document.getElementById('categoryName_' + categoryId).style.display = 'none';
-                    document.getElementById('editCategoryName_' + categoryId).style.display = 'block';
+                    document.getElementById('categoryShortName_' + categoryId).style.display = 'none';
+                    document.getElementById('editCategoryShortName_' + categoryId).style.display = 'block';
+
+                    document.getElementById('categoryReportName_' + categoryId).style.display = 'none';
+                    document.getElementById('editCategoryReportName_' + categoryId).style.display = 'block';
 
                     document.getElementById('categoryOrder_' + categoryId).style.display = 'none';
                     document.getElementById('editCategoryOrder_' + categoryId).style.display = 'block';
@@ -146,16 +161,25 @@
             document.querySelectorAll('.save-category').forEach(function(button) {
                 button.addEventListener('click', function() {
                     var categoryId = this.getAttribute('data-id');
-                    var newName = document.getElementById('editCategoryName_' + categoryId).value;
+                    var newShortName = document.getElementById('editCategoryShortName_' + categoryId).value;
+                    var newReportName = document.getElementById('editCategoryReportName_' + categoryId).value;
                     var newOrder = document.getElementById('editCategoryOrder_' + categoryId).value;
 
                     // Add values to the form
                     var editForm = document.getElementById('editForm_' + categoryId);
-                    var nameInput = document.createElement('input');
-                    nameInput.setAttribute('type', 'hidden');
-                    nameInput.setAttribute('name', 'name');
-                    nameInput.setAttribute('value', newName);
-                    editForm.appendChild(nameInput);
+                    var shortNameInput = document.createElement('input');
+
+                    shortNameInput.setAttribute('type', 'hidden');
+                    shortNameInput.setAttribute('name', 'shortName');
+                    shortNameInput.setAttribute('value', newShortName);
+                    editForm.appendChild(shortNameInput);
+
+                    var reportNameInput = document.createElement('input');
+
+                    reportNameInput.setAttribute('type', 'hidden');
+                    reportNameInput.setAttribute('name', 'reportName');
+                    reportNameInput.setAttribute('value', newReportName);
+                    editForm.appendChild(reportNameInput);
 
                     var orderInput = document.createElement('input');
                     orderInput.setAttribute('type', 'hidden');
@@ -171,7 +195,6 @@
             document.querySelectorAll('.delete-category').forEach(function(button) {
                 button.addEventListener('click', function() {
                     var categoryId = this.getAttribute('data-id');
-                    var categoryName = document.getElementById('categoryName_' + categoryId).textContent.trim();
 
                     // Submit the check form
                     var checkForm = document.getElementById('checkUsageForm_' + categoryId);
