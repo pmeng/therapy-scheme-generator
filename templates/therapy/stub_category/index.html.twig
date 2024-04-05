@@ -235,6 +235,21 @@
                 });
             });
 
+            document.getElementById('usedStubsModal').addEventListener('shown.bs.modal', function () {
+                var categoryId = document.getElementById('categoryId').value;
+                var select = document.getElementById('categorySelect');
+                var options = select.options;
+
+                console.log(options[0].value);
+                
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value == categoryId) {
+                        select.removeChild(options[i]);
+                        break;
+                    }
+                }
+            })
+
 
             document.getElementById('reassignStubsBtn').addEventListener('click', function() {
                 var newCategoryId = document.getElementById('categorySelect').value;
