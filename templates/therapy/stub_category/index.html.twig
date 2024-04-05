@@ -111,8 +111,8 @@
                         </div>
                         <div id="selectCategoryContainer">
                             <div class="form-group mt-3">
-                                <label for="categorySelect">Select Category</label>
                                 <select class="form-select" id="categorySelect">
+                                        <option value="" hidden=true fixed=true>Select Category</option>
                                     {% for category in categories %}
                                         <option value="{{ category.id }}">{{ category.shortName }}</option>
                                     {% endfor %}
@@ -244,11 +244,24 @@
                 
                 for (var i = 0; i < options.length; i++) {
                     if (options[i].value == categoryId) {
-                        select.removeChild(options[i]);
+                        options[i].hidden = true;
                         break;
                     }
                 }
             })
+            
+            document.getElementById('usedStubsModal').addEventListener('hidden.bs.modal', function () {
+                var categoryId = document.getElementById('categoryId').value;
+                var select = document.getElementById('categorySelect');
+                var options = select.options;
+
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value == categoryId) {
+                        options[i].hidden = false;
+                        break;
+                    }
+                }
+            });
 
 
             document.getElementById('reassignStubsBtn').addEventListener('click', function() {
