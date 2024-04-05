@@ -57,7 +57,7 @@
 				</div>
                 </div>
 
-                <div class="container-fluid">
+                <div class="row mt-3 container-fluid floating-buttons-container">
                     <div class="row">
                         <div class="col text-center">
                             <div class="d-grid gap-2">
@@ -513,6 +513,17 @@ $(document).ready(function () {
 
 {% block stylesheets %}
 	<style>
+        .floating-buttons-container {
+			position: fixed;
+			bottom: 20px;
+			right: 50%; /* Center horizontally */
+			transform: translateX(50%); /* Center horizontally */
+			display: flex;
+			flex-direction: column;
+			gap: 10px; /* Adjust the gap between buttons as needed */
+			width: fit-content; /* Fill the width of the content */
+		}
+
 		.d-none {
 			display: none;
 		}
