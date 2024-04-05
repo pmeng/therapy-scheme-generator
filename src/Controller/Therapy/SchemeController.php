@@ -62,8 +62,8 @@ class SchemeController extends AbstractController
             $comments = json_decode($formData['comments'], true);
             $scheme->setComments($comments);
             
-            $scheme->setSuppress($formData['suppress']);
-            $scheme->setExcerpt($formData['excerpt']);
+            $scheme->setSuppress(false);
+            $scheme->setExcerpt(false);
             
             $scheme->setCreatedAt(new \DateTimeImmutable());
             $scheme->setUpdatedAt(new \DateTimeImmutable());
@@ -167,17 +167,39 @@ class SchemeController extends AbstractController
         $stubsOrder = $requestData['stubsOrder'];
         $suppress = $requestData['suppress'];
         $excerpt = $requestData['excerpt'];
-            
-        $reportContent = $schemeService->generatePDFReport(
-            $selectedLabels,
-            $suppress,
-            $currentComments,
-            $checkedCheckboxes,
-            $stubsOrder,
-            $excerpt
-        );
-        
+        $combined = $requestData['combined'];
 
+        if(!$combined) {
+
+            $reportContent = $schemeService->generatePDFReport(
+                $selectedLabels,
+                $suppress,
+                $currentComments,
+                $checkedCheckboxes,
+                $stubsOrder,
+                $excerpt
+            );
+
+        } else {
+            $excerpt = false;
+            $reportContent = $schemeService->generatePDFReport(
+                $selectedLabels,
+                $suppress,
+                $currentComments,
+                $checkedCheckboxes,
+                $stubsOrder,
+                $excerpt
+            );
+            $reportContent .= $schemeService->generatePDFReport(
+                $selectedLabels,
+                $suppress,
+                $currentComments,
+                $checkedCheckboxes,
+                $stubsOrder,
+                !$excerpt
+            ); 
+        }
+        
         $session = $request->getSession();
         $session->set('reportContent', $reportContent);
         $session->set('reportExcerpt', $excerpt);

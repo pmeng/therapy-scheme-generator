@@ -121,7 +121,10 @@ class Label
 
         $stubs = new ArrayCollection();
         foreach ($labelStubs as $labelStub) {
-            $stubs[] = $labelStub->getStub();
+            $stub = $labelStub->getStub();
+            if(!$stub->getIsDeleted()) {
+                $stubs[] = $labelStub->getStub();
+            }
         }
 
         return $stubs;

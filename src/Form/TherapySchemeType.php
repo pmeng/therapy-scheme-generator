@@ -26,14 +26,14 @@ class TherapySchemeType extends AbstractType
                 'label' => false,
                 'data' => true
             ])
-            ->add('suppress', CheckboxType::class, [
-                'required' => false,
-                'label' => false
-            ])
-            ->add('excerpt', CheckboxType::class, [
-                'required' => false,
-                'label' => false
-            ])
+            // ->add('suppress', CheckboxType::class, [
+            //     'required' => false,
+            //     'label' => false
+            // ])
+            // ->add('excerpt', CheckboxType::class, [
+            //     'required' => false,
+            //     'label' => false
+            // ])
             ->add('comments', TextareaType::class, [
                 'required' => false,
                 'label' => false,

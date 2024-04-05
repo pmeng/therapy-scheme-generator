@@ -153,13 +153,25 @@
         <source>app-therapy-report-table-background</source>
         <target>Background</target>
       </trans-unit>
+      <trans-unit id="q_H@4Vr" resname="app-therapy-report-table-label">
+        <source>app-therapy-report-table-label</source>
+        <target>Labels name</target>
+      </trans-unit>
       <trans-unit id="q_H4sVr" resname="app-therapy-report-table-comment">
         <source>app-therapy-report-table-comment</source>
         <target>Comment</target>
       </trans-unit>
-      <trans-unit id="AuY7XjK" resname="app-therapy-report-generate-report-button">
-        <source>app-therapy-report-generate-report-button</source>
-        <target>Generate Report</target>
+      <trans-unit id="AuY7XjK" resname="app-therapy-report-generate-patient-report-button">
+        <source>app-therapy-report-generate-patient-report-button</source>
+        <target>Generate Patient Report</target>
+      </trans-unit>
+      <trans-unit id="AuXY3jK" resname="app-therapy-report-generate-short-report-button">
+        <source>app-therapy-report-generate-short-report-button</source>
+        <target>Generate Short Report</target>
+      </trans-unit>
+      <trans-unit id="AuXWSWK" resname="app-therapy-report-generate-combined-report-button">
+        <source>app-therapy-report-generate-combined-report-button</source>
+        <target>Generate Combined Report</target>
       </trans-unit>
       <trans-unit id="e8RSXYg" resname="app-label-edit-page-title">
         <source>app-label-edit-page-title</source>
@@ -211,7 +223,7 @@
       </trans-unit>
       <trans-unit id="cofIMtF" resname="app-therapy-report-use-excerpt">
         <source>app-therapy-report-use-excerpt</source>
-        <target>Use 'excerpt' instead of 'description'</target>
+        <target>Show 'excerpt' instead of 'description'</target>
       </trans-unit>
       <trans-unit id="A5mIo.v" resname="app-therapy-report-table-excerpt">
         <source>app-therapy-report-table-excerpt</source>
