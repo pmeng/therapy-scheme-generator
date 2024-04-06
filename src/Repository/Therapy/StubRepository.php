@@ -55,6 +55,8 @@ class StubRepository extends ServiceEntityRepository
         $stub->setDescription($data['description']);
         $stub->setExcerpt($data['excerpt']);
         $stub->setBackground($data['background']);
+        $stub->setCategory($data['category']);
+
 
         $this->_em->persist($stub);
 

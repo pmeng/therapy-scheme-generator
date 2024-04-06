@@ -22,15 +22,10 @@
                     <div class="form-check form-switch col-2 m-3">
 						{{ form_widget(form.selectAll) }}
 					</div>
-					<div class="form-check form-switch col-3 m-3">
-						{{ form_widget(form.suppress) }}
-					</div>
-					<div class="form-check form-switch col-5 m-3">
-						{{ form_widget(form.excerpt) }}
-					</div>
 				</div>
 
 				<div class="row mt-3">
+                <div class="col-12">
 					<table class="table">
 						<thead>
 							<tr>
@@ -52,29 +47,62 @@
 								<th>
 									{{ 'app-therapy-report-table-comment'|trans }}
 								</th>
+                                <th>
+								    {{ 'app-therapy-report-table-label'|trans }}
+							    </th>
 							</tr>
 						</thead>
 						<tbody></tbody>
 					</table>
 				</div>
+                </div>
 
-				<div class="row mb-3">
-					<div class="col">
-						<div class="d-grid gap-2 d-md-block">
-							<button class="btn btn-primary" type="button" id="generateHTMLButton">
-								{{ 'app-therapy-report-generate-report-button'|trans }}
-								(HTML)
-							</button>
-							<button class="btn btn-primary" type="button" id="generatePDFButton">
-								{{ 'app-therapy-report-generate-report-button'|trans }}
-								(PDF)
-							</button>
-							<button class="btn btn-primary" type="button" id="saveAsTemplateButton">
-								{{ 'app-therapy-report-save-as-template-button'|trans }}
-							</button>
-						</div>
-					</div>
-				</div>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col text-center">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" type="button" id="generatePatientHTMLButton">
+                                    {{ 'app-therapy-report-generate-patient-report-button'|trans }}
+                                    (HTML)
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col text-center">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" type="button" id="generatePatientPDFButton">
+                                    {{ 'app-therapy-report-generate-patient-report-button'|trans }}
+                                    (PDF)
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col text-center">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" type="button" id="generateShortHTMLButton">
+                                    {{ 'app-therapy-report-generate-short-report-button'|trans }}
+                                    (HTML)
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col text-center">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" type="button" id="generateCombinedHTMLButton">
+                                    {{ 'app-therapy-report-generate-combined-report-button'|trans }}
+                                    (HTML)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col text-center">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" type="button" id="saveAsTemplateButton">
+                                    {{ 'app-therapy-report-save-as-template-button'|trans }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
 
 			</div>
 
@@ -127,8 +155,8 @@ $(document).ready(function () {
                 const currentComments = getCurrentComments();
                 const checkedCheckboxes = getCheckedCheckboxes();
                 const stubsOrder = getStubsOrder();
-                const suppress = $("#therapy_scheme_suppress").is(":checked");
-                const excerpt = $("#therapy_scheme_excerpt").is(":checked");
+                const suppress = false;
+                const excerpt = false;
                 await generateDynamicForm(selectedValues, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
                 initializeSortableForTables();
 
@@ -317,7 +345,7 @@ function sortTable(tbodyId, order) {
 }
 
 {# ! Generate the Report #}
-const generateReport = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
+const generateReport = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt, combined = false) => {
 
     if (selectedLabels.length > 0) {
         const currentLanguage = "{{ app.request.locale }}";
@@ -329,7 +357,8 @@ const generateReport = async (selectedLabels, currentComments, checkedCheckboxes
             checkedCheckboxes,
             stubsOrder,
             suppress,
-            excerpt
+            excerpt,
+            combined
         };
         const result = await axios.post(url, requestBody);
         return result;
@@ -342,28 +371,12 @@ $(document).ready(function () {
     const selectAllSwitch = document.getElementById("therapy_scheme_selectAll");
     const selectAllSwitchLabel = selectAllSwitch?.parentElement?.querySelector("label");
     selectAllSwitchLabel.innerText = "{{ 'app-therapy-report-select-all'|trans }}";
-
-    const suppressLabelsSwitch = document.getElementById("therapy_scheme_suppress");
-    const suppressLabelsSwitchLabel = suppressLabelsSwitch?.parentElement?.querySelector("label");
-    suppressLabelsSwitchLabel.innerText = "{{ 'app-therapy-report-suppress-labels'|trans }}";
-
-    const excerptSwitch = document.getElementById("therapy_scheme_excerpt");
-    const excerptSwitchLabel = excerptSwitch?.parentElement?.querySelector("label");
-    const replaceString = new RegExp("&#039;", 'g');
-    const label = "{{ 'app-therapy-report-use-excerpt'|trans }}".replace(replaceString , "'");
-    excerptSwitchLabel.innerText = label;
 });
 
 {# ! Resetting when page is refreshed #}
 $(document).ready(function () {
     {# * Resetting the select2 #}
     $("#therapy_scheme_labels").val(null).trigger("change");
-
-    {# * Resetting the SwitchBox, Only while adding #}
-    const excerptSwitch = document.getElementById("therapy_scheme_excerpt");
-    excerptSwitch.checked = false;
-    const suppressLabelsSwitch = document.getElementById("therapy_scheme_suppress");
-    suppressLabelsSwitch.checked = false;
 
     {# * Resetting the textareas #}
     $("textarea").val("");
@@ -433,34 +446,66 @@ $(document).ready(function () {
         form.submit();
 	});
 
-	$("#generatePDFButton").click(async function () {
-		const currentComments = getCurrentComments();
-		const checkedCheckboxes = getCheckedCheckboxes();
-    const stubsOrder = getStubsOrder();
-		const suppress = $("#therapy_scheme_suppress").is(":checked");
-		const excerpt = $("#therapy_scheme_excerpt").is(":checked");
-		const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
-		const responseStatus = response.status;
-		if (responseStatus === 200) {
-			const form = document.getElementById("generatePDFForm");
-			form.submit();
-		}
-	});
+		$("#generatePatientPDFButton").click(async function () {
+			const currentComments = getCurrentComments();
+			const checkedCheckboxes = getCheckedCheckboxes();
+			const stubsOrder = getStubsOrder();
+			const suppress = false;
+			const excerpt = false;
+			const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+			const responseStatus = response.status;
+			if (responseStatus === 200) {
+				const form = document.getElementById("generatePDFForm");
+				form.submit();
+			}
+		});
 
-	$("#generateHTMLButton").click(async function (e) {
-		e.preventDefault();
-		const currentComments = getCurrentComments();
-		const checkedCheckboxes = getCheckedCheckboxes();
-    const stubsOrder = getStubsOrder();
-		const suppress = $("#therapy_scheme_suppress").is(":checked");
-		const excerpt = $("#therapy_scheme_excerpt").is(":checked");
-		const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
-		const responseStatus = response.status;
-		if (responseStatus === 200) {
-			const generateHTMLLink = document.getElementById("generateHTMLLink");
-			generateHTMLLink.click();
-		}
-	});
+		$("#generatePatientHTMLButton").click(async function (e) {
+			e.preventDefault();
+			const currentComments = getCurrentComments();
+			const checkedCheckboxes = getCheckedCheckboxes();
+			const stubsOrder = getStubsOrder();
+			const suppress = false;
+			const excerpt = false;
+			const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+			const responseStatus = response.status;
+			if (responseStatus === 200) {
+				const generateHTMLLink = document.getElementById("generateHTMLLink");
+				generateHTMLLink.click();
+			}
+		});
+
+		$("#generateShortHTMLButton").click(async function (e) {
+			e.preventDefault();
+			const currentComments = getCurrentComments();
+			const checkedCheckboxes = getCheckedCheckboxes();
+			const stubsOrder = getStubsOrder();
+			const suppress = false;
+			const excerpt = true;
+			const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+			const responseStatus = response.status;
+			if (responseStatus === 200) {
+				const generateHTMLLink = document.getElementById("generateHTMLLink");
+				generateHTMLLink.click();
+			}
+		});
+
+		$("#generateCombinedHTMLButton").click(async function (e) {
+			e.preventDefault();
+			const currentComments = getCurrentComments();
+			const checkedCheckboxes = getCheckedCheckboxes();
+			const stubsOrder = getStubsOrder();
+			const suppress = false;
+			const excerpt = true;
+			const combined = true;
+			const response = await generateReport(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt, combined);
+			const responseStatus = response.status;
+			if (responseStatus === 200) {
+				const generateHTMLLink = document.getElementById("generateHTMLLink");
+				generateHTMLLink.click();
+			}
+		});
+
 });
 
 </script>

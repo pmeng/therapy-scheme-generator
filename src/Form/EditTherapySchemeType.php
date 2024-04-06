@@ -21,14 +21,14 @@ class EditTherapySchemeType extends AbstractType
                 'data' => false,
                 'mapped' => false
             ])
-            ->add('suppress', CheckboxType::class, [
-                'required' => false,
-                'label' => false
-            ])
-            ->add('excerpt', CheckboxType::class, [
-                'required' => false,
-                'label' => false
-            ])
+            // ->add('suppress', CheckboxType::class, [
+            //     'required' => false,
+            //     'label' => false
+            // ])
+            // ->add('excerpt', CheckboxType::class, [
+            //     'required' => false,
+            //     'label' => false
+            // ])
             ->add('comments', TextareaType::class, [
                 'required' => false,
                 'label' => false,

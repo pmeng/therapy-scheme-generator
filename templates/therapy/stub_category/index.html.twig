@@ -1,0 +1,311 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-3">
+
+        <div class="row mb-3">
+            <h2>Stub Categories</h2>
+        </div>
+
+        <form id="editCategoryForm" method="post">
+            {{ form_start(stubCategoryForm) }}
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="shortName">Short Name</label>
+                        {{ form_widget(stubCategoryForm.shortName, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="reportName">Report Name</label>
+                        {{ form_widget(stubCategoryForm.reportName, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="categoryOrder">Order</label>
+                        {{ form_widget(stubCategoryForm.categoryOrder, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        {{ form_widget(stubCategoryForm.save, {'attr': {'class': 'btn btn-primary form-control'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            {{ form_end(stubCategoryForm) }}
+        </form>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <table id="categoriesTable" class="table table-striped" style="table-layout: fixed;">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 10%;">
+                        <col style="width: 5%;">
+                        <col style="width: 5%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Short Name</th>
+                            <th>Report Name</th>
+                            <th>Order</th>
+                            <th>     </th>
+                            <th>     </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in pagination %}
+                        <tr>
+                            <td>
+                                <span id="categoryShortName_{{ category.id }}">{{ category.shortName }}</span>
+                                <input type="text" id="editCategoryShortName_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.shortName }}">
+                            </td>
+                            <td>
+                                <span id="categoryReportName_{{ category.id }}">{{ category.reportName }}</span>
+                                <input type="text" id="editCategoryReportName_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.reportName }}">
+                            </td>
+                            <td>
+                                <span id="categoryOrder_{{ category.id }}">{{ category.categoryOrder }}</span>
+                                <input type="number" id="editCategoryOrder_{{ category.id }}" class="form-control" style="display: none;" value="{{ category.categoryOrder }}">
+                            </td>
+                            <td>
+                                <button class="btn btn-primary edit-category" data-id="{{ category.id }}">Edit</button>
+                                <button class="btn btn-success save-category" data-id="{{ category.id }}" style="display: none;">Save</button>
+
+                                <form action="{{ path('app_therapy_stub_category_edit', {'id': category.id}) }}" method="post" id="editForm_{{category.id}}"  >
+                                </form>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger delete-category" data-id="{{ category.id }}">Delete</button>
+                                <form action="{{ path('app_therapy_stub_category_delete', {'id': category.id}) }}" method="post" id="deleteForm_{{category.id}}"  >
+                                </form>
+                                <form action="{{ path('app_check_category_usage', {'id': category.id}) }}" method="post" id="checkUsageForm_{{category.id}}" style="display: none;">
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal fade" id="usedStubsModal" tabindex="-1" aria-labelledby="usedStubsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="usedStubsModalLabel">Warning: Please select a new category to reassign the associated stubs automatically, or change the category for each stub manually before deleting.</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="associatedStubsListContainer" style="max-height: 400px; overflow-y: auto;">
+                            <h6>Associated Stubs:</h6>
+                            <ul id="usedStubsList" class="list-group">
+                                <!-- Stub items will be dynamically added here -->
+                            </ul>
+                        </div>
+                        <div id="selectCategoryContainer">
+                            <div class="form-group mt-3">
+                                <select class="form-select" id="categorySelect">
+                                        <option value="" hidden=true fixed=true>Select Category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.shortName }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="hidden" id="categoryId" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="reassignStubsBtn">Reassign Stubs</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Edit button click event handler
+            document.querySelectorAll('.edit-category').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var categoryId = this.getAttribute('data-id');
+                    document.getElementById('categoryShortName_' + categoryId).style.display = 'none';
+                    document.getElementById('editCategoryShortName_' + categoryId).style.display = 'block';
+
+                    document.getElementById('categoryReportName_' + categoryId).style.display = 'none';
+                    document.getElementById('editCategoryReportName_' + categoryId).style.display = 'block';
+
+                    document.getElementById('categoryOrder_' + categoryId).style.display = 'none';
+                    document.getElementById('editCategoryOrder_' + categoryId).style.display = 'block';
+
+                    this.style.display = 'none';
+                    document.querySelector('.save-category[data-id="' + categoryId + '"]').style.display = 'inline-block';
+                });
+            });
+
+
+            // Save button click event handler
+            document.querySelectorAll('.save-category').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var categoryId = this.getAttribute('data-id');
+                    var newShortName = document.getElementById('editCategoryShortName_' + categoryId).value;
+                    var newReportName = document.getElementById('editCategoryReportName_' + categoryId).value;
+                    var newOrder = document.getElementById('editCategoryOrder_' + categoryId).value;
+
+                    // Add values to the form
+                    var editForm = document.getElementById('editForm_' + categoryId);
+                    var shortNameInput = document.createElement('input');
+
+                    shortNameInput.setAttribute('type', 'hidden');
+                    shortNameInput.setAttribute('name', 'shortName');
+                    shortNameInput.setAttribute('value', newShortName);
+                    editForm.appendChild(shortNameInput);
+
+                    var reportNameInput = document.createElement('input');
+
+                    reportNameInput.setAttribute('type', 'hidden');
+                    reportNameInput.setAttribute('name', 'reportName');
+                    reportNameInput.setAttribute('value', newReportName);
+                    editForm.appendChild(reportNameInput);
+
+                    var orderInput = document.createElement('input');
+                    orderInput.setAttribute('type', 'hidden');
+                    orderInput.setAttribute('name', 'categoryOrder');
+                    orderInput.setAttribute('value', newOrder);
+                    editForm.appendChild(orderInput);
+
+                    // Submit the form
+                    editForm.submit();
+                });
+            });
+
+            document.querySelectorAll('.delete-category').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var categoryId = this.getAttribute('data-id');
+
+                    // Submit the check form
+                    var checkForm = document.getElementById('checkUsageForm_' + categoryId);
+                    fetch(checkForm.action, {
+                        method: checkForm.method,
+                        body: new FormData(checkForm)
+                    })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        if (data.isUsed) {
+                            var usedStubs = data.usedStubs;
+                            var modalBody = document.getElementById('usedStubsList');
+                            var modalCategory = document.getElementById('categoryId');
+                            modalCategory.value = categoryId;
+
+                            modalBody.innerHTML = ''; // Clear previous list
+
+                            // Populate modal body with used stubs
+                            usedStubs.forEach(function(stub) {
+                                var listItem = document.createElement('li');
+                                listItem.className = 'list-group-item';
+                                var stubLink = document.createElement('a');
+                                stubLink.href = '{{ path('app_therapy_stub_edit', {'id': 0}) }}'.replace(0, stub.id);
+                                stubLink.textContent = stub.name;
+                                listItem.appendChild(stubLink);
+                                modalBody.appendChild(listItem);
+                            });
+
+                            // Show the modal
+                            var modal = new bootstrap.Modal(document.getElementById('usedStubsModal'));
+                            modal.show();
+                        } else {
+                            document.getElementById('deleteForm_' + categoryId).submit();
+                        }
+                    });
+                });
+            });
+
+            document.getElementById('usedStubsModal').addEventListener('shown.bs.modal', function () {
+                var categoryId = document.getElementById('categoryId').value;
+                var select = document.getElementById('categorySelect');
+                var options = select.options;
+
+                console.log(options[0].value);
+                
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value == categoryId) {
+                        options[i].hidden = true;
+                        break;
+                    }
+                }
+            })
+            
+            document.getElementById('usedStubsModal').addEventListener('hidden.bs.modal', function () {
+                var categoryId = document.getElementById('categoryId').value;
+                var select = document.getElementById('categorySelect');
+                var options = select.options;
+
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value == categoryId) {
+                        options[i].hidden = false;
+                        break;
+                    }
+                }
+            });
+
+
+            document.getElementById('reassignStubsBtn').addEventListener('click', function() {
+                var newCategoryId = document.getElementById('categorySelect').value;
+                var categoryId = document.getElementById('categoryId').value;
+
+                const path = '{{ path('app_therapy_stub_category_replace', {'id': 0}) }}'.replace(0, categoryId);
+
+
+                fetch( path, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'newCategoryId=' + newCategoryId,
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        // Redirect to the stub categories list page or handle success as needed
+                        window.location.href = '{{ path('app_therapy_stub_categories_list') }}';
+                    } else {
+                        alert(data.message); // Display an error message
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    // Handle error
+                });
+            });
+
+            // Clear modal content when the modal is closed
+            document.getElementById('usedStubsModal').addEventListener('hidden.bs.modal', function() {
+                document.getElementById('usedStubsList').innerHTML = '';
+            });
+
+
+        });
+    </script>
+
+
+
+
+{% endblock %}
+    
