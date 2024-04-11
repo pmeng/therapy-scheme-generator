@@ -46,7 +46,26 @@ class SchemeService
         $categoriesWithStubs[$category->getId()] = [
             'stubs' => [],
         ];
-    } 
+    }
+    foreach ($stubsOrder as $order) {
+
+        $categoryID = $order[0][0];
+        $stubIDs = $order[0][1];
+
+        foreach ($stubIDs as $stubID) {
+            $stub = $this->stubRepository->find($stubID);
+            $stubLabels = $stub->getLabels();
+            foreach ($stubLabels as $l) {
+              if(in_array($l->getId(), $selectedLabels) && $categoryID == $stub->getCategory()->getId()) {
+                if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+                  $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
+                }
+              }
+            }
+        }
+
+    }
+ 
     // Generate tbody for remaining selected labels
     foreach ($selectedLabels as $labelID) {
       $label = $this->labelRepository->find($labelID);
@@ -54,9 +73,11 @@ class SchemeService
         continue;
       }
       $labelStubs = $label->getStubsSortedByPosition();
+
       foreach( $labelStubs as $stub) {
-        if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs']))
-        $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'][] = $stub;
+        if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+          $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'][] = $stub;
+        } 
       }
       
     }
@@ -66,15 +87,15 @@ class SchemeService
       if (count($stubs) > 0) {
 
           $category = $this->stubCategoryRepository->find($categoryId);
-
           // Generate the tbody for the category
           if($category){
             $newTbody .= $this->generateLabelTbody($category, $stubs, $selectedLabels, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $currentLanguage);
           }
-          
       }
     }
+
     return $newTbody;
+
   }
 
   private function generateLabelTbody($label, $labelStubs, $selectedLabels, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $currentLanguage) {
@@ -100,7 +121,6 @@ class SchemeService
     '</div>' .
     '</td>' .
     '</tr>';
-    
     if (count($labelStubs) > 0) {
       foreach ($labelStubs as $stub) {
 
@@ -137,7 +157,6 @@ class SchemeService
 
           // Extract the labelID and stubID values
           $stubID = $matches[2];
-          // dd( (int)$labelID ,$label);
           if ((int)$stubID == $stub->getId() ) {
             $checked = 'checked';
           }
@@ -220,7 +239,6 @@ class SchemeService
         $categoryID = $order[0][0];
         $stubIDs = $order[0][1];
 
-        $labelStubs = [];
 
         foreach ($stubIDs as $stubID) {
             $stub = $this->stubRepository->find($stubID);
@@ -275,6 +293,25 @@ class SchemeService
         '</tr>';
     }
     $newTbody .= $trLabel;
+
+    $hasStubs = false;
+    foreach ($checkedCheckboxes as $checkboxKey) {
+      // Define a regular expression pattern
+      $pattern = '/labelID=(\d+)\|stubID=(\d+)/';
+
+      // Match the pattern against the string
+      preg_match($pattern, $checkboxKey, $matches);
+
+      // Extract the labelID and stubID values
+      $categoryID = $matches[1];
+      if ((int)$categoryID == $label->getId() ) {
+        $hasStubs = true;
+      }
+    }
+
+    if(!$hasStubs) {
+      return '';
+    }
   
     foreach ($labelStubs as $stub) {
   

@@ -116,7 +116,10 @@ class LabelController extends AbstractController
                 // Find the corresponding label_stub record
                 if( $stubId ) {
 
-                    $labelStub = $this->entityManager->getRepository(LabelStub::class)->findOneBy(['stub' => $stubId]);
+                    $labelStub = $this->entityManager->getRepository(LabelStub::class)->findOneBy([
+                        'stub' => $stubId ,
+                        'label' => $id
+                    ]);
                     
                     // Update the position
                     $labelStub->setPosition($index + 1);
