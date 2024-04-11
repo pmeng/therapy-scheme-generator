@@ -30,6 +30,13 @@
 				<div class="form-check form-switch col-2 m-3">
 					{{ form_widget(form.selectAll) }}
 				</div>
+				<div class="col-7 m-2 text-center">
+					<button class="btn btn-primary" type="button" id="resetStubsOrderButton">
+						Reset Stubs Order
+					</button>
+				</div>
+			</div>
+			<div class="row mt-3 justify-content-center">
 			</div>
 			<div class="row mt-3">
             <div class="col-12">
@@ -464,6 +471,30 @@
 				} else {
 						rows.forEach((row) => row.classList.remove("d-none"));
 				}
+		});
+	});
+
+	// * Reset Stubs Order to label's default
+	$(document).ready(function () {
+		const resetStubsOrderButton = document.getElementById("resetStubsOrderButton");
+		resetStubsOrderButton?.addEventListener("click", async function (event) {
+			const currentComments = getCurrentComments();
+			const checkedCheckboxes = getCheckedCheckboxes();
+			const stubsOrder = [];
+			const suppress = false;
+			const excerpt = false;
+			await generateDynamicForm(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+			
+			initializeSortableForTables()
+			{# * Show/hide content #}
+			if (selectedValues.length > 0) {
+				$("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
+				$("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
+			} else {
+				$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
+				$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
+			}
+			
 		});
 	});
 
