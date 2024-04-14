@@ -186,7 +186,7 @@ class SchemeService
           substr($stub->getExcerpt(), 0, 40) .
           '</td>' .
           '<td class="col-2">' .
-          substr($stub->getBackground(), 0, 100) .
+          substr($stub->getBackground(), 0, 300) .
           '</td>' .
           '<td class="border-start col-2">' .
           $textArea .
