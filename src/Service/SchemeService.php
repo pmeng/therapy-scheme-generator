@@ -55,11 +55,17 @@ class SchemeService
         foreach ($stubIDs as $stubID) {
             $stub = $this->stubRepository->find($stubID);
             $stubLabels = $stub->getLabels();
-            foreach ($stubLabels as $l) {
-              if(in_array($l->getId(), $selectedLabels) && $categoryID == $stub->getCategory()->getId()) {
-                if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
-                  $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
+            if( count ( $stubLabels ) ) {
+              foreach ($stubLabels as $l) {
+                if(in_array($l->getId(), $selectedLabels) && $categoryID == $stub->getCategory()->getId()) {
+                  if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+                    $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
+                  }
                 }
+              }
+            } else {
+              if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+                $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
               }
             }
         }

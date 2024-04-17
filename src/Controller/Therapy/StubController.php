@@ -9,6 +9,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -268,5 +269,51 @@ class StubController extends AbstractController
         $this->entityManager->flush();
 
         return $this->redirectToRoute('app_therapy_stubs_list');
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stubs/schemeSearch', name: 'app_therapy_stubs_scheme_search')]
+    public function searchTherapyStubs(Request $request, StubRepository $stubRepository): Response
+    {
+        $requestData = json_decode($request->getContent(), true);
+        $searchText = $requestData['searchText'];
+
+        // Implement your logic to search therapy stubs based on the search text
+        // For example, using a repository method to fetch therapy stubs
+
+        $query = $stubRepository
+            ->createQueryBuilder('stub')
+            ->where('stub.name LIKE :search')
+            ->setParameter('search', '%' . $searchText . '%')
+            ;            
+        
+        
+        $therapyStubs = $query
+            ->andWhere($query->expr()->orX(
+                $query->expr()->isNull('stub.isDeleted'),
+                $query->expr()->eq('stub.isDeleted', 0)
+            ))
+            ->getQuery()
+            ->getResult()
+        ;
+
+        // Transform therapy stubs into a format suitable for JSON response
+        $responseData = [];
+        foreach ($therapyStubs as $stub) {
+            $labels = [];
+            foreach ($stub->getLabels() as $label) {
+                $labels[] = [
+                    'id' => $label->getId(),
+                    'name' => $label->getShortName()
+                ];
+            }
+            $responseData[] = [
+                'id' => $stub->getId(),
+                'name' => $stub->getName(),
+                'excerpt' => $stub->getExcerpt(),
+                'categoryId' => $stub->getCategory()->getId(),
+                'labels' => $labels
+            ];
+        }
+        return new JsonResponse($responseData);
     }
 }

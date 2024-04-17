@@ -24,7 +24,17 @@
 				</cite>
 			</p>
 		</div>
-
+       
+		<div class="row mb-3">
+			<div class="col-sm-8">
+				<input type="search" class="form-control" id="searchStubsInput" name="searchName" placeholder="Search Therapy Stubs">
+			</div>
+			<div class="col-sm-4">
+				<button type="button" class="btn btn-primary btn-block" id="searchButton">Search</button>
+			</div>
+		</div>
+		<div class="row mb-3" id="searchResults"  style="max-height: 300px; overflow: auto;" ></div>
+      
 		<div id="contentDisplayedWhenLabelsAreSelected" class="d-none">
 			<div class="row mt-3">
 				<div class="form-check form-switch col-2 m-3">
@@ -230,6 +240,54 @@
 		return labelOrderArray;
 	}
 
+	function getStubsWithoutLabels() {
+		// Get all tbody elements with the class 'sortable'
+		const tbodyElements = document.querySelectorAll('tbody.sortable');
+
+		const labelOrderArray = []; // Define an array to store JSON representations
+
+		tbodyElements.forEach(tbody => {
+			// Get all rows in the current tbody
+			const rows = Array.from(tbody.children);
+
+			const labelOrderMap = new Map(); // Define a map for each tbody
+
+			rows
+				.filter((_, index) => index !== 0) // Skip the first row
+				.forEach(function(row) {
+					const match = row.id.match(/rowLabel\|(\d+)\|stub\|(\d+)/);
+					if(match) {
+
+						const labelId = match[1];
+						const stubId = match[2];
+
+						// Check if the stub has a label
+                		const labelCol = row.lastElementChild.textContent.trim();
+                		const hasLabels = labelCol !== '';
+
+						if(!hasLabels) {
+
+							if (!labelOrderMap.has(labelId)) {
+								labelOrderMap.set(labelId, []);
+							}
+
+							labelOrderMap.get(labelId).push(stubId);
+
+						}
+
+					}
+				});
+
+			// Convert labelOrderMap to JSON and push it to labelOrderArray
+			if(labelOrderMap.size){
+				labelOrderArray.push([...labelOrderMap]);
+			}
+		});
+
+		// Return the array if needed
+		return labelOrderArray;
+	}
+
 	let selectedLabels = [];
 	$(document).ready(function () {
 		$("#edit_therapy_scheme_labels")
@@ -247,7 +305,6 @@
 
 					const selectedValues = labelsSelect2.map((item) => item.id);
 					selectedLabels = selectedValues;
-
 					const currentComments = getCurrentComments();
 					const checkedCheckboxes = getCheckedCheckboxes();
 					const stubsOrder = getStubsOrder();
@@ -260,8 +317,10 @@
 						$("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
 						$("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
 					} else {
-						$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
-						$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
+						if(getStubsOrder().length == 0) {    
+							$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
+							$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
+						}
 					}
 
 			});
@@ -299,48 +358,41 @@
 	const generateDynamicForm = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
 
 		// Get all tbody elements
-		const tbodyElements = document.querySelectorAll("table tbody");
-		if (selectedLabels.length === 0) {
-			// Clear the content of all tbody elements
+		const tbodyElements = document.querySelectorAll("table:not(#searchResultsTable) tbody");
+		const currentLanguage = "{{ app.request.locale }}";
+		const url = "{{ path('app_therapy_scheme_generateForm') }}";
+		const requestBody = {
+			selectedLabels,
+			currentLanguage,
+			currentComments,
+			checkedCheckboxes,
+			stubsOrder,
+			suppress,
+			excerpt
+		};
+
+		try {
+			// Send a POST request
+			const response = await axios.post(url, requestBody);
+
+			// Remove all existing tbody elements
 			tbodyElements.forEach(tbody => {
 				tbody.remove();
 			});
-		} else {
-			const currentLanguage = "{{ app.request.locale }}";
-			const url = "{{ path('app_therapy_scheme_generateForm') }}";
-			const requestBody = {
-				selectedLabels,
-				currentLanguage,
-				currentComments,
-				checkedCheckboxes,
-				stubsOrder,
-				suppress,
-				excerpt
-			};
 
-			try {
-				// Send a POST request
-				const response = await axios.post(url, requestBody);
+			// Append new tbody sections from the response HTML
+			document.querySelector("table:not(#searchResultsTable)").insertAdjacentHTML('beforeend', response.data);
 
-				// Remove all existing tbody elements
-				tbodyElements.forEach(tbody => {
-					tbody.remove();
-				});
+			sortInit();
 
-				// Append new tbody sections from the response HTML
-				document.querySelector("table").insertAdjacentHTML('beforeend', response.data);
-
-				sortInit();
-
-			} catch (error) {
-				console.error("Error:", error);
-			}
+		} catch (error) {
+			console.error("Error:", error);
 		}
 	};
 
 	// * Generate the Report
 	const generateReport = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt, combined = false) => {
-		if (selectedLabels.length > 0) {
+		if (selectedLabels.length > 0 || stubsOrder.length) {
 			const currentLanguage = "{{ app.request.locale }}";
 			const url = "{{ path('app_therapy_scheme_generateReport') }}";
 			const requestBody = {
@@ -476,27 +528,136 @@
 
 	// * Reset Stubs Order to label's default
 	$(document).ready(function () {
+		
+		const labelsSelect2 = $("#edit_therapy_scheme_labels").select2("data");
+		const selectedlabels = labelsSelect2.map((item) => item.id);
+
 		const resetStubsOrderButton = document.getElementById("resetStubsOrderButton");
 		resetStubsOrderButton?.addEventListener("click", async function (event) {
 			const currentComments = getCurrentComments();
 			const checkedCheckboxes = getCheckedCheckboxes();
-			const stubsOrder = [];
+			const stubsOrder = getStubsWithoutLabels();
 			const suppress = false;
 			const excerpt = false;
 			await generateDynamicForm(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
 			
 			initializeSortableForTables()
-			{# * Show/hide content #}
-			if (selectedValues.length > 0) {
-				$("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
-				$("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
-			} else {
-				$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
-				$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
-			}
-			
+		
 		});
 	});
+
+$(document).ready(function () {
+	$("#searchStubsInput").keypress(function(event) {
+        if (event.which == 13) { // 13 is the Enter key code
+            event.preventDefault();
+            $("#searchButton").click();
+        }
+    });
+
+    $("#searchButton").click(async function () {
+        const searchText = $("#searchStubsInput").val();
+        if (searchText.trim() === "") {
+            $("#searchResults").empty();
+            return;
+        }
+
+        const url = "{{ path('app_therapy_stubs_scheme_search') }}";
+        try {
+            const response = await axios.post(url, { searchText });
+
+            $("#searchResults").empty();
+            const rows = response.data.map((stub) => {
+
+                const stubId = stub.id;
+                const stubName = $('<div>').text(stub.name).html(); // Escaping HTML
+                const excerpt = $('<div>').text(stub.excerpt.substring(0, 50)).html(); // Escaping HTML
+                const categoryId = stub.categoryId;
+                const labels = stub.labels.map((label) => {
+                    return `<tr data-stub-id="${stubId}" data-label-id="${label.id}" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td>${$('<div>').text(label.name).html()}</td></tr>`; // Escaping HTML
+                }).join("");
+                if (labels) {
+                    return labels;
+                } else {
+                    return `<tr data-stub-id="${stubId}" data-label-id="" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td class="no-label">Not Assigned to a LABEL</td></tr>`;
+                }
+            });
+            if(rows.length) {
+                $("#searchResults").html(`<table id="searchResultsTable"><thead><tr><th>Stub Name</th><th>Excerpt</th><th>Label</th></tr></thead><tbody>${rows.join("")}</tbody></table>`);
+            }
+        } catch (error) {
+            console.error("Error fetching search results:", error);
+            // Handle the error (e.g., display an error message to the user)
+        }
+    });
+
+    $("#searchResults").on("click", "tr", async function() {
+		
+		console.log('test');
+        // Get the unique identifier of the clicked row (e.g., stub ID)
+        const stubId = $(this).data("stub-id");
+        const labelId = $(this).data("label-id");
+        const categoryId = $(this).data("category-id");
+
+        // Update selected labels array
+        const labelsSelect2 = $("#edit_therapy_scheme_labels").select2("data");
+        const selectedLabels = labelsSelect2.map((item) => item.id);
+        const selectedLabelIndex = selectedLabels.findIndex(label => label == labelId);
+
+        const currentComments = getCurrentComments();
+        const checkedCheckboxes = getCheckedCheckboxes();
+        const stubsOrder = getStubsOrder();
+        const suppress = false;
+        const excerpt = false;
+        if (labelId.toString() == '') {
+
+            var categoryFound = false;
+            stubsOrder.forEach((category) => {
+                const [cId, stubIds] = category[0];
+                if (cId[0] == categoryId.toString() ) {
+                    stubIds.push( stubId.toString() );
+                    categoryFound = true;
+                }
+            });
+
+            if (!categoryFound) {
+                stubsOrder.push([[categoryId.toString(), [stubId.toString()]]]);
+            }
+
+            $("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
+            $("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
+
+            await generateDynamicForm(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+            initializeSortableForTables()
+            const checkbox = document.querySelector(`[name='targets|labelID=${categoryId}|stubID=${stubId}']`);
+            checkbox.checked = 'checked';
+
+        } else {
+
+            if (selectedLabelIndex === -1) {
+                selectedLabels.push(labelId.toString());
+                
+                $("#edit_therapy_scheme_labels").val(selectedLabels);
+                $("#edit_therapy_scheme_labels").trigger('change');
+
+                setTimeout(() => {
+                    const checkbox = document.querySelector(`[name='targets|labelID=${categoryId}|stubID=${stubId}']`);                
+                    if (checkbox) {
+                        checkbox.checked = true; // Check the checkbox
+                    }
+                }, 400);
+
+            } else {
+
+                const checkbox = document.querySelector(`[name='targets|labelID=${categoryId}|stubID=${stubId}']`);
+                checkbox.checked = 'checked';
+                                
+            }
+            
+        }
+
+
+    });
+});
 
 	// * Generate PDF, Save as template, Save as HTML
 	$(document).ready(function () {
@@ -598,4 +759,28 @@
 			cursor: grab;
 		}
 	</style>
+
+    <style>
+        #searchResultsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        #searchResultsTable th, #searchResultsTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #searchResultsTable th {
+            background-color: #f2f2f2;
+        }
+
+        .no-label {
+            font-style: italic;
+            color: #999;
+        }
+    </style>
+
 {% endblock %}
