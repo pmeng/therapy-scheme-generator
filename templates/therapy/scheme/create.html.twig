@@ -266,7 +266,8 @@ function getStubsWithoutLabels() {
                     const stubId = match[2];
 
                     // Check if the stub has a label
-                    const labelCol = row.lastElementChild.textContent.trim();
+                    const labelCol = row.childNodes[row.childNodes.length - 2].textContent.trim();
+                    
                     const hasLabels = labelCol !== '';
 
                     if(!hasLabels) {
@@ -351,12 +352,63 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
             tbody.remove();
         });
         document.querySelector("table:not(#searchResultsTable)").insertAdjacentHTML('beforeend', response.data);
+        if( ! response.data ) {
+            $("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
+            $("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
+        }
         sortInit();
+        deleteInit();
+
     } catch (error) {
         console.error("Error:", error);
     }
 };
 
+function deleteInit() {
+
+    $('.trash-icon').each(function() {
+        $(this).on('click', async function(event) {
+            event.preventDefault(); // Prevent the default form submission behavior
+            // Get the ID of the closest <tr> element
+            const rowId = $(this).closest("tr").attr("id");
+
+            // Parse the category ID and stub ID from the row ID
+            const parts = rowId.split("|");
+            const categoryId = parts[1];
+            const stubId = parts[3];
+
+            const currentComments = getCurrentComments();
+            const checkedCheckboxes = getCheckedCheckboxes();
+            const stubsOrder = getStubsOrder();
+            const suppress = false;
+            const excerpt = false;
+
+            stubsOrder.forEach((category, index) => {
+                const [cId, stubIds] = category[0];
+
+                if (cId == categoryId.toString()) {
+
+                    const stubIndex = stubIds.indexOf(stubId); 
+
+                    if (index !== -1) {
+                        stubIds.splice(stubIndex, 1); // Remove the stubId from the array
+                    }
+
+                    if (stubIds.length == 0) {
+
+                        stubsOrder.splice(index, 1); // Remove the stubId from the array
+
+                    }
+                }
+            });
+
+            await generateDynamicForm(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+            initializeSortableForTables()
+
+        });
+    });
+
+}
 
 function sortInit() {
 
@@ -535,10 +587,10 @@ $(document).ready(function () {
                 const excerpt = $('<div>').text(stub.excerpt.substring(0, 50)).html(); // Escaping HTML
                 const categoryId = stub.categoryId;
                 const labels = stub.labels.map((label) => {
-                    return `<tr data-stub-id="${stubId}" data-label-id="${label.id}" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td>${$('<div>').text(label.name).html()}</td></tr>`; // Escaping HTML
-                }).join("");
+                    return label.name
+                }).join(" ,");
                 if (labels) {
-                    return labels;
+                    return `<tr data-stub-id="${stubId}" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td>${$('<div>').text(labels).html()}</td></tr>`; // Escaping HTML
                 } else {
                     return `<tr data-stub-id="${stubId}" data-label-id="" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td class="no-label">Not Assigned to a LABEL</td></tr>`;
                 }
@@ -555,66 +607,38 @@ $(document).ready(function () {
     $("#searchResults").on("click", "tr", async function() {
         // Get the unique identifier of the clicked row (e.g., stub ID)
         const stubId = $(this).data("stub-id");
-        const labelId = $(this).data("label-id");
         const categoryId = $(this).data("category-id");
 
         // Update selected labels array
         const labelsSelect2 = $("#therapy_scheme_labels").select2("data");
         const selectedLabels = labelsSelect2.map((item) => item.id);
-        const selectedLabelIndex = selectedLabels.findIndex(label => label == labelId);
 
         const currentComments = getCurrentComments();
         const checkedCheckboxes = getCheckedCheckboxes();
         const stubsOrder = getStubsOrder();
         const suppress = false;
         const excerpt = false;
-        if (labelId.toString() == '') {
 
-            var categoryFound = false;
-            stubsOrder.forEach((category) => {
-                const [cId, stubIds] = category[0];
-                if (cId[0] == categoryId.toString() ) {
-                    stubIds.push( stubId.toString() );
-                    categoryFound = true;
-                }
-            });
-
-            if (!categoryFound) {
-                stubsOrder.push([[categoryId.toString(), [stubId.toString()]]]);
+        var categoryFound = false;
+        stubsOrder.forEach((category) => {
+            const [cId, stubIds] = category[0];
+            if (cId[0] == categoryId.toString() ) {
+                stubIds.push( stubId.toString() );
+                categoryFound = true;
             }
+        });
 
-            $("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
-            $("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
-
-            await generateDynamicForm(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
-            initializeSortableForTables()
-            const checkbox = document.querySelector(`[name='targets|labelID=${categoryId}|stubID=${stubId}']`);
-            checkbox.checked = 'checked';
-
-        } else {
-
-            if (selectedLabelIndex === -1) {
-                selectedLabels.push(labelId.toString());
-                
-                $("#therapy_scheme_labels").val(selectedLabels);
-                $("#therapy_scheme_labels").trigger('change');
-
-                setTimeout(() => {
-                    const checkbox = document.querySelector(`[name='targets|labelID=${categoryId}|stubID=${stubId}']`);                
-                    if (checkbox) {
-                        checkbox.checked = true; // Check the checkbox
-                    }
-                }, 400);
-
-            } else {
-
-                const checkbox = document.querySelector(`[name='targets|labelID=${categoryId}|stubID=${stubId}']`);
-                checkbox.checked = 'checked';
-                                
-            }
-            
+        if (!categoryFound) {
+            stubsOrder.push([[categoryId.toString(), [stubId.toString()]]]);
         }
 
+        $("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
+        $("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
+
+        await generateDynamicForm(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+        initializeSortableForTables()
+        const checkbox = document.querySelector(`[name='targets|labelID=${categoryId}|stubID=${stubId}']`);
+        checkbox.checked = 'checked';
 
     });
 
@@ -727,6 +751,20 @@ $(document).ready(function () {
         .no-label {
             font-style: italic;
             color: #999;
+        }
+        .trash-icon {
+            color: #555; /* Grey color */
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            padding: 0; /* Remove padding */
+            transition: color 0.3s; /* Smooth color transition */
+        }
+        .trash-icon:hover {
+            color: red; /* Grey color */
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            padding: 0; /* Remove padding */
+            transition: color 0.3s; /* Smooth color transition */
         }
     </style>
 {% endblock %}
