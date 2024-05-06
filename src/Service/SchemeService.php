@@ -55,11 +55,17 @@ class SchemeService
         foreach ($stubIDs as $stubID) {
             $stub = $this->stubRepository->find($stubID);
             $stubLabels = $stub->getLabels();
-            foreach ($stubLabels as $l) {
-              if(in_array($l->getId(), $selectedLabels) && $categoryID == $stub->getCategory()->getId()) {
-                if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
-                  $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
+            if( count ( $stubLabels ) ) {
+              foreach ($stubLabels as $l) {
+                if($categoryID == $stub->getCategory()->getId()) {
+                  if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+                    $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
+                  }
                 }
+              }
+            } else {
+              if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+                $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
               }
             }
         }
@@ -164,6 +170,13 @@ class SchemeService
         $checkboxInput = '<input type="checkbox" name="' . $inputKey . '" class="form-check-input" ' . $checked . ' />';
         // * End Checkbox
 
+        if(!$labelNames) {          
+          // Trash icon for removing stub
+           $trashIcon = '<button class="btn btn-sm btn-danger trash-icon"><i class="fas fa-trash"></i></button>';
+        } else {
+          $trashIcon = '';
+        }
+
         $descriptionItemClass = 'col-2 descriptionItem';
         $excerptItemClass = 'col-2 excerptItem';
         if ($excerpt) {
@@ -193,6 +206,9 @@ class SchemeService
           '</td>' .
           '<td class="col-1.5">' .
           $labelNames .
+          '</td>' .
+          '<td>' .
+          $trashIcon .
           '</td>' .
           '</tr>';
         }
