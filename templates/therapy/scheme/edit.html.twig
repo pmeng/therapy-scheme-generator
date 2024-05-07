@@ -313,14 +313,12 @@
 					await generateDynamicForm(selectedValues, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
 					initializeSortableForTables()
 					{# * Show/hide content #}
-					if (selectedValues.length > 0) {
+					if (selectedValues.length > 0 || getStubsOrder().length != 0) {
 						$("#contentDisplayedWhenLabelsAreSelected").removeClass("d-none");
 						$("#contentDisplayedWhenNoLabelsAreSelected").addClass("d-none");
 					} else {
-						if(getStubsOrder().length == 0) {    
-							$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
-							$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
-						}
+						$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
+						$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
 					}
 
 			});

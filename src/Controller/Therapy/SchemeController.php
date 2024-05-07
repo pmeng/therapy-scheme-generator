@@ -255,9 +255,6 @@ class SchemeController extends AbstractController
 
             // Check if someone the user was able to submit the form with empty labels
             $labels = $form->get('labels')->getData();
-            if (count($labels) === 0) {
-                return $this->redirect($request->headers->get('referer'));
-            }
             
             $updateCurrent = $form->get('updateCurrent')->getData();
             

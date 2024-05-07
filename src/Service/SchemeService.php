@@ -51,26 +51,15 @@ class SchemeService
 
         $categoryID = $order[0][0];
         $stubIDs = $order[0][1];
-
         foreach ($stubIDs as $stubID) {
-            $stub = $this->stubRepository->find($stubID);
-            $stubLabels = $stub->getLabels();
-            if( count ( $stubLabels ) ) {
-              foreach ($stubLabels as $l) {
-                if($categoryID == $stub->getCategory()->getId()) {
-                  if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
-                    $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
-                  }
-                }
-              }
-            } else {
-              if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
-                $categoriesWithStubs[$categoryID]['stubs'][] = $stub;
-              }
-            }
+          $stub = $this->stubRepository->find($stubID);
+          if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+            $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'][] = $stub;
+          }
         }
 
     }
+
  
     // Generate tbody for remaining selected labels
     foreach ($selectedLabels as $labelID) {
