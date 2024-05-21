@@ -24,7 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class SchemeController extends AbstractController
 {
-    const ITEMS_PER_PAGE = 5;
+    const ITEMS_PER_PAGE = 100;
 
     protected EntityManagerInterface $entityManager;
     protected PaginatorInterface $paginator;
@@ -448,7 +448,10 @@ class SchemeController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/templates/list', name: 'app_therapy_saved_templates', methods: ['GET', 'POST'])]
     public function loadTemplates(Request $request, SchemeRepository $schemeRepository): Response
     {
-        $templates = $schemeRepository->findAll();
+        $templates = $schemeRepository->createQueryBuilder('t')
+        ->orderBy('t.name')
+        ->getQuery()
+        ->getResult();
 
         $templates = $this->paginator->paginate(
             $templates,

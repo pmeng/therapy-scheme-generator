@@ -25,7 +25,7 @@
                     <button type="button" class="btn btn-primary btn-block" id="searchButton">Search</button>
                 </div>
             </div>
-            <div class="row mb-3" id="searchResults"  style="max-height: 300px; overflow: auto;" ></div>
+            <div class="row mb-3" id="searchResults"  ></div>
         
 			<div id="contentDisplayedWhenLabelsAreSelected" class="d-none">
 				<div class="row mt-3">
@@ -566,41 +566,104 @@ $(document).ready(function () {
         }
     });
 
-    $("#searchButton").click(async function () {
-        const searchText = $("#searchStubsInput").val();
-        if (searchText.trim() === "") {
-            $("#searchResults").empty();
-            return;
-        }
+ $("#searchButton").click(async function () {
+    const searchText = $("#searchStubsInput").val();
+    if (searchText.trim() === "") {
+        $("#searchResults").empty();
+        return;
+    }
 
-        const url = "{{ path('app_therapy_stubs_scheme_search') }}";
-        try {
-            const response = await axios.post(url, { searchText });
+    const url = "{{ path('app_therapy_stubs_scheme_search') }}";
+    try {
+        const response = await axios.post(url, { searchText });
 
-            $("#searchResults").empty();
-            const rows = response.data.map((stub) => {
-
-                const stubId = stub.id;
-                const stubName = $('<div>').text(stub.name).html(); // Escaping HTML
-                const excerpt = $('<div>').text(stub.excerpt.substring(0, 50)).html(); // Escaping HTML
-                const categoryId = stub.categoryId;
-                const labels = stub.labels.map((label) => {
-                    return label.name
-                }).join(" ,");
-                if (labels) {
-                    return `<tr data-stub-id="${stubId}" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td>${$('<div>').text(labels).html()}</td></tr>`; // Escaping HTML
-                } else {
-                    return `<tr data-stub-id="${stubId}" data-label-id="" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td class="no-label">Not Assigned to a LABEL</td></tr>`;
-                }
-            });
-            if(rows.length) {
-                $("#searchResults").html(`<table id="searchResultsTable"><thead><tr><th>Stub Name</th><th>Excerpt</th><th>Label</th></tr></thead><tbody>${rows.join("")}</tbody></table>`);
+        $("#searchResults").empty();
+        const rows = response.data.map((stub) => {
+            const stubId = stub.id;
+            const stubName = $('<div>').text(stub.name).html(); // Escaping HTML
+            const excerpt = $('<div>').text(stub.excerpt.substring(0, 50)).html(); // Escaping HTML
+            const categoryId = stub.categoryId;
+            const labels = stub.labels.map((label) => {
+                return label.name;
+            }).join(" ,");
+            if (labels) {
+                return `<tr data-stub-id="${stubId}" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td>${$('<div>').text(labels).html()}</td></tr>`;
+            } else {
+                return `<tr data-stub-id="${stubId}" data-label-id="" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td class="no-label">Not Assigned to a LABEL</td></tr>`;
             }
-        } catch (error) {
-            console.error("Error fetching search results:", error);
-            // Handle the error (e.g., display an error message to the user)
+        });
+
+        if(rows.length) {
+            $("#searchResults").html(`
+                <table id="searchResultsTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Stub Name</th>
+                            <th>Excerpt</th>
+                            <th>Label</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.join('')}
+                    </tbody>
+                </table>
+            `);
+            
+            setupPagination('searchResultsTable', 100); // Initialize custom pagination
+        }
+    } catch (error) {
+        console.error("Error fetching search results:", error);
+        // Handle the error (e.g., display an error message to the user)
+    }
+});
+
+function setupPagination(tableId, rowsPerPage) {
+    const table = document.getElementById(tableId);
+    const tbody = table.getElementsByTagName('tbody')[0];
+    const rows = Array.from(tbody.getElementsByTagName('tr'));
+    const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+    let currentPage = 1;
+
+    function displayPage(page) {
+        rows.forEach((row, index) => {
+            row.style.display = (index >= (page - 1) * rowsPerPage && index < page * rowsPerPage) ? '' : 'none';
+        });
+    }
+
+    displayPage(currentPage);
+
+    // Add pagination controls
+    const paginationControls = document.createElement('div');
+    paginationControls.className = 'pagination-controls';
+
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+    prevButton.className = 'page-link';
+    prevButton.addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent form submission
+        if (currentPage > 1) {
+            currentPage--;
+            displayPage(currentPage);
         }
     });
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.className = 'page-link';
+    nextButton.addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent form submission
+        if (currentPage < pageCount) {
+            currentPage++;
+            displayPage(currentPage);
+        }
+    });
+
+    paginationControls.appendChild(prevButton);
+    paginationControls.appendChild(nextButton);
+
+    table.parentElement.appendChild(paginationControls);
+}
 
     $("#searchResults").on("click", "tr", async function() {
         // Get the unique identifier of the clicked row (e.g., stub ID)
@@ -745,6 +808,19 @@ $(document).ready(function () {
         #searchResultsTable th {
             background-color: #f2f2f2;
         }
+        .pagination-controls {
+			display: flex;
+			justify-content: center;
+			margin-top: 10px;
+		}
+
+		.page-link {
+			padding: 5px 10px;
+			margin: 0 5px;
+			border: 1px solid #ddd;
+			background-color: #f8f9fa;
+			cursor: pointer;
+		}
 
         .no-label {
             font-style: italic;
