@@ -6,6 +6,42 @@
 		<h2 class="mt-3">{{ 'app-new-therapy-scheme-page-title'|trans }}</h2>
 		<div class="row mt-3">
 			<div class="col-8">
+				{{ form_label(form.title) }}
+				{{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.objective) }}
+				{{ form_widget(form.objective, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.place) }}
+				{{ form_widget(form.place, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.date) }}
+				{{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+        <div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.salutation) }}
+				{{ form_widget(form.salutation, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.footer) }}
+				{{ form_widget(form.footer, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
 				{{ form_widget(form.labels, {'attr': {'class': 'form-control'}}) }}
 			</div>
 		</div>
@@ -146,6 +182,8 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/sortablejs@1.14.0/Sortable.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script>
     
@@ -215,31 +253,36 @@ function getStubsOrder() {
 
         const labelOrderMap = new Map(); // Define a map for each tbody
 
-        rows
-            .filter((_, index) => index !== 0) // Skip the first row
-            .forEach(function(row) {
-                const match = row.id.match(/rowLabel\|(\d+)\|stub\|(\d+)/);
-                if(match) {
+        if(rows.length <= 3) {
+            const labelId = tbody.id.match(/oldTbody(\d+)/)[1];
+            labelOrderMap.set(labelId, []);
+        } else {
+                rows
+				.filter((_, index) => index > 1) // Skip the first row
+				.forEach(function(row) {
+					const match = row.id.match(/rowLabel\|(\d+)\|stub\|(\d+)/);
+					if(match) {
 
-                    const labelId = match[1];
-                    const stubId = match[2];
+						const labelId = match[1];
+						const stubId = match[2];
 
-                    if (!labelOrderMap.has(labelId)) {
-                        labelOrderMap.set(labelId, []);
-                    }
+						if (!labelOrderMap.has(labelId)) {
+							labelOrderMap.set(labelId, []);
+						}
 
-                    labelOrderMap.get(labelId).push(stubId);
+						labelOrderMap.get(labelId).push(stubId);
 
-                }
-            });
+					}
+				});
+			}
 
-        // Convert labelOrderMap to JSON and push it to labelOrderArray
-        labelOrderArray.push([...labelOrderMap]);
-    });
+			// Convert labelOrderMap to JSON and push it to labelOrderArray
+			labelOrderArray.push([...labelOrderMap]);
+		});
 
-    // Return the array if needed
-    return labelOrderArray;
-}
+		// Return the array if needed
+		return labelOrderArray;
+	}
 
 
 function getStubsWithoutLabels() {
@@ -318,6 +361,18 @@ const getCheckedCheckboxes = () => {
     return checkedCheckboxes;
 };
 
+const getCategoryFreeText = () => {
+    const categoryFreeText = {};
+
+    Object.keys(CKEDITOR.instances).forEach(key => {
+        const categoryId = key.split('_')[3];
+        categoryFreeText[categoryId] = CKEDITOR.instances[key].getData();
+    });
+
+    return categoryFreeText;
+};
+
+
 {# ! Generate the dynamic form #}
 const generateDynamicForm = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
 
@@ -340,15 +395,13 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
         // Send a POST request
         const response = await axios.post(url, requestBody);
 
+        const freeText = getCategoryFreeText();
+
         // Remove all existing tbody elements
         tbodyElements.forEach(tbody => {
             tbody.remove();
         });
 
-        // Append new tbody sections from the response HTML
-        tbodyElements.forEach(tbody => {
-            tbody.remove();
-        });
         document.querySelector("table:not(#searchResultsTable)").insertAdjacentHTML('beforeend', response.data);
         if( ! response.data ) {
             $("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
@@ -356,6 +409,32 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
         }
         sortInit();
         deleteInit();
+
+        const tbodyElementsNew = document.querySelectorAll("tbody[id^='oldTbody']");
+
+        tbodyElementsNew.forEach(tbody => {
+            const categoryID = tbody.id.replace('oldTbody', '');
+            const ckEditorFieldHTML = `
+                <tr class="filtered">
+                    <td colspan="8">
+                        <div class="editor-container">
+                            <label for="category_free_text_${categoryID}" class="editor-label">Free Text</label>
+                            <textarea id="category_free_text_${categoryID}" name="editor1"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            `;
+
+            tbody.insertAdjacentHTML('beforeend', ckEditorFieldHTML);
+
+            // Initialize CKEditor for the new field with the required configuration
+            CKEDITOR.replace(`category_free_text_${categoryID}`, {
+                removePlugins: 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+            });
+
+            CKEDITOR.instances[`category_free_text_${categoryID}`].setData(freeText[categoryID]);
+
+        });
 
     } catch (error) {
         console.error("Error:", error);
@@ -462,6 +541,16 @@ const generateReport = async (selectedLabels, currentComments, checkedCheckboxes
     if (selectedLabels.length > 0 || stubsOrder.length) {
         const currentLanguage = "{{ app.request.locale }}";
         const url = "{{ path('app_therapy_scheme_generateReport') }}";
+
+        const title = document.getElementById('therapy_scheme_title').value;
+        const objective = document.getElementById('therapy_scheme_objective').value;
+        const place = document.getElementById('therapy_scheme_place').value;
+        const date = document.getElementById('therapy_scheme_date').value;
+        console.log(date);
+        const salutation = document.getElementById('therapy_scheme_salutation').value;
+        const footer = document.getElementById('therapy_scheme_footer').value;
+        const categoryFreeText = getCategoryFreeText();
+
         const requestBody = {
             selectedLabels,
             currentLanguage,
@@ -470,10 +559,19 @@ const generateReport = async (selectedLabels, currentComments, checkedCheckboxes
             stubsOrder,
             suppress,
             excerpt,
-            combined
+            combined,
+            title,
+            objective,
+            place,
+            date,
+            salutation,
+            footer,
+            categoryFreeText
         };
+
         const result = await axios.post(url, requestBody);
         return result;
+
     }
 };
 
@@ -654,6 +752,9 @@ $(document).ready(function () {
         const stubsOrder = document.getElementById("therapy_scheme_stubsOrder");
         stubsOrder.value = JSON.stringify(getStubsOrder());
 
+        const categoryFreeText = document.getElementById("therapy_scheme_freeText");
+        categoryFreeText.value = JSON.stringify(getCategoryFreeText());
+
         const form = document.getElementById("create_therapy_scheme_form");
         form.submit();
 	});
@@ -763,6 +864,21 @@ $(document).ready(function () {
             border: none; /* No border */
             padding: 0; /* Remove padding */
             transition: color 0.3s; /* Smooth color transition */
+        }
+        .editor-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #e0e0e0;
+        }
+        .editor-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .editor-wrapper {
+            margin-bottom: 20px;
         }
     </style>
 {% endblock %}

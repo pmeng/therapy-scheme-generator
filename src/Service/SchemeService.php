@@ -53,8 +53,10 @@ class SchemeService
         $stubIDs = $order[0][1];
         foreach ($stubIDs as $stubID) {
           $stub = $this->stubRepository->find($stubID);
-          if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
-            $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'][] = $stub;
+          if ($stub) {
+              if(!in_array($stub, $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'])) {
+                $categoriesWithStubs[$stub->getCategory()->getId()]['stubs'][] = $stub;
+              }
           }
         }
 
@@ -79,7 +81,7 @@ class SchemeService
 
     foreach ($categoriesWithStubs as $categoryId => $categoryWithStubs) {
       $stubs = $categoryWithStubs['stubs'];
-      if (count($stubs) > 0) {
+      if (count($stubs) > -1) {
 
           $category = $this->stubCategoryRepository->find($categoryId);
           // Generate the tbody for the category
@@ -88,7 +90,6 @@ class SchemeService
           }
       }
     }
-
     return $newTbody;
 
   }
@@ -201,15 +202,6 @@ class SchemeService
           '</td>' .
           '</tr>';
         }
-      } else {
-        $translatedNoSavedTemplates = $this->translator->trans('app-therapy-report-no-saved-templates', [], 'messages', $currentLanguage);
-        $newTbody .= '<tr id="rowLabel|' . $label->getId() . '|stub|0">' .
-          '<th style="">' .
-          '<span class="d-flex justify-content-center fs-4 text-secondary">' .
-          $translatedNoSavedTemplates .
-          '</span>' .
-          '</th>' .
-          '</tr>';
       }
 
       $newTbody .= '</tbody>'; // Close the tbody for each label
@@ -222,9 +214,51 @@ class SchemeService
     $checkedCheckboxes,
     $stubsOrder,
     $excerpt,
+    $title,
+    $objective,
+    $place,
+    $date,
+    $salutation,
+    $categoryFreeText
   ): string {
   
     $newTbody = '';
+
+    if (isset($place) && !empty($place)) {
+    } else {
+      $place = 'Ort';
+    }
+    if (isset($date) && !empty($date)) {
+    } else {
+      $date = "d.m.Y";
+    }
+    $newTbody .= '<tr>
+        <td colspan="5" style="text-align: right; font-family: Quicksand; font-size: 9pt;">
+            <strong>' . $place . ', ' . $date . '</strong>
+        </td>
+    </tr>';
+
+    if (isset($title) && !empty($title)) {
+    } else {
+      $title = "Therapieplan";
+    }
+    $newTbody .= '<tr>
+        <td colspan="5" style="text-align: center; font-family: Quicksand; font-size: 18pt; font-weight: bold;">
+            ' . $title . '
+        </td>
+    </tr>';
+
+
+    if (isset($objective) && !empty($objective)) {
+    } else {
+      $objective = "Für";
+    }
+    $newTbody .= '<tr>
+        <td colspan="5" style="text-align: left; font-family: Quicksand; font-size: 12pt;">
+            ' . $objective . '
+        </td>
+    </tr>';
+
     $stubsOrder = $stubsOrder ?? [];
     $categories = $this->stubCategoryRepository
         ->createQueryBuilder('stub_category')
@@ -272,52 +306,79 @@ class SchemeService
 
     foreach ($categoriesWithStubs as $categoryId => $categoryWithStubs) {
       $stubs = $categoryWithStubs['stubs'];
-      if (count($stubs) > 0) {
+      if (count($stubs) > 0 || isset($categoryFreeText[$categoryId])) {
 
           $category = $this->stubCategoryRepository->find($categoryId);
 
           // Generate the tbody for the category
           if($category){
-            $newTbody .= $this->generateLabelTbodyPDF($category, $stubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt);
+            $hasFreeText = false;
+            if(isset($categoryFreeText[$categoryId])) {
+              if($categoryFreeText[$categoryId]) {
+                $hasFreeText = true;  
+              }
+            }
+
+            $newTbody .= $this->generateLabelTbodyPDF($category, $stubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $hasFreeText);
+            
+            if($hasFreeText) {
+
+              $newTbody .= '<tr id="rowLabel|' . $categoryId . '|stub|' . "FreeText" . '"><td colspan="5" style="font-size: 9pt;">' .
+              $categoryFreeText[$categoryId] .
+              '</td></tr>';
+
+            }
+
           }
           
       }
     }
 
+    if (isset($salutation) && !empty($salutation)) {
+    } else {
+      $salutation = "Mit freundlichen Grüßen";
+    }
+    
+    $newTbody .= '<tr>
+        <td colspan="5" style="text-align: left; font-family: Quicksand; font-size: 12pt;">
+            ' . $salutation . '
+        </td>
+    </tr>';
+
+
     return $newTbody;
   
   }
-  private function generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt) {
+  private function generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $hasFreeText) {
 
   
     $newTbody = '';
     $trLabel = '';
     if (!$suppress) {
       $trLabel .= '<tr class="table-light" id="rowLabel|' . $label->getId() . '">' .
-        '<th colspan="5">' . $label->getReportName() . '</th>' .
-        '</tr>';
+      '<th colspan="5" style="font-size: 16pt;">' . $label->getReportName() . '</th>' .
+      '</tr>';
     }
     $newTbody .= $trLabel;
-
     $hasStubs = false;
     foreach ($checkedCheckboxes as $checkboxKey) {
       // Define a regular expression pattern
       $pattern = '/labelID=(\d+)\|stubID=(\d+)/';
-
+      
       // Match the pattern against the string
       preg_match($pattern, $checkboxKey, $matches);
-
+      
       // Extract the labelID and stubID values
       $categoryID = $matches[1];
       if ((int)$categoryID == $label->getId() ) {
         $hasStubs = true;
       }
     }
-
-    if(!$hasStubs) {
+    
+    if(!$hasStubs && !$hasFreeText) {
       return '';
     }
-  
+    
     foreach ($labelStubs as $stub) {
   
       // todo: dont show the line, if checkbox is not checked and show comments in a new row
@@ -337,12 +398,12 @@ class SchemeService
   
       $descriptionExcerptItem = '';
       if ($excerpt) {
-        $descriptionExcerptItem = '<td ></td><td>' .
+        $descriptionExcerptItem = '<td style="font-size: 9pt;">' .
           $stub->getExcerpt() .
           '</td>';
       } else {
         // 100px;
-        $descriptionExcerptItem = '<td ></td><td>' .
+        $descriptionExcerptItem = '<td style="font-size: 9pt;">' .
           $stub->getDescription() .
           '</td>';
       }
@@ -361,7 +422,7 @@ class SchemeService
         }
       }
       if ($comment != '') {
-        $newTbody .= '<tr><td colspan="3">' . $comment . '</td></tr>';
+        $newTbody .= '<tr><td colspan="3" style="font-size: 9pt;">' . $comment . '</td></tr>';
       }
     }
 
