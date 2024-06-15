@@ -273,6 +273,10 @@
         <source>app-therapy-report-no-saved-templates</source>
         <target>Nicht gefunden</target>
       </trans-unit>
+      <trans-unit id="OaSFQif" resname="app-therapy-scheme-pdf-pagination">
+        <source>app-therapy-scheme-pdf-pagination</source>
+        <target>Seite {PAGE_NUM} von {PAGE_COUNT}</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

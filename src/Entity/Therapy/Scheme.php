@@ -4,6 +4,8 @@ namespace App\Entity\Therapy;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\Therapy\SchemeRepository;
+use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: SchemeRepository::class)]
 class Scheme
@@ -39,6 +41,27 @@ class Scheme
 
     #[ORM\Column]
     private ?array $stubsOrder = [];
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $title;
+    
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $objective;
+    
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $place;
+    
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTimeInterface $schemeDate;
+    
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $salutation;
+    
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $footer;
+    
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $freeText = [];
 
     public function __toString(): string
     {
@@ -158,6 +181,93 @@ class Scheme
     public function setStubsOrder(array $stubsOrder): self
     {
         $this->stubsOrder = $stubsOrder;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): self
+    {
+        $this->title = $title ?? '';
+
+        return $this;
+    }
+
+    public function getPlace(): ?string
+    {
+        return $this->place;
+    }
+
+    public function setPlace(?string $place): self
+    {
+        $this->place = $place ?? '';
+
+        return $this;
+    }
+
+    public function getSchemeDate(): ?\DateTimeInterface
+    {
+        return $this->schemeDate;
+    }
+
+    public function setSchemeDate(?\DateTimeInterface $schemeDate): self
+    {
+        $this->schemeDate = $schemeDate;
+        return $this;
+    }
+
+    public function getFooter(): ?string
+    {
+        return $this->footer;
+    }
+
+    public function setFooter(?string $footer): self
+    {
+        $this->footer = $footer ?? '';
+
+        return $this;
+    }
+
+    public function getFreeText(): array
+    {
+        if($this->freeText) {
+            return $this->freeText;
+        } else {
+            return [];
+        }
+    }
+
+    public function setFreeText(array $freeText): self
+    {
+        $this->freeText = $freeText;
+
+        return $this;
+    }
+
+    public function getObjective(): ?string
+    {
+        return $this->objective;
+    }
+
+    public function setObjective(?string $objective): self
+    {
+        $this->objective = $objective ?? '';
+
+        return $this;
+    }
+
+    public function getSalutation(): ?string
+    {
+        return $this->salutation;
+    }
+
+    public function setSalutation(?string $salutation): self
+    {
+        $this->salutation = $salutation ?? '';
 
         return $this;
     }

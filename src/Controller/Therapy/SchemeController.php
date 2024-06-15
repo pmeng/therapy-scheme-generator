@@ -15,12 +15,14 @@ use App\Form\EditTherapySchemeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\Therapy\SchemeRepository;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SchemeController extends AbstractController
 {
@@ -28,13 +30,16 @@ class SchemeController extends AbstractController
 
     protected EntityManagerInterface $entityManager;
     protected PaginatorInterface $paginator;
+    protected TranslatorInterface $translator;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
+        TranslatorInterface $translator
     ) {
         $this->entityManager = $entityManager;
         $this->paginator = $paginator;
+        $this->translator = $translator;
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create', methods: ['GET', 'POST'])]
@@ -49,6 +54,27 @@ class SchemeController extends AbstractController
             $formData = $form->getData();
 
             $scheme = new Scheme();
+
+            $title = $formData['title'];
+            $scheme->setTitle($title);
+
+            $objective = $formData['objective'];
+            $scheme->setObjective($objective);
+
+            $place = $formData['place'];
+            $scheme->setPlace($place);
+
+            $schemeDate = $formData['date'];
+            if($schemeDate) {
+                $scheme->setSchemeDate(new \DateTimeImmutable($schemeDate->format('m/d/Y')));
+            }
+
+            $salutation = $formData['salutation'];
+            $scheme->setSalutation($salutation);
+
+            $footer = $formData['footer'];
+            $scheme->setFooter($footer);
+
             $targets = json_decode($formData['targets'], true);
             $scheme->setTargets($targets);
 
@@ -58,6 +84,12 @@ class SchemeController extends AbstractController
                 $stubsOrder = [];
             }
             $scheme->setStubsOrder($stubsOrder);
+
+            $categoryFreeText = json_decode($formData['freeText'], true);
+            if ($categoryFreeText === null) {
+                $categoryFreeText = [];
+            }
+            $scheme->setFreeText($categoryFreeText);
             
             $comments = json_decode($formData['comments'], true);
             $scheme->setComments($comments);
@@ -160,6 +192,15 @@ class SchemeController extends AbstractController
         if (strlen($validationError) > 0) {
             return new JsonResponse(['error' => $validationError], 400);
         }
+        $title = $requestData['title'];
+        $objective = $requestData['objective'];
+        $place = $requestData['place'];
+        $date = $requestData['date'];
+        $date = new DateTimeImmutable($requestData['date']);
+        $date = $date->format('d/m/Y');
+        $salutation = $requestData['salutation'];
+        $footer = $requestData['footer'];
+        $categoryFreeText = $requestData['categoryFreeText'];
 
         $selectedLabels = $requestData['selectedLabels'];
         $currentComments = $requestData['currentComments'];
@@ -168,18 +209,24 @@ class SchemeController extends AbstractController
         $suppress = $requestData['suppress'];
         $excerpt = $requestData['excerpt'];
         $combined = $requestData['combined'];
-
+        
         if(!$combined) {
-
+            
             $reportContent = $schemeService->generatePDFReport(
                 $selectedLabels,
                 $suppress,
                 $currentComments,
                 $checkedCheckboxes,
                 $stubsOrder,
-                $excerpt
+                $excerpt,
+                $title,
+                $objective,
+                $place,
+                $date,
+                $salutation,
+                $categoryFreeText
             );
-
+            
         } else {
             $excerpt = false;
             $reportContent = $schemeService->generatePDFReport(
@@ -188,7 +235,14 @@ class SchemeController extends AbstractController
                 $currentComments,
                 $checkedCheckboxes,
                 $stubsOrder,
-                $excerpt
+                $excerpt,
+                $title,
+                $objective,
+                $place,
+                $date,
+                ' ',
+                $categoryFreeText
+                
             );
             $reportContent .= $schemeService->generatePDFReport(
                 $selectedLabels,
@@ -196,13 +250,16 @@ class SchemeController extends AbstractController
                 $currentComments,
                 $checkedCheckboxes,
                 $stubsOrder,
-                !$excerpt
+                !$excerpt,
+                ' ',' ',' ',' ',
+                $salutation,
+                []
             ); 
         }
-        
         $session = $request->getSession();
         $session->set('reportContent', $reportContent);
         $session->set('reportExcerpt', $excerpt);
+        $session->set('reportFooter', $footer);
         
         return new JsonResponse(['success' => true], 200);
     }
@@ -252,7 +309,7 @@ class SchemeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+      
             // Check if someone the user was able to submit the form with empty labels
             $labels = $form->get('labels')->getData();
             
@@ -265,9 +322,10 @@ class SchemeController extends AbstractController
             }
             
             $formData = $form->getData();
-            
+
             $targets = $formData->getTargets();
             $scheme->setTargets($targets);
+
             $stubsOrder = $formData->getStubsOrder();
             if(is_null($stubsOrder)) {
                 $stubsOrder = [];
@@ -283,7 +341,34 @@ class SchemeController extends AbstractController
             
             $excerpt = $formData->isExcerpt();
             $scheme->setExcerpt($excerpt);
+
+            $title = $formData->getTitle();
+            $scheme->setTitle($title);
             
+            $objective = $formData->getObjective();
+            $scheme->setObjective($objective);
+            
+            $place = $formData->getPlace();
+            $scheme->setPlace($place);
+            
+            $schemeDate = $formData->getSchemeDate();
+            if ($schemeDate) {
+                $schemeDateFormatted = $schemeDate->format('m/d/Y');
+                $scheme->setSchemeDate(new \DateTime($schemeDateFormatted));
+            }
+            
+            $salutation = $formData->getSalutation();
+            $scheme->setSalutation($salutation);
+            
+            $footer = $formData->getFooter();
+            $scheme->setFooter($footer);
+            
+            $categoryFreeText = $formData->getFreeText();
+            if ($categoryFreeText == null) {
+                $categoryFreeText = [];
+            }
+            $scheme->setFreeText($categoryFreeText);
+
             $scheme->setCreatedAt(new \DateTimeImmutable());
             $scheme->setUpdatedAt(new \DateTimeImmutable());
             $labelIDs = [];
@@ -344,6 +429,13 @@ class SchemeController extends AbstractController
                 $toBeUpdatedScheme->setStubsOrder($data->getStubsOrder());
                 $toBeUpdatedScheme->setSuppress($data->isSuppress());
                 $toBeUpdatedScheme->setExcerpt($data->isExcerpt());
+                $toBeUpdatedScheme->setTitle($data->getTitle());
+                $toBeUpdatedScheme->setObjective($data->getObjective());
+                $toBeUpdatedScheme->setPlace($data->getPlace());
+                $toBeUpdatedScheme->setSchemeDate($data->getSchemeDate());
+                $toBeUpdatedScheme->setSalutation($data->getSalutation());
+                $toBeUpdatedScheme->setFooter($data->getFooter());
+                $toBeUpdatedScheme->setFreeText($data->getFreeText());
                 $toBeUpdatedScheme->setUpdatedAt(new \DateTimeImmutable());
             } else {
                 $this->entityManager->persist($data);
@@ -366,10 +458,12 @@ class SchemeController extends AbstractController
         $session = $request->getSession();
         $reportContent = $session->get('reportContent');
         $reportExcerpt = $session->get('reportExcerpt');
+
         if (!$reportContent) {
             return $this->redirectToRoute('app_therapy_scheme_create'); // todo changeName
         }
         $reportContent = "<tbody>$reportContent</tbody>";
+
         return $this->render('therapy/scheme/pdf-template.html.twig', [
             'reportContent' => $reportContent,
             'reportExcerpt' => $reportExcerpt,
@@ -381,15 +475,36 @@ class SchemeController extends AbstractController
     {
         $session = $request->getSession();
         $reportContent = $session->get('reportContent');
-        $reportExcerpt = $session->get('reportExcerpt');        
+        $reportExcerpt = $session->get('reportExcerpt');  
+        $footerText = $session->get('reportFooter');  
+
         if (!$reportContent) {
             return $this->redirectToRoute('app_therapy_scheme_create');
         }
-        $reportContent = "<tbody>$reportContent</tbody>";
+
+        // Path to the logo image
+        $logoPath = realpath(__DIR__ . '/../../../').'\public\images\logo.jpeg';
+
+        // Read the image file content
+        $imageData = file_get_contents($logoPath);
+
+        // Encode the image content in Base64
+        $base64Image = base64_encode($imageData);
+
+        // Create a data URI for the image
+        $imageSrc = 'data:image/jpeg;base64,' . $base64Image;
+
+        // Report content with embedded Base64 image
+        $reportContent = 
+                '<tr>
+                    <td colspan="5" style="text-align: right;">
+                        <img src="' . $imageSrc . '" alt="Logo" style="width: auto; max-height: 3.5cm; margin-bottom: 10pt;">
+                    </td>
+                </tr>' . $reportContent;
 
 
         $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('defaultFont', 'dejavu sans');
         $dompdf = new Dompdf($pdfOptions);
 
         $html = $this->renderView('therapy/scheme/pdf-template.html.twig', [
@@ -399,12 +514,22 @@ class SchemeController extends AbstractController
 
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
+        
         $dompdf->render();
-        $dompdf->stream("report-" . date('Y-m-d') . ".pdf", [
-            "Attachment" => true
-        ]);
-        return new Response();
+        if(!$footerText) {
+            $footerText = $this->translator->trans('app-therapy-scheme-pdf-pagination', [], 'messages',$request->getLocale());
+        }
+        $dompdf->getCanvas()->page_text(510, 810, $footerText, '', 6, array(0,0,0));
+        // Stream the generated PDF to the browser as an attachment
+        $response = new Response($dompdf->output());
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'attachment;filename="report-' . date('Y-m-d') . '.pdf"');
+        $response->headers->set('Cache-Control', 'private, max-age=0, must-revalidate');
+        $response->headers->set('Pragma', 'public');
+    
+        return $response;
     }
+    
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/searchRedirector', name: 'app_therapy_scheme_search_redirector')]
     public function searchRedirector(Request $request): Response

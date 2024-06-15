@@ -8,6 +8,42 @@
 		</h2>
 		<div class="row mt-3">
 			<div class="col-8">
+				{{ form_label(form.title) }}
+				{{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.objective) }}
+				{{ form_widget(form.objective, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.place) }}
+				{{ form_widget(form.place, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.schemeDate) }}
+				{{ form_widget(form.schemeDate, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.salutation) }}
+				{{ form_widget(form.salutation, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
+				{{ form_label(form.footer) }}
+				{{ form_widget(form.footer, {'attr': {'class': 'form-control'}}) }}
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-8">
 				{{ form_widget(form.labels, {'attr': {'class': 'form-control'}}) }}
 			</div>
 		</div>
@@ -178,7 +214,8 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/sortablejs@1.14.0/Sortable.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script>
 
@@ -213,9 +250,12 @@
 			const rows = Array.from(tbody.children);
 
 			const labelOrderMap = new Map(); // Define a map for each tbody
-
+			if(rows.length <= 3) {
+				const labelId = tbody.id.match(/oldTbody(\d+)/)[1];
+				labelOrderMap.set(labelId, []);
+			} else {
 			rows
-				.filter((_, index) => index !== 0) // Skip the first row
+				.filter((_, index) => index > 1) // Skip the first row
 				.forEach(function(row) {
 					const match = row.id.match(/rowLabel\|(\d+)\|stub\|(\d+)/);
 					if(match) {
@@ -231,6 +271,7 @@
 
 					}
 				});
+			}
 
 			// Convert labelOrderMap to JSON and push it to labelOrderArray
 			labelOrderArray.push([...labelOrderMap]);
@@ -310,7 +351,15 @@
 					const stubsOrder = getStubsOrder();
 					const suppress = false;
 					const excerpt = false;
+					
+					
+					const categoryFreeText = JSON.parse($("#edit_therapy_scheme_freeText").val());
 					await generateDynamicForm(selectedValues, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
+
+					Object.keys(categoryFreeText).forEach( category => {
+						CKEDITOR.instances[`category_free_text_${category}`].setData(categoryFreeText[category]);
+					});
+
 					initializeSortableForTables()
 					{# * Show/hide content #}
 					if (selectedValues.length > 0 || getStubsOrder().length != 0) {
@@ -351,52 +400,103 @@
 		return checkedCheckboxes;
 	};
 
+	
+	const getCategoryFreeText = () => {
+		const categoryFreeText = {};
+
+		Object.keys(CKEDITOR.instances).forEach(key => {
+			const categoryId = key.split('_')[3];
+			categoryFreeText[categoryId] = CKEDITOR.instances[key].getData();
+		});
+		
+		$("#edit_therapy_scheme_freeText").val(JSON.stringify(categoryFreeText));
+
+		return categoryFreeText;
+	};
+
+
 
 	{# ! Generate the dynamic form #}
-	const generateDynamicForm = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
+const generateDynamicForm = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt) => {
+    // Get all tbody elements
+    const tbodyElements = document.querySelectorAll("table:not(#searchResultsTable) tbody");
+    const currentLanguage = "{{ app.request.locale }}";
+    const url = "{{ path('app_therapy_scheme_generateForm') }}";
+    const requestBody = {
+        selectedLabels,
+        currentLanguage,
+        currentComments,
+        checkedCheckboxes,
+        stubsOrder,
+        suppress,
+        excerpt
+    };
 
-		// Get all tbody elements
-		const tbodyElements = document.querySelectorAll("table:not(#searchResultsTable) tbody");
-		const currentLanguage = "{{ app.request.locale }}";
-		const url = "{{ path('app_therapy_scheme_generateForm') }}";
-		const requestBody = {
-			selectedLabels,
-			currentLanguage,
-			currentComments,
-			checkedCheckboxes,
-			stubsOrder,
-			suppress,
-			excerpt
-		};
+    try {
+        // Send a POST request
+        const response = await axios.post(url, requestBody);
 
-		try {
-			// Send a POST request
-			const response = await axios.post(url, requestBody);
 
-			// Remove all existing tbody elements
-			tbodyElements.forEach(tbody => {
-				tbody.remove();
-			});
+		const freeText = getCategoryFreeText();
+		
+        // Remove all existing tbody elements
+        tbodyElements.forEach(tbody => {
+            tbody.remove();
+        });
 
-			// Append new tbody sections from the response HTML
-			document.querySelector("table:not(#searchResultsTable)").insertAdjacentHTML('beforeend', response.data);
-			if( ! response.data ) {
-				$("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
-				$("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
-			}
-			sortInit();
-			deleteInit();
+        // Append new tbody sections from the response HTML
+        document.querySelector("table:not(#searchResultsTable)").insertAdjacentHTML('beforeend', response.data);
+        if (!response.data) {
+            $("#contentDisplayedWhenNoLabelsAreSelected").removeClass("d-none");
+            $("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
+        }
+        sortInit();
+        deleteInit();
 
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
+        const tbodyElementsNew = document.querySelectorAll("tbody[id^='oldTbody']");
+
+        tbodyElementsNew.forEach(tbody => {
+            const categoryID = tbody.id.replace('oldTbody', '');
+            const ckEditorFieldHTML = `
+                <tr class="filtered">
+                    <td colspan="8">
+                        <div class="editor-container">
+                            <label for="category_free_text_${categoryID}" class="editor-label">Free Text</label>
+                            <textarea id="category_free_text_${categoryID}" name="editor1"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            `;
+			
+            tbody.insertAdjacentHTML('beforeend', ckEditorFieldHTML);
+
+            // Initialize CKEditor for the new field with the required configuration
+            CKEDITOR.replace(`category_free_text_${categoryID}`, {
+                removePlugins: 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+            });
+
+			CKEDITOR.instances[`category_free_text_${categoryID}`].setData(freeText[categoryID]);
+
+        });
+
+    } catch (error) {
+        console.error("Error:", error);
+    }
+};
 
 	// * Generate the Report
 	const generateReport = async (selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt, combined = false) => {
 		if (selectedLabels.length > 0 || stubsOrder.length) {
 			const currentLanguage = "{{ app.request.locale }}";
 			const url = "{{ path('app_therapy_scheme_generateReport') }}";
+
+			const title = document.getElementById('edit_therapy_scheme_title').value;
+			const objective = document.getElementById('edit_therapy_scheme_objective').value;
+			const place = document.getElementById('edit_therapy_scheme_place').value;
+			const date = document.getElementById('edit_therapy_scheme_schemeDate').value;
+			const salutation = document.getElementById('edit_therapy_scheme_salutation').value;
+			const footer = document.getElementById('edit_therapy_scheme_footer').value;
+			const categoryFreeText = getCategoryFreeText();
 			const requestBody = {
 				selectedLabels,
 				currentLanguage,
@@ -405,10 +505,19 @@
 				stubsOrder,
 				suppress,
 				excerpt,
-				combined
+				combined,
+				title,
+				objective,
+				place,
+				date,
+				salutation,
+				footer,
+				categoryFreeText
 			};
+
 			const result = await axios.post(url, requestBody);
 			return result;
+
 		}
 	};
 
@@ -751,11 +860,13 @@ function setupPagination(tableId, rowsPerPage) {
 			const comments = getCurrentComments();
 			const checkedCheckboxes = getCheckedCheckboxes();
 			const stubsOrder = getStubsOrder();
+			const categoryFreeText = getCategoryFreeText();
 
 			// Set the values of the hidden input fields
 			$("#edit_therapy_scheme_comments").val(JSON.stringify(comments));
 			$("#edit_therapy_scheme_targets").val(JSON.stringify(checkedCheckboxes));
 			$("#edit_therapy_scheme_stubsOrder").val(JSON.stringify(stubsOrder));
+			$("#edit_therapy_scheme_freeText").val(JSON.stringify(categoryFreeText));
 
 			// Submit the form
 			$("#edit_create_therapy_scheme_form").submit();
@@ -887,6 +998,21 @@ function setupPagination(tableId, rowsPerPage) {
             border: none; /* No border */
             padding: 0; /* Remove padding */
             transition: color 0.3s; /* Smooth color transition */
+        }
+		.editor-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #e0e0e0;
+        }
+        .editor-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .editor-wrapper {
+            margin-bottom: 20px;
         }
     </style>
 
