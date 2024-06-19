@@ -239,8 +239,6 @@ class SchemeService
 
     
     if (!$date) {
-      $date = $this->schemeSettings->getSchemeDate()->format('d/m/Y');
-      if($date)
       $date = "d.m.Y";
     }
     

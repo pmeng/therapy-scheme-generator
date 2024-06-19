@@ -34,6 +34,7 @@ class TherapySchemeType extends AbstractType
                 'label' => 'Date',
                 'widget' => 'single_text',
                 'html5' => true,
+                'data' => new \DateTime(),
             ])
             ->add('salutation', TextAreaType::class, [
                 'required' => false,

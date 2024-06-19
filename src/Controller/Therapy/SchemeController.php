@@ -301,6 +301,11 @@ class SchemeController extends AbstractController
             $excerpt,
             $currentLanguage
         );
+
+        $schemeDate = $editedScheme->getSchemeDate();
+        if(!$schemeDate) {
+            $editedScheme->setSchemeDate($editedScheme->getCreatedAt());
+        }
         
         $form = $this->createForm(EditTherapySchemeType::class, $editedScheme);
         $form->add('labels', EntityType::class, [

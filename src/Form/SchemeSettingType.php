@@ -54,12 +54,6 @@ class SchemeSettingType extends AbstractType
                 'required' => false,
                 'label' => 'Place',
             ])
-            ->add('schemeDate', DateType::class, [
-                'required' => false,
-                'label' => 'Date',
-                'widget' => 'single_text',
-                'html5' => true,
-            ])
             ->add('salutation', TextAreaType::class, [
                 'required' => false,
                 'label' => 'Salutation',
