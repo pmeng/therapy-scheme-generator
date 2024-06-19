@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Scheme Settings{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="card-title">Scheme Settings</h1>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'class': 'my-4'}}) }}
+                        
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Logo</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.logo, {'attr': {'class': 'form-control-file'}}) }}
+                            </div>
+                        </div>
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Title</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Title Font Style</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.titleFontStyle, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Title Font Size</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.titleFontSize, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Place</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.place, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Scheme Date</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.schemeDate, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Objective</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.objective, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Salutation</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.salutation, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Footer</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.footer, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Text Font Style</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.textFontStyle, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Text Font Size</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.textFontSize, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Heading Font Style</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.headingFontStyle, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <label class="col-sm-3 col-form-label">Heading Font Size</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.headingFontSize, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-4">
+                            <div class="col-sm-12 text-center">
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </div>
+                        
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

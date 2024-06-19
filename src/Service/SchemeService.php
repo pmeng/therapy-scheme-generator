@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
+use App\Entity\Therapy\SchemeSetting;
 use App\Repository\Therapy\LabelRepository;
+use App\Repository\Therapy\SchemeSettingRepository;
 use App\Repository\Therapy\StubCategoryRepository;
 use App\Repository\Therapy\StubRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -13,14 +15,19 @@ class SchemeService
   private $labelRepository;
   private $stubRepository;
   private $stubCategoryRepository;
+  private $schemeSettingRepository;
   private $translator;
+  private $schemeSettings;
 
-  public function __construct(LabelRepository $labelRepository, StubRepository $stubRepository, StubCategoryRepository $stubCategoryRepository, TranslatorInterface $translator)
+  public function __construct(LabelRepository $labelRepository, StubRepository $stubRepository, StubCategoryRepository $stubCategoryRepository, SchemeSettingRepository $schemeSettingRepository,TranslatorInterface $translator)
   {
     $this->labelRepository = $labelRepository;
     $this->stubRepository = $stubRepository;
     $this->stubCategoryRepository = $stubCategoryRepository;
+    $this->schemeSettingRepository = $schemeSettingRepository;
     $this->translator = $translator;
+    $this->schemeSettings = $this->schemeSettingRepository->findOneBy([]) ?: new SchemeSetting();
+
   }
 
   public function generateTbody(
@@ -221,40 +228,74 @@ class SchemeService
     $salutation,
     $categoryFreeText
   ): string {
-  
-    $newTbody = '';
 
-    if (isset($place) && !empty($place)) {
-    } else {
+    $newTbody = '';
+    
+    if (!$place) {
+      $place = $this->schemeSettings->getPlace();
+      if(!$place)
       $place = 'Ort';
-    }
-    if (isset($date) && !empty($date)) {
-    } else {
+    } 
+
+    
+    if (!$date) {
+      $date = $this->schemeSettings->getSchemeDate()->format('d/m/Y');
+      if($date)
       $date = "d.m.Y";
     }
+    
+    $textFontStyle = $this->schemeSettings->getTextFontStyle();
+
+    if (!$textFontStyle) {
+      $textFontStyle = 'dejavu sans';
+    } 
+
+    $textFontSize = $this->schemeSettings->getTextFontSize();
+
+    if (!$textFontSize) {
+      $textFontSize = 9;
+    } 
+
+    $titleFontStyle = $this->schemeSettings->getTitleFontStyle();
+
+    if (!$titleFontStyle) {
+      $titleFontStyle = 'dejavu sans';
+    } 
+
+    $titleFontSize = $this->schemeSettings->getTitleFontSize();
+
+    if (!$titleFontSize) {
+      $titleFontSize = 18;
+    } 
+
     $newTbody .= '<tr>
-        <td colspan="5" style="text-align: right; font-family: Quicksand; font-size: 9pt;">
+        <td colspan="5" style="text-align: right; font-size: '.$textFontSize.'pt;">
             <strong>' . $place . ', ' . $date . '</strong>
         </td>
     </tr>';
 
-    if (isset($title) && !empty($title)) {
-    } else {
+    
+    if (!$title) {
+      $title = $this->schemeSettings->getTitle();
+      if(!$title)
       $title = "Therapieplan";
     }
+
     $newTbody .= '<tr>
-        <td colspan="5" style="text-align: center; font-family: Quicksand; font-size: 18pt; font-weight: bold;">
+        <td colspan="5" style="text-align: center; font-family: '.$titleFontStyle.'; font-size: '.$titleFontSize.'pt; font-weight: bold;">
             ' . $title . '
         </td>
     </tr>';
 
-
-    if (isset($objective) && !empty($objective)) {
-    } else {
+    
+    if (!$objective) {
+      $objective = $this->schemeSettings->getObjective();
+      if(!$objective)
       $objective = "Für";
     }
+
     $newTbody .= '<tr>
-        <td colspan="5" style="text-align: left; font-family: Quicksand; font-size: 12pt;">
+        <td colspan="5" style="text-align: left; font-family: '.$textFontStyle.'; font-size: '.$textFontSize.'pt;">
             ' . $objective . '
         </td>
     </tr>';
@@ -334,13 +375,15 @@ class SchemeService
       }
     }
 
-    if (isset($salutation) && !empty($salutation)) {
-    } else {
+    
+    if (!$salutation) {
+      $salutation = $this->schemeSettings->getSalutation();
+      if(!$salutation)
       $salutation = "Mit freundlichen Grüßen";
     }
-    
+
     $newTbody .= '<tr>
-        <td colspan="5" style="text-align: left; font-family: Quicksand; font-size: 12pt;">
+        <td colspan="5" style="text-align: left; font-family: '.$textFontStyle.'; font-size: '.$textFontSize.'pt;">
             ' . $salutation . '
         </td>
     </tr>';
@@ -351,12 +394,23 @@ class SchemeService
   }
   private function generateLabelTbodyPDF($label, $labelStubs, $suppress, $currentComments, $checkedCheckboxes, $excerpt, $hasFreeText) {
 
-  
+    $headingFontStyle = $this->schemeSettings->getHeadingFontStyle();
+
+    if (!$headingFontStyle) {
+      $headingFontStyle = 'dejavu sans';
+    } 
+
+    $headingFontSize = $this->schemeSettings->getHeadingFontSize();
+
+    if (!$headingFontSize) {
+      $headingFontSize = 16;
+    } 
+
     $newTbody = '';
     $trLabel = '';
     if (!$suppress) {
       $trLabel .= '<tr class="table-light" id="rowLabel|' . $label->getId() . '">' .
-      '<th colspan="5" style="font-size: 16pt;">' . $label->getReportName() . '</th>' .
+      '<th colspan="5" style="font-family: '.$headingFontStyle.'; font-size: '.$headingFontSize.'pt;">' . $label->getReportName() . '</th>' .
       '</tr>';
     }
     $newTbody .= $trLabel;
@@ -398,12 +452,12 @@ class SchemeService
   
       $descriptionExcerptItem = '';
       if ($excerpt) {
-        $descriptionExcerptItem = '<td style="font-size: 9pt;">' .
+        $descriptionExcerptItem = '<td style="font-size: '.$this->schemeSettings->getTextFontSize().'pt;">' .
           $stub->getExcerpt() .
           '</td>';
       } else {
         // 100px;
-        $descriptionExcerptItem = '<td style="font-size: 9pt;">' .
+        $descriptionExcerptItem = '<td style="font-size: '.$this->schemeSettings->getTextFontSize().'pt;">' .
           $stub->getDescription() .
           '</td>';
       }
@@ -422,7 +476,7 @@ class SchemeService
         }
       }
       if ($comment != '') {
-        $newTbody .= '<tr><td colspan="3" style="font-size: 9pt;">' . $comment . '</td></tr>';
+        $newTbody .= '<tr><td colspan="3" style="font-size: '.$this->schemeSettings->getTextFontSize().'pt;">' . $comment . '</td></tr>';
       }
     }
 

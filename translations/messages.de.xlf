@@ -229,6 +229,10 @@
         <source>app-therapy-scheme-templates</source>
         <target>Gespeicherte Therapieschemata</target>
       </trans-unit>
+      <trans-unit id="9HQQ1L8" resname="app-therapy-scheme-setting">
+        <source>app-therapy-scheme-setting</source>
+        <target>Schema Einstellungen</target>
+      </trans-unit>
       <trans-unit id="D6nuB.." resname="app-new-therapy-save-scheme-template">
         <source>app-new-therapy-save-scheme-template</source>
         <target>Therapieschema zur Wiederverwendung speichern</target>

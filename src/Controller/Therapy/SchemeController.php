@@ -8,6 +8,7 @@ use Dompdf\Options;
 use App\Entity\Therapy\Label;
 use App\Service\LabelService;
 use App\Entity\Therapy\Scheme;
+use App\Entity\Therapy\SchemeSetting;
 use App\Service\SchemeService;
 use App\Form\TherapySchemeType;
 use App\Form\SchemeTemplateType;
@@ -15,6 +16,7 @@ use App\Form\EditTherapySchemeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\Therapy\SchemeRepository;
+use App\Repository\Therapy\SchemeSettingRepository;
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,14 +34,18 @@ class SchemeController extends AbstractController
     protected PaginatorInterface $paginator;
     protected TranslatorInterface $translator;
 
+    private $schemeSettingRepository;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        SchemeSettingRepository $schemeSettingRepository
     ) {
         $this->entityManager = $entityManager;
         $this->paginator = $paginator;
         $this->translator = $translator;
+        $this->schemeSettingRepository = $schemeSettingRepository;
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/scheme/create', name: 'app_therapy_scheme_create', methods: ['GET', 'POST'])]
@@ -195,7 +201,6 @@ class SchemeController extends AbstractController
         $title = $requestData['title'];
         $objective = $requestData['objective'];
         $place = $requestData['place'];
-        $date = $requestData['date'];
         $date = new DateTimeImmutable($requestData['date']);
         $date = $date->format('d/m/Y');
         $salutation = $requestData['salutation'];
@@ -478,35 +483,37 @@ class SchemeController extends AbstractController
         $reportExcerpt = $session->get('reportExcerpt');  
         $footerText = $session->get('reportFooter');  
 
+        $schemeSettings = $this->schemeSettingRepository->findOneBy([]) ?: new SchemeSetting();
+        
         if (!$reportContent) {
             return $this->redirectToRoute('app_therapy_scheme_create');
         }
 
-        // Path to the logo image
-        $logoPath = realpath(__DIR__ . '/../../../').'\public\images\logo.jpeg';
+        $imageData = $schemeSettings->getLogo();
 
-        // Read the image file content
-        $imageData = file_get_contents($logoPath);
+        if($imageData) {
 
-        // Encode the image content in Base64
-        $base64Image = base64_encode($imageData);
-
-        // Create a data URI for the image
-        $imageSrc = 'data:image/jpeg;base64,' . $base64Image;
-
-        // Report content with embedded Base64 image
-        $reportContent = 
-                '<tr>
-                    <td colspan="5" style="text-align: right;">
-                        <img src="' . $imageSrc . '" alt="Logo" style="width: auto; max-height: 3.5cm; margin-bottom: 10pt;">
-                    </td>
-                </tr>' . $reportContent;
+            // Encode the image content in Base64
+            $base64Image = base64_encode($imageData);
+    
+            // Create a data URI for the image
+            $imageSrc = 'data:image/jpeg;base64,' . $base64Image;
+    
+            // Report content with embedded Base64 image
+            $reportContent = 
+                    '<tr>
+                        <td colspan="5" style="text-align: right;">
+                            <img src="' . $imageSrc . '" alt="Logo" style="width: auto; max-height: 3.5cm; margin-bottom: 10pt;">
+                        </td>
+                    </tr>' . $reportContent;
+                    
+        }
 
 
         $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'dejavu sans');
+        $pdfOptions->set('defaultFont', $schemeSettings->getTextFontStyle());
         $dompdf = new Dompdf($pdfOptions);
-
+        
         $html = $this->renderView('therapy/scheme/pdf-template.html.twig', [
             'reportContent' => $reportContent,
             'reportExcerpt' => $reportExcerpt,
@@ -516,9 +523,14 @@ class SchemeController extends AbstractController
         $dompdf->setPaper('A4', 'portrait');
         
         $dompdf->render();
+
         if(!$footerText) {
-            $footerText = $this->translator->trans('app-therapy-scheme-pdf-pagination', [], 'messages',$request->getLocale());
+            $footerText = $schemeSettings->getFooter();
+            if(!$footerText) {
+                $footerText = $this->translator->trans('app-therapy-scheme-pdf-pagination', [], 'messages',$request->getLocale());
+            }
         }
+        
         $dompdf->getCanvas()->page_text(510, 810, $footerText, '', 6, array(0,0,0));
         // Stream the generated PDF to the browser as an attachment
         $response = new Response($dompdf->output());
