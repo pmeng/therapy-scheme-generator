@@ -27,6 +27,7 @@ class SchemeSettingType extends AbstractType
             'Courier' => 'courier',
             'Helvetica' => 'helvetica',
             'Zapfdingbats' => 'zapfdingbats',
+            'Monospace' => 'monospace',
             'Symbol' => 'symbol',
             'Serif' => 'serif',
             'Fixed' => 'fixed',

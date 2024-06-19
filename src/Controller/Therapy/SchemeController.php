@@ -530,8 +530,14 @@ class SchemeController extends AbstractController
                 $footerText = $this->translator->trans('app-therapy-scheme-pdf-pagination', [], 'messages',$request->getLocale());
             }
         }
-        
-        $dompdf->getCanvas()->page_text(510, 810, $footerText, '', 6, array(0,0,0));
+        // Get the width and height of the page
+        $w = $dompdf->getCanvas()->get_width();
+        $h =$dompdf->getCanvas()->get_height();
+
+        $fontMetrics = $dompdf->getFontMetrics();
+        $font = $fontMetrics->getFont($schemeSettings->getTextFontStyle());
+
+        $dompdf->getCanvas()->page_text($w - 100 ,$h - 30, $footerText, $font , 6, array(0,0,0));
         // Stream the generated PDF to the browser as an attachment
         $response = new Response($dompdf->output());
         $response->headers->set('Content-Type', 'application/pdf');
