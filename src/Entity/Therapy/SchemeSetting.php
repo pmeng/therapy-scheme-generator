@@ -24,9 +24,6 @@ class SchemeSetting
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $place = null;
     
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $schemeDate = null;
-    
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $salutation = null;
     
@@ -78,17 +75,6 @@ class SchemeSetting
     public function setPlace(?string $place): self
     {
         $this->place = $place;
-        return $this;
-    }
-
-    public function getSchemeDate(): ?DateTimeInterface
-    {
-        return $this->schemeDate;
-    }
-
-    public function setSchemeDate(?DateTimeInterface $schemeDate): self
-    {
-        $this->schemeDate = $schemeDate;
         return $this;
     }
 
