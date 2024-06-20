@@ -429,7 +429,12 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
 
             // Initialize CKEditor for the new field with the required configuration
             CKEDITOR.replace(`category_free_text_${categoryID}`, {
-                removePlugins: 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+                toolbar: [
+                    { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript'] },
+                    { name: 'paragraph', items: [ 'NumberedList', 'BulletedList', 'Indent' ] },
+                    { name: 'insert', items: [ 'SpecialChar' ] }
+                ],
+                removeButtons: '',
             });
 
             CKEDITOR.instances[`category_free_text_${categoryID}`].setData(freeText[categoryID]);
