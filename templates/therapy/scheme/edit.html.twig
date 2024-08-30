@@ -329,6 +329,15 @@
 		return labelOrderArray;
 	}
 
+	
+	function initializeStubsOrder() {
+		if (!initializeStubsOrder.hasBeenCalled) {
+			initializeStubsOrder.hasBeenCalled = true;
+			return JSON.parse($("#edit_therapy_scheme_stubsOrder").val());
+		}
+		return getStubsOrder();
+	}
+
 	let selectedLabels = [];
 	$(document).ready(function () {
 		$("#edit_therapy_scheme_labels")
@@ -348,7 +357,7 @@
 					selectedLabels = selectedValues;
 					const currentComments = getCurrentComments();
 					const checkedCheckboxes = getCheckedCheckboxes();
-					const stubsOrder = getStubsOrder();
+					const stubsOrder = initializeStubsOrder();
 					const suppress = false;
 					const excerpt = false;
 					
