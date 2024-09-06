@@ -9,13 +9,13 @@ use Symfony\Component\Form\FormEvents;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use App\Repository\Therapy\LabelRepository;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\Event\PreSubmitEvent;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class StubType extends AbstractType
 {
@@ -34,22 +34,25 @@ class StubType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'app-therapy-stub-form-label-name',
             ])
-            ->add('description', CKEditorType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => 'app-therapy-stub-form-label-description',
-                'config' => [
-                    'removePlugins' => 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+                'attr' => [
+                    'class' => 'quill-editor', 
+                    'data-quill-target' => 'description', 
                 ],
             ])
-            ->add('excerpt', CKEditorType::class, [
+            ->add('excerpt', TextareaType::class, [
                 'label' => 'app-therapy-stub-form-label-excerpt',
-                'config' => [
-                    'removePlugins' => 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+                'attr' => [
+                    'class' => 'quill-editor',
+                    'data-quill-target' => 'excerpt',
                 ],
             ])
-            ->add('background', CKEditorType::class, [
+            ->add('background', TextareaType::class, [
                 'label' => 'app-therapy-stub-form-label-background',
-                'config' => [
-                    'removePlugins' => 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
+                'attr' => [
+                    'class' => 'quill-editor',
+                    'data-quill-target' => 'background',
                 ],
             ])
             ->add('labels', EntityType::class, [
