@@ -214,8 +214,9 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/sortablejs@1.14.0/Sortable.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script>
 
@@ -356,8 +357,11 @@
 					const categoryFreeText = JSON.parse($("#edit_therapy_scheme_freeText").val());
 					await generateDynamicForm(selectedValues, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
 
-					Object.keys(categoryFreeText).forEach( category => {
-						CKEDITOR.instances[`category_free_text_${category}`].setData(categoryFreeText[category]);
+					Object.keys(categoryFreeText).forEach(category => {
+						const quillInstance = Quill.find(document.querySelector(`#category_free_text_${category}`));
+						if (quillInstance) {
+							quillInstance.root.innerHTML = categoryFreeText[category]; // Set the content in Quill
+						}
 					});
 
 					initializeSortableForTables()
@@ -404,15 +408,39 @@
 	const getCategoryFreeText = () => {
 		const categoryFreeText = {};
 
-		Object.keys(CKEDITOR.instances).forEach(key => {
-			const categoryId = key.split('_')[3];
-			categoryFreeText[categoryId] = CKEDITOR.instances[key].getData();
+		document.querySelectorAll('.ql-editor').forEach(editor => {
+			const categoryId = editor.parentElement.id.split('_')[3];
+			const quillInstance = Quill.find(editor.parentElement);
+			categoryFreeText[categoryId] = transformQuillHTML(quillInstance.getSemanticHTML()); // Get the content from Quill
 		});
-		
+
 		$("#edit_therapy_scheme_freeText").val(JSON.stringify(categoryFreeText));
 
 		return categoryFreeText;
 	};
+
+	function transformQuillHTML(html) {
+		// Create a temporary DOM element to manipulate the HTML
+		const tempDiv = document.createElement('div');
+		tempDiv.innerHTML = html;
+
+		// Loop through all elements that have a ql-indent class
+		tempDiv.querySelectorAll('[class*="ql-indent-"]').forEach(element => {
+			// Extract the indentation level from the class name
+			const indentClass = Array.from(element.classList).find(cls => cls.startsWith('ql-indent-'));
+			if (indentClass) {
+				const indentLevel = parseInt(indentClass.replace('ql-indent-', ''), 10);
+
+				// Apply inline style for margin or padding to simulate indent
+				element.style.marginLeft = `${indentLevel * 20}px`;  // Adjust the multiplier as needed
+
+				// Remove the Quill class after applying the style
+				element.classList.remove(indentClass);
+			}
+		});
+
+		return tempDiv.innerHTML;
+	}
 
 
 
@@ -437,7 +465,7 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
         const response = await axios.post(url, requestBody);
 
 
-		const freeText = getCategoryFreeText();
+		const categoryFreeText = getCategoryFreeText();
 		
         // Remove all existing tbody elements
         tbodyElements.forEach(tbody => {
@@ -455,29 +483,47 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
 
         const tbodyElementsNew = document.querySelectorAll("tbody[id^='oldTbody']");
 
-        tbodyElementsNew.forEach(tbody => {
-            const categoryID = tbody.id.replace('oldTbody', '');
-            const ckEditorFieldHTML = `
-                <tr class="filtered">
-                    <td colspan="8">
-                        <div class="editor-container">
-                            <label for="category_free_text_${categoryID}" class="editor-label">Free Text</label>
-                            <textarea id="category_free_text_${categoryID}" name="editor1"></textarea>
-                        </div>
-                    </td>
-                </tr>
-            `;
+		tbodyElementsNew.forEach(tbody => {
+			const categoryID = tbody.id.replace('oldTbody', '');
+			const editorFieldHTML = `
+				<tr class="filtered">
+					<td colspan="8">
+						<div class="editor-container">
+							<label for="category_free_text_${categoryID}" class="editor-label">Free Text</label>
+							<div id="category_free_text_${categoryID}" name="editor1" class="ql-container ql-snow"></div>
+						</div>
+					</td>
+				</tr>
+			`;
 			
-            tbody.insertAdjacentHTML('beforeend', ckEditorFieldHTML);
+			tbody.insertAdjacentHTML('beforeend', editorFieldHTML);
 
-            // Initialize CKEditor for the new field with the required configuration
-            CKEDITOR.replace(`category_free_text_${categoryID}`, {
-                removePlugins: 'print,preview,save,newpage,sourcearea,templates,exportpdf,pastefromword,scayt,forms,div,language,image,smiley,iframe,about,maximize,showblocks',
-            });
+			const quillOptions = {
+				modules: {
+					toolbar: [
+						['bold', 'italic', 'underline', 'strike'],   // Bold, Italic, Underline, Strikethrough
+						[{ 'script': 'sub' }, { 'script': 'super' }], // Subscript, Superscript
+						[{ 'list': 'ordered' }, { 'list': 'bullet' }], // Numbered List, Bulleted List
+						[{ 'indent': '-1' }, { 'indent': '+1' }], // Indent
+						['clean'], // Clear formatting
+					]
+				},
+				theme: 'snow'
+			};
 
-			CKEDITOR.instances[`category_free_text_${categoryID}`].setData(freeText[categoryID]);
+			const quill = new Quill(`#category_free_text_${categoryID}`, quillOptions);
+			quill.root.style.fontSize = '16px';	
 
-        });
+		});
+
+		Object.keys(categoryFreeText).forEach(category => {
+			const quillInstance = Quill.find(document.querySelector(`#category_free_text_${category}`));
+			if (quillInstance) {
+				quillInstance.root.innerHTML = categoryFreeText[category]; // Set the content in Quill
+			}
+		});
+
+
 
     } catch (error) {
         console.error("Error:", error);
@@ -1000,20 +1046,64 @@ function setupPagination(tableId, rowsPerPage) {
             transition: color 0.3s; /* Smooth color transition */
         }
 		.editor-container {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #e0e0e0;
-        }
-        .editor-label {
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .editor-wrapper {
-            margin-bottom: 20px;
-        }
+			color: #555;
+			position: relative;
+			background-color: #ffffff; /* White background */
+			border: 1px solid #e0e0e0; /* Light grey border */
+			border-radius: 4px; /* Rounded corners */
+			padding: 10px;
+			margin-top: 10px;
+		}
+
+		/* Ensure the editor content area fills the container */
+		.ql-container {
+			height: 80%;
+		}
+
+		.ql-editor {
+			min-height: 150px; /* Adjust the content area height as needed */
+		}
+
+
+		.editor-label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+			color: #333; /* Dark grey text color */
+		}
+
+		.ql-toolbar.ql-snow {
+			border: 1px solid #e0e0e0; /* Light grey border */
+			border-bottom: none; /* No bottom border */
+			border-radius: 4px 4px 0 0; /* Rounded corners on top */
+			background-color: #f9f9f9; /* Slightly off-white background for toolbar */
+			padding: 5px;
+		}
+
+		.ql-container.ql-snow {
+			border: 1px solid #e0e0e0; /* Light grey border */
+			border-radius: 0 0 4px 4px; /* Rounded corners on bottom */
+			background-color: #ffffff; /* White background */
+		}
+
+		.ql-toolbar .ql-formats {
+			display: flex;
+		}
+
+		.ql-toolbar button {
+			background: none;
+			border: none;
+			color: #333; /* Dark grey icon color */
+			margin: 0 2px;
+			cursor: pointer;
+			padding: 5px;
+		}
+
+		.ql-toolbar button:hover {
+			background-color: #e0e0e0; /* Light grey background on hover */
+			border-radius: 4px;
+		}
+
     </style>
 
 {% endblock %}
