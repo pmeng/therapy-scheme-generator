@@ -362,18 +362,10 @@ class SchemeService
             
             if($hasFreeText) {
 
-              // Find and replace font-size styles with inherit to match the font size in the scheme settings
-              
-              $modifiedTrString = preg_replace_callback(
-                '/(<[^>]*style="[^"]*font-size:[^;"]+;?[^"]*"[^>]*>)/',
-                function($matches) {
-                    return preg_replace('/font-size:[^;"]+;?/', 'font-size: inherit;', $matches[0]);
-                },
-                $categoryFreeText[$categoryId]
-              );
 
-              $newTbody .= '<tr id="rowLabel|' . $categoryId . '|stub|' . "FreeText" . '"><td colspan="5" style="font-size: '.$textFontSize.'pt;">' .
-              $modifiedTrString .
+              $newTbody .= '<tr id="rowLabel|' . $categoryId . '|stub|' . "FreeText" . '"><td colspan="5" style="font-size: ' . $this->schemeSettings->getTextFontSize() .'pt;">' .
+              $categoryFreeText[$categoryId] .
+
               '</td></tr>';
 
             }
