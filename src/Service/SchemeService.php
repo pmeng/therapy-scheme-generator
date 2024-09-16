@@ -362,8 +362,10 @@ class SchemeService
             
             if($hasFreeText) {
 
+
               $newTbody .= '<tr id="rowLabel|' . $categoryId . '|stub|' . "FreeText" . '"><td colspan="5" style="font-size: ' . $this->schemeSettings->getTextFontSize() .'pt;">' .
               $categoryFreeText[$categoryId] .
+
               '</td></tr>';
 
             }
