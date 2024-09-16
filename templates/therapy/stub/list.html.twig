@@ -30,12 +30,19 @@
 				</div>
 			</form>
 		</div>
-
-
-        <div class="mb-3 text-center">
-            <a href="{{ path('app_therapy_stubs_list', {'showDeleted': not showDeleted, 'sort': sort, 'direction': direction}) }}" class="btn btn-secondary">
-                {{ showDeleted ? 'Hide Deleted Stubs' : 'Show Deleted Stubs' }}
-            </a>
+        
+        <div class="row mb-3">
+            <div class="col text-start">
+                <a href="{{ path('app_therapy_stub_new', {'_locale': app.request.locale}) }}" class="btn btn-outline-primary" role="button">
+                    {{ 'app-new-therapy-stub-button'|trans }}
+                </a>
+            </div>
+            <div class="col text-center">
+                <a href="{{ path('app_therapy_stubs_list', {'showDeleted': not showDeleted, 'sort': sort, 'direction': direction}) }}" class="btn btn-secondary">
+                    {{ showDeleted ? 'Hide Deleted Stubs' : 'Show Deleted Stubs' }}
+                </a>
+            </div>
+            <div class="col"></div>
         </div>
 
         <table id="stubsTable" class="table table-striped">
