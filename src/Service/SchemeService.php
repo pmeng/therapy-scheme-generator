@@ -476,7 +476,7 @@ class SchemeService
         }
       }
       if ($comment != '') {
-        $newTbody .= '<tr><td colspan="3" style="font-size: '.$this->schemeSettings->getTextFontSize().'pt;">' . $comment . '</td></tr>';
+        $newTbody .= '<tr><td colspan="3" style="font-size: '.$this->schemeSettings->getTextFontSize().'pt; padding-left: 15%;">' . $comment . '</td></tr>';
       }
     }
 
