@@ -379,6 +379,12 @@ function transformQuillHTML(html) {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
 
+    tempDiv.querySelectorAll('p').forEach(p => {
+        if (!p.textContent.trim()) {
+            p.remove();
+        }
+    });
+
     // Loop through all elements that have a ql-indent class
     tempDiv.querySelectorAll('[class*="ql-indent-"]').forEach(element => {
         // Extract the indentation level from the class name
