@@ -187,9 +187,34 @@
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
 <script>
+
+    
+
+window.addEventListener('beforeunload', function (event) {
+    // Custom logic for when the user closes the tab
+    if (sessionStorage.getItem('isPageOpen') === 'true') {
+        console.log('Tab is being closed!');
+        // Perform your custom logic here, like saving data or sending analytics
+    } else {
+        console.log('Page is refreshing or navigating away');
+    }
+
+    // Remove the default browser confirmation dialog
+    event.preventDefault(); // This prevents the default action but won't show the confirmation
+    // Do not include `event.returnValue = '';` to avoid showing the default dialog.
+});
+
+// When the page is refreshed, remove the flag
+window.addEventListener('unload', function () {
+    sessionStorage.removeItem('isPageOpen');
+});
     
 let selectedLabels = [];
 $(document).ready(function () {
+    
+    // Set a flag in sessionStorage when the page is loaded
+    sessionStorage.setItem('isPageOpen', 'true');
+
     $("#therapy_scheme_labels")
         .select2({
             placeholder: "Select labels",
