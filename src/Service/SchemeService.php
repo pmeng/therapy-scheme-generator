@@ -182,32 +182,35 @@ class SchemeService
           $excerptItemClass .= ' d-none';
         }
 
-        $newTbody .= '<tr id="rowLabel|' . $label->getId() . '|stub|' . $stub->getId() . '">' .
-          '<td class="text-end col-2">' .
-          $checkboxInput .
-          '</td>' .
-          '<td class="col-2">' .
-          $stub->getName() .
-          '</td>' .
-          '<td class="' . $descriptionItemClass . '">' .
-          substr($stub->getDescription(), 0, 40) .
-          '</td>' .
-          '<td class="' . $excerptItemClass . '">' .
-          substr($stub->getExcerpt(), 0, 40) .
-          '</td>' .
-          '<td class="col-2">' .
-          substr($stub->getBackground(), 0, 300) .
-          '</td>' .
-          '<td class="border-start col-2">' .
-          $textArea .
-          '</td>' .
-          '<td class="col-1.5">' .
-          $labelNames .
-          '</td>' .
-          '<td>' .
-          $trashIcon .
-          '</td>' .
-          '</tr>';
+        $newTbody .= '<tr id="rowLabel|' . $label->getId() . '|stub|' . $stub->getId() . '" ' .
+        ($stub->getIsMarked() || $stub->getIsDeleted() ? 'class="table-danger"' : '') . // Apply red color if isMarked is 1
+        '>' .
+        '<td class="text-end col-2">' .
+        $checkboxInput .
+        '</td>' .
+        '<td class="col-2">' .
+        $stub->getName() .
+        '</td>' .
+        '<td class="' . $descriptionItemClass . '">' .
+        substr($stub->getDescription(), 0, 40) .
+        '</td>' .
+        '<td class="' . $excerptItemClass . '">' .
+        substr($stub->getExcerpt(), 0, 40) .
+        '</td>' .
+        '<td class="col-2">' .
+        substr($stub->getBackground(), 0, 300) .
+        '</td>' .
+        '<td class="border-start col-2">' .
+        $textArea .
+        '</td>' .
+        '<td class="col-1.5">' .
+        $labelNames .
+        '</td>' .
+        '<td>' .
+        $trashIcon .
+        '</td>' .
+        '</tr>';
+      
         }
       }
 

@@ -54,6 +54,9 @@ class StubController extends AbstractController
             $query->andWhere($query->expr()->orX(
                 $query->expr()->isNull('stub.isDeleted'),
                 $query->expr()->eq('stub.isDeleted', 0)
+            ))->andWhere($query->expr()->orX(
+                $query->expr()->isNull('stub.isMarked'),
+                $query->expr()->eq('stub.isMarked', 0)
             ));
         }
 
@@ -131,6 +134,9 @@ class StubController extends AbstractController
             $query->andWhere($query->expr()->orX(
                 $query->expr()->isNull('stub.isDeleted'),
                 $query->expr()->eq('stub.isDeleted', 0)
+            ))->andWhere($query->expr()->orX(
+                $query->expr()->isNull('stub.isMarked'),
+                $query->expr()->eq('stub.isMarked', 0)
             ));
         }
         
@@ -264,7 +270,23 @@ class StubController extends AbstractController
             return $this->redirectToRoute('app_therapy_stubs_list');
         }
 
+        $stub->setIsMarked(!$stub->getIsDeleted());
         $stub->setIsDeleted(!$stub->getIsDeleted());
+        $this->entityManager->persist($stub);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('app_therapy_stubs_list');
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/markUnmark/{id<\d+>}', name: 'app_therapy_stub_mark_unmark')]
+    public function markUnmarkStub(int $id, StubRepository $stubRepository): Response
+    {
+        $stub = $stubRepository->find($id);
+        if ($stub === null) {
+            return $this->redirectToRoute('app_therapy_stubs_list');
+        }
+
+        $stub->setIsMarked(!$stub->getIsMarked());
         $this->entityManager->persist($stub);
         $this->entityManager->flush();
 
@@ -291,6 +313,10 @@ class StubController extends AbstractController
             ->andWhere($query->expr()->orX(
                 $query->expr()->isNull('stub.isDeleted'),
                 $query->expr()->eq('stub.isDeleted', 0)
+            ))
+            ->andWhere($query->expr()->orX(
+                $query->expr()->isNull('stub.isMarked'),
+                $query->expr()->eq('stub.isMarked', 0)
             ))
             ->getQuery()
             ->getResult()
