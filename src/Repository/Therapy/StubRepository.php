@@ -147,7 +147,7 @@ class StubRepository extends ServiceEntityRepository
         $qb->select('s')
             ->from('App\Entity\Therapy\Scheme', 's')
             ->where($qb->expr()->like('s.targets', ':stubId'))
-            ->setParameter('stubId', '%stubID=' . $stubId . '%');
+            ->setParameter('stubId', '%stubID=' . $stubId . '"%');
         
         return $qb->getQuery()->getResult();
     }
