@@ -201,6 +201,14 @@
         <source>app-delete-button</source>
         <target>Delete</target>
       </trans-unit>
+      <trans-unit id="XKdvd3f" resname="app-mark-as-deleted-button">
+        <source>app-mark-as-deleted-button</source>
+        <target>Mark as deleted in therapy schemes</target>
+      </trans-unit>
+      <trans-unit id="XKvra3f" resname="app-unmark-as-deleted-button">
+        <source>app-unmark-as-deleted-button</source>
+        <target>Unmark as deleted in therapy schemes</target>
+      </trans-unit>
       <trans-unit id="8Kdvlxd" resname="app-undelete-button">
         <source>app-undelete-button</source>
         <target>Undelete</target>
