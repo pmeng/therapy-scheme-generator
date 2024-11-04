@@ -31,6 +31,9 @@ class Stub
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $isDeleted;
 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $isMarked;
+
     #[ORM\ManyToOne(targetEntity: StubCategory::class, inversedBy: "stubs")]
     #[ORM\JoinColumn(nullable: true)]
     private ?StubCategory $category;
@@ -111,6 +114,17 @@ class Stub
     {
         $this->isDeleted = $isDeleted;
 
+        return $this;
+    }
+
+    public function getIsMarked(): ?bool
+    {
+        return $this->isMarked;
+    }
+
+    public function setIsMarked(bool $isMarked): self
+    {
+        $this->isMarked = $isMarked;
         return $this;
     }
 

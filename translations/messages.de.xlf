@@ -189,6 +189,14 @@
         <source>app-delete-button</source>
         <target>Löschen</target>
       </trans-unit>
+      <trans-unit id="XKdvd3f" resname="app-mark-as-deleted-button">
+        <source>app-mark-as-deleted-button</source>
+        <target>In Therapieschemata als gelöscht markieren</target>
+      </trans-unit>
+      <trans-unit id="XKvra3f" resname="app-unmark-as-deleted-button">
+        <source>app-unmark-as-deleted-button</source>
+        <target>Markierung als gelöscht in Therapieplänen aufheben</target>
+      </trans-unit>
       <trans-unit id="8Kdvlxd" resname="app-undelete-button">
         <source>app-undelete-button</source>
         <target>Wiederherstellen</target>

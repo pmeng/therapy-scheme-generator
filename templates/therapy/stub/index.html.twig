@@ -57,27 +57,34 @@
         {% if stub %}
             <form action="{{ path('app_therapy_stub_delete_undelete', {'id': stub.id}) }}" method="post" id="deleteUndoForm">
             </form>
+            <form action="{{ path('app_therapy_stub_mark_unmark', {'id': stub.id}) }}" method="post" id="markUndoForm">
+            </form>
         {% endif %}
 
 </div>
-
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="confirmModalLabel">{{ 'app-modal-stub-confirmation'|trans }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'app-modal-close'|trans }}"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="relatedSchemes"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'app-cancel-button'|trans }}</button>
-                    <button type="button" id="confirmDelete" class="btn btn-danger">{{ 'app-delete-button'|trans }}</button>
+    {% if stub %}
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="confirmModalLabel">{{ 'app-modal-stub-confirmation'|trans }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'app-modal-close'|trans }}"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="relatedSchemes"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="confirmDelete" class="btn btn-danger">{{ 'app-delete-button'|trans }}</button>
+                        <button id="markAsDeleted" class="btn btn-danger" type="button" data-bs-toggle="modal" >
+                            {% if stub.isMarked %}{{ 'app-unmark-as-deleted-button'|trans }}{% else %}{{ 'app-mark-as-deleted-button'|trans }}{% endif %}
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'app-cancel-button'|trans }}</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
+
 {% endblock %}
 
 {% block javascripts %}
@@ -143,7 +150,10 @@
         {% if stub %}
             const deleteButton = document.getElementById('deleteUndoBTN');
             const confirmDeleteButton = document.getElementById('confirmDelete');
+            const markAsDeletedButton = document.getElementById('markAsDeleted');
+
             const isDeleted = {% if stub.isDeleted %}true{% else %}false{% endif %};
+            const isMarked = {% if stub.isMarked %}true{% else %}false{% endif %};
 
             const notUsedInScheme = {% if usedSchemes == [] %}true{% else %}false{% endif %};
 
@@ -179,6 +189,9 @@
                 
                 confirmDeleteButton.addEventListener('click', function () {
                     document.getElementById('deleteUndoForm').submit();
+                });
+                markAsDeletedButton.addEventListener('click', function () {
+                    document.getElementById('markUndoForm').submit();
                 });
             }
         {% endif %}
