@@ -221,6 +221,14 @@
         <source>app-save-and-new-button</source>
         <target>Save + New</target>
       </trans-unit>
+      <trans-unit id="8Kdxfsd" resname="app-duplicate-button">
+        <source>app-duplicate-button</source>
+        <target>Duplicate</target>
+      </trans-unit>
+      <trans-unit id="JbMDsRT" resname="app-save-and-duplicate-button">
+        <source>app-save-and-duplicate-button</source>
+        <target>Save + Duplicate</target>
+      </trans-unit>
       <trans-unit id="8AsTaqb" resname="app-therapy-report-select-all">
         <source>app-therapy-report-select-all</source>
         <target>Select All</target>

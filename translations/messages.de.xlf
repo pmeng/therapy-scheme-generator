@@ -209,6 +209,14 @@
         <source>app-save-and-new-button</source>
         <target>Speichern + Neu</target>
       </trans-unit>
+      <trans-unit id="8Kdxfsd" resname="app-duplicate-button">
+        <source>app-duplicate-button</source>
+        <target>Duplizieren</target>
+      </trans-unit>
+      <trans-unit id="JbMDsRT" resname="app-save-and-duplicate-button">
+        <source>app-save-and-duplicate-button</source>
+        <target>Speichern + Duplizieren</target>
+      </trans-unit>
       <trans-unit id="8AsGalb" resname="app-therapy-report-suppress-labels">
         <source>app-therapy-report-suppress-labels</source>
         <target>Labels unterdrücken</target>
