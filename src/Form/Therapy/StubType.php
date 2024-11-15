@@ -76,6 +76,11 @@ class StubType extends AbstractType
                 'label' => false,
                 'mapped' => false,
                 'attr' => ['style' => 'display: none;'],
+            ])->add('submitAndDuplicate', CheckboxType::class, [
+                'required' => false,
+                'label' => false,
+                'mapped' => false,
+                'attr' => ['style' => 'display: none;'],
             ]);
 
             $builder->addEventListener(FormEvents::PRE_SUBMIT, function(PreSubmitEvent $event){
