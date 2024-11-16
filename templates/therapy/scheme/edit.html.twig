@@ -389,7 +389,7 @@
 					Object.keys(categoryFreeText).forEach(category => {
 						const quillInstance = Quill.find(document.querySelector(`#category_free_text_${category}`));
 						if (quillInstance) {
-							quillInstance.root.innerHTML = categoryFreeText[category]; // Set the content in Quill
+							quillInstance.clipboard.dangerouslyPasteHTML(categoryFreeText[category]);
 						}
 					});
 
@@ -554,7 +554,7 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
 		Object.keys(categoryFreeText).forEach(category => {
 			const quillInstance = Quill.find(document.querySelector(`#category_free_text_${category}`));
 			if (quillInstance) {
-				quillInstance.root.innerHTML = categoryFreeText[category]; // Set the content in Quill
+				quillInstance.clipboard.dangerouslyPasteHTML(categoryFreeText[category]);
 			}
 		});
 
