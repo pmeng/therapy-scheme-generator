@@ -155,10 +155,9 @@
         submitAndDuplicate.addEventListener('click', function () {
             const checkbox = document.getElementById('stub_submitAndDuplicate');
             checkbox.checked = true;
-            console.log(checkbox);
-            document.querySelector('textarea[name="stub[description]"]').value = quillDescription.root.innerHTML;
-            document.querySelector('textarea[name="stub[excerpt]"]').value = quillExcerpt.root.innerHTML;
-            document.querySelector('textarea[name="stub[background]"]').value = quillBackground.root.innerHTML;
+            document.querySelector('textarea[name="stub[description]"]').value = quillDescription.getSemanticHTML();
+            document.querySelector('textarea[name="stub[excerpt]"]').value = quillExcerpt.getSemanticHTML();
+            document.querySelector('textarea[name="stub[background]"]').value = quillBackground.getSemanticHTML();
             const form = document.getElementById('stubForm');
             form.submit();
         });
