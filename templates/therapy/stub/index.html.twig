@@ -43,18 +43,22 @@
             <div class="d-grid gap-2 d-md-block mb-4">
                 {{ form_row(stubForm.submitAndNew)}}
                 <a href="{{ path('app_main') }}" class="btn-secondary btn">{{ 'app-cancel-button'|trans }}</a>
-                {% if stub %}
+                {% if stub and status == "edit" %}
                     <button class="btn-dark btn" id="deleteUndoBTN" type="button" data-bs-toggle="modal" data-bs-target="{% if stub.isDeleted %}null{% else %}#confirmModal{% endif %}">
                         {% if stub.isDeleted %}{{ 'app-undelete-button'|trans }}{% else %}{{ 'app-delete-button'|trans }}{% endif %}
                     </button>
                 {% endif %}
                 <button class="btn-primary btn" id="submitBTN" type="submit">{{ 'app-save-button'|trans }}</button>
                 <button class="btn-primary btn" id="submitAndNewBTN" type="submit">{{ 'app-save-and-new-button'|trans }}</button>
+                {% if stub and status == "edit" %}
+                <a href="{{ path('app_therapy_stub_duplicate', {id: stub.id}) }}" id="duplicateBTN" class="btn-primary btn">{{'app-duplicate-button'|trans}}</a>
+                <button class="btn-primary btn" id="submitAndDuplicateBTN" type="submit">{{ 'app-save-and-duplicate-button'|trans }}</button>
+                {% endif %}
             </div>
         </div>
         {{ form_end(stubForm) }}
 
-        {% if stub %}
+        {% if stub and status == "edit" %}
             <form action="{{ path('app_therapy_stub_delete_undelete', {'id': stub.id}) }}" method="post" id="deleteUndoForm">
             </form>
             <form action="{{ path('app_therapy_stub_mark_unmark', {'id': stub.id}) }}" method="post" id="markUndoForm">
@@ -62,7 +66,7 @@
         {% endif %}
 
 </div>
-    {% if stub %}
+    {% if stub and status == "edit" %}
         <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -147,7 +151,18 @@
             form.submit();
         });
 
-        {% if stub %}
+        const submitAndDuplicate = document.getElementById('submitAndDuplicateBTN');
+        submitAndDuplicate.addEventListener('click', function () {
+            const checkbox = document.getElementById('stub_submitAndDuplicate');
+            checkbox.checked = true;
+            document.querySelector('textarea[name="stub[description]"]').value = quillDescription.getSemanticHTML();
+            document.querySelector('textarea[name="stub[excerpt]"]').value = quillExcerpt.getSemanticHTML();
+            document.querySelector('textarea[name="stub[background]"]').value = quillBackground.getSemanticHTML();
+            const form = document.getElementById('stubForm');
+            form.submit();
+        });
+
+        {% if stub and status == "edit" %}
             const deleteButton = document.getElementById('deleteUndoBTN');
             const confirmDeleteButton = document.getElementById('confirmDelete');
             const markAsDeletedButton = document.getElementById('markAsDeleted');

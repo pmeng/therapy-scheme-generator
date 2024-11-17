@@ -63,6 +63,15 @@ class StubRepository extends ServiceEntityRepository
         return $this->applyLabels($data['labels'], $stub);
     }
 
+    public function getNewStubObjectFromStub($stub): Stub
+    {
+        $duplicateStub = clone $stub;
+
+        $this->_em->persist($duplicateStub);
+
+        return $this->applyLabels($stub->getLabels(), $duplicateStub);
+    }
+
     public function updateEntityFromDto(Stub $stub, StubObject $dto): Stub
     {
         $stub->setName($dto->name);
@@ -100,7 +109,6 @@ class StubRepository extends ServiceEntityRepository
     {
         $allLabels = $this->_em->getRepository(Label::class)->findAll();
         $labelsToInject = [];
-
         if ($stubLabels instanceof Collection) {
             $tmp = [];
             foreach ($stubLabels as $label) {
@@ -118,7 +126,6 @@ class StubRepository extends ServiceEntityRepository
         }
 
         $labelsToCreate = array_diff($stubLabels, array_keys($labelsToInject));
-
         foreach ($labelsToCreate as $label) {
             $_label = new Label();
             $_label->setShortName($label);

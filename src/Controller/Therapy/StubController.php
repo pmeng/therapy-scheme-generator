@@ -246,8 +246,18 @@ class StubController extends AbstractController
             $this->entityManager->flush();
 
             $submitAndNew = $stubForm->get('submitAndNew')->getData();
-            $nextAction = $submitAndNew ? 'app_therapy_stub_new' : 'app_therapy_stubs_list';
+            $submitAndDuplicate = $stubForm->get('submitAndDuplicate')->getData();
+
+            if ($submitAndNew) {
+                $nextAction = 'app_therapy_stub_new';
+            } elseif ($submitAndDuplicate) {
+                $nextAction = 'app_therapy_stub_duplicate';
+                return $this->redirectToRoute($nextAction, ['id' => $id]);
+            } else {
+                $nextAction = 'app_therapy_stubs_list';
+            }
             return $this->redirectToRoute($nextAction);
+
 
         }
 
@@ -260,6 +270,50 @@ class StubController extends AbstractController
             'stub' => $stub,
             'usedSchemes' => $stubRepository->findSchemesByStubId($id)
         ]);
+    }
+
+    #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/duplicate/{id<\d+>}', name: 'app_therapy_stub_duplicate')]
+    public function duplicateStub(Request $request, int $id, StubRepository $stubRepository): Response
+    {
+        $stub = $stubRepository->find($id);
+        if ($stub === null) {
+            return $this->redirectToRoute('app_therapy_stubs_list');
+        }
+
+        $stubForm = $this->createForm(StubType::class, $stub);
+        $stubForm->handleRequest($request);
+
+        if ($stubForm->isSubmitted() && $stubForm->isValid()) {
+            $data = $stubForm->getData();
+
+
+            if ($data->getDescription() === null) {
+                $data->setDescription("");
+            }
+            if ($data->getExcerpt() === null) {
+                $data->setExcerpt("");
+            }
+            if ($data->getBackground() === null) {
+                $data->setBackground("");
+            }
+
+            $submitAndNew = $stubForm->get('submitAndNew')->getData();
+
+            $stubRepository->getNewStubObjectFromStub($data);
+
+            $nextAction = $submitAndNew ? 'app_therapy_stub_new' : 'app_main';
+            return $this->redirectToRoute($nextAction);
+
+        }
+
+        return $this->render('therapy/stub/index.html.twig', [
+            'formTitle' => $this->translator->trans('app-new-therapy-stub-form-title'),
+            'stubForm' => $stubForm->createView(),
+            "status" => "add",
+            'stub' => $stub,
+            'usedSchemes' => $stubRepository->findSchemesByStubId($id)
+        ]);
+
     }
 
     #[Route('/{_locale<%app.supported_locales%>}/therapy/stub/deleteUndelete/{id<\d+>}', name: 'app_therapy_stub_delete_undelete')]
