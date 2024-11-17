@@ -121,9 +121,9 @@
 
         const quillBackground = new Quill('#background-editor', quillOptions);
 
-        quillDescription.root.innerHTML = document.querySelector('textarea[name="stub[description]"]').value;
-        quillExcerpt.root.innerHTML = document.querySelector('textarea[name="stub[excerpt]"]').value;
-        quillBackground.root.innerHTML = document.querySelector('textarea[name="stub[background]"]').value;
+        quillDescription.clipboard.dangerouslyPasteHTML(document.querySelector('textarea[name="stub[description]"]').value);
+        quillExcerpt.clipboard.dangerouslyPasteHTML(document.querySelector('textarea[name="stub[excerpt]"]').value);
+        quillBackground.clipboard.dangerouslyPasteHTML(document.querySelector('textarea[name="stub[background]"]').value);
 
         quillDescription.root.style.fontSize = '16px';	
         quillExcerpt.root.style.fontSize = '16px';	
@@ -133,9 +133,9 @@
         submitAndNew.addEventListener('click', function () {
             const checkbox = document.getElementById('stub_submitAndNew');
             checkbox.checked = true;
-            document.querySelector('textarea[name="stub[description]"]').value = quillDescription.root.innerHTML;
-            document.querySelector('textarea[name="stub[excerpt]"]').value = quillExcerpt.root.innerHTML;
-            document.querySelector('textarea[name="stub[background]"]').value = quillBackground.root.innerHTML;
+            document.querySelector('textarea[name="stub[description]"]').value = quillDescription.getSemanticHTML();
+            document.querySelector('textarea[name="stub[excerpt]"]').value = quillExcerpt.getSemanticHTML();
+            document.querySelector('textarea[name="stub[background]"]').value = quillBackground.getSemanticHTML();
             const form = document.getElementById('stubForm');
             form.submit();
         });
@@ -144,9 +144,9 @@
         submit.addEventListener('click', function () {
             const checkbox = document.getElementById('stub_submitAndNew');
             checkbox.checked = false;
-            document.querySelector('textarea[name="stub[description]"]').value = quillDescription.root.innerHTML;
-            document.querySelector('textarea[name="stub[excerpt]"]').value = quillExcerpt.root.innerHTML;
-            document.querySelector('textarea[name="stub[background]"]').value = quillBackground.root.innerHTML;
+            document.querySelector('textarea[name="stub[description]"]').value = quillDescription.getSemanticHTML();
+            document.querySelector('textarea[name="stub[excerpt]"]').value = quillExcerpt.getSemanticHTML();
+            document.querySelector('textarea[name="stub[background]"]').value = quillBackground.getSemanticHTML();
             const form = document.getElementById('stubForm');
             form.submit();
         });
