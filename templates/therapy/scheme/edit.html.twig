@@ -514,6 +514,8 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
             $("#contentDisplayedWhenLabelsAreSelected").addClass("d-none");
         }
         sortInit();
+		editStubInit();
+        duplicateStubInit();
         deleteInit();
 
         const tbodyElementsNew = document.querySelectorAll("tbody[id^='oldTbody']");
@@ -650,7 +652,7 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
 				});
 
 				await generateDynamicForm(selectedLabels, currentComments, checkedCheckboxes, stubsOrder, suppress, excerpt);
-				initializeSortableForTables()
+				initializeSortableForTables();
 
 			});
 		});
@@ -704,6 +706,86 @@ const generateDynamicForm = async (selectedLabels, currentComments, checkedCheck
 			$tbody.append(row);
 		});
 	}
+
+	function editStubInit() {
+
+		$('.edit-icon:not(.editStub)').each(function() {
+			$(this).on('click', async function(event) {
+				event.stopPropagation(); // Prevent the click from bubbling up to the table
+				event.preventDefault(); // Prevent the default form submission behavior
+				// Get the ID of the closest <tr> element
+				const rowId = $(this).closest("tr").attr("id");
+
+				// Parse stub ID from the row ID
+				const parts = rowId.split("|");
+				const stubId = parts[3];
+
+				const path = '{{ path('app_therapy_stub_edit', {'id': 0}) }}'.replace(0, stubId);
+			
+				window.location.href = path;
+			
+			});
+		});
+
+	}
+
+	function duplicateStubInit() {
+
+		$('.copy-icon:not(.duplicateStub)').each(function() {
+			$(this).on('click', async function(event) {
+
+				event.stopPropagation(); // Prevent the click from bubbling up to the table
+				event.preventDefault(); // Prevent the default form submission behavior
+				// Get the ID of the closest <tr> element
+				const rowId = $(this).closest("tr").attr("id");
+
+				// Parse stub ID from the row ID
+				const parts = rowId.split("|");
+				const stubId = parts[3];
+
+				const path = '{{ path('app_therapy_stub_duplicate', {'id': 0}) }}'.replace(0, stubId);
+			
+				window.location.href = path;
+			
+			});
+		});
+
+	}
+
+	function searchEditStubInit() {
+
+		$(".editStub").each(function() {
+			$(this).on("click", async function(event) {
+
+				event.stopPropagation(); // Prevent the click from bubbling up to the table
+				event.preventDefault(); // Prevent the default form submission behavior
+
+				const stubId = $(this).data("stub-id");
+				const path = '{{ path('app_therapy_stub_edit', {'id': 0}) }}'.replace(0, stubId);
+
+				window.location.href = path;
+
+			});
+		});
+
+	}
+
+	function searchDuplicateStubInit() {
+		$(".duplicateStub").each(function() {
+			$(this).on("click", async function(event) {
+
+				event.stopPropagation(); // Prevent the click from bubbling up to the table
+				event.preventDefault(); // Prevent the default form submission behavior
+
+				const stubId = $(this).data("stub-id");
+				const path = '{{ path('app_therapy_stub_duplicate', {'id': 0}) }}'.replace(0, stubId);
+
+				window.location.href = path;
+
+			});
+		});
+	}
+
 
 	// * Resetting when page is refreshed
 	$(document).ready(function () {
@@ -808,13 +890,17 @@ $(document).ready(function () {
             const stubName = $('<div>').text(stub.name).html(); // Escaping HTML
             const excerpt = $('<div>').text(stub.excerpt.substring(0, 50)).html(); // Escaping HTML
             const categoryId = stub.categoryId;
+			const editIcon = `<button class="btn btn-sm btn-danger edit-icon d-block mx-1 editStub" type="button" data-stub-id="${stubId}" ><i class="fas fa-edit"></i></button>`;
+    	    const duplicateIcon = `<button class="btn btn-sm btn-danger copy-icon d-block  mx-1 duplicateStub" type="button" data-stub-id="${stubId}"><i class="fas fa-copy"></i></button>`;
+			const editAndDuplicate = '<td>' + editIcon + duplicateIcon + '</td>';
+
             const labels = stub.labels.map((label) => {
                 return label.name;
             }).join(" ,");
             if (labels) {
-                return `<tr data-stub-id="${stubId}" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td>${$('<div>').text(labels).html()}</td></tr>`;
+                return `<tr data-stub-id="${stubId}" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td>${$('<div>').text(labels).html()}</td>${editAndDuplicate}</tr>`;
             } else {
-                return `<tr data-stub-id="${stubId}" data-label-id="" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td class="no-label">Not Assigned to a LABEL</td></tr>`;
+                return `<tr data-stub-id="${stubId}" data-label-id="" data-category-id="${categoryId}"><td>${stubName}</td><td>${excerpt}</td><td class="no-label">Not Assigned to a LABEL</td>${editAndDuplicate}</tr>`;
             }
         });
 
@@ -826,6 +912,7 @@ $(document).ready(function () {
                             <th>Stub Name</th>
                             <th>Excerpt</th>
                             <th>Label</th>
+							<th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -835,6 +922,8 @@ $(document).ready(function () {
             `);
             
             setupPagination('searchResultsTable', 100); // Initialize custom pagination
+			searchEditStubInit();
+			searchDuplicateStubInit();
         }
     } catch (error) {
         console.error("Error fetching search results:", error);
@@ -1078,6 +1167,34 @@ function setupPagination(tableId, rowsPerPage) {
         }
         .trash-icon:hover {
             color: red; /* Grey color */
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            padding: 0; /* Remove padding */
+            transition: color 0.3s; /* Smooth color transition */
+        }
+        .edit-icon {
+            color: #555; /* Grey color */
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            padding: 0; /* Remove padding */
+            transition: color 0.3s; /* Smooth color transition */
+        }
+        .edit-icon:hover {
+            color: black; /* Black color */
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            padding: 0; /* Remove padding */
+            transition: color 0.3s; /* Smooth color transition */
+        }
+        .copy-icon {
+            color: #555; /* Grey color */
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            padding: 0; /* Remove padding */
+            transition: color 0.3s; /* Smooth color transition */
+        }
+        .copy-icon:hover {
+            color: black; /* Black color */
             background-color: transparent; /* Transparent background */
             border: none; /* No border */
             padding: 0; /* Remove padding */

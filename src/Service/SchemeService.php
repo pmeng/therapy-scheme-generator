@@ -169,10 +169,12 @@ class SchemeService
 
         if(!$labelNames) {          
           // Trash icon for removing stub
-           $trashIcon = '<button class="btn btn-sm btn-danger trash-icon"><i class="fas fa-trash"></i></button>';
+           $trashIcon = '<button class="btn btn-sm btn-danger trash-icon d-block mx-1" type="button"><i class="fas fa-trash"></i></button>';
         } else {
           $trashIcon = '';
         }
+        $editIcon = '<button class="btn btn-sm btn-danger edit-icon d-block mx-1" type="button"><i class="fas fa-edit"></i></button>';
+        $duplicateIcon = '<button class="btn btn-sm btn-danger copy-icon d-block  mx-1" type="button"><i class="fas fa-copy"></i></button>';
 
         $descriptionItemClass = 'col-2 descriptionItem';
         $excerptItemClass = 'col-2 excerptItem';
@@ -208,6 +210,8 @@ class SchemeService
         '</td>' .
         '<td>' .
         $trashIcon .
+        $editIcon .
+        $duplicateIcon .
         '</td>' .
         '</tr>';
       
