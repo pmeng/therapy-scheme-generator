@@ -185,7 +185,13 @@ class SchemeController extends AbstractController
             $currentLanguage
         );
 
-        return new JsonResponse($newTbody);
+        $json = json_encode($newTbody, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+
+        if ($json === false) {
+            return new JsonResponse(['error' => 'Encoding failed.'], 500);
+        }
+    
+        return new JsonResponse($json, 200, [], true); 
     }
 
 
