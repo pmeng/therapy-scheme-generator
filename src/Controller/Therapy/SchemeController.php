@@ -185,13 +185,11 @@ class SchemeController extends AbstractController
             $currentLanguage
         );
 
-        $json = json_encode($newTbody, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        $newTbody = mb_convert_encoding($newTbody, 'UTF-8', 'UTF-8');
 
-        if ($json === false) {
-            return new JsonResponse(['error' => 'Encoding failed.'], 500);
-        }
-    
-        return new JsonResponse($json, 200, [], true); 
+        $newTbody = preg_replace('/[\x00-\x1F\x7F-\x9F]/u', '', $newTbody);
+
+        return new JsonResponse($newTbody);
     }
 
 
